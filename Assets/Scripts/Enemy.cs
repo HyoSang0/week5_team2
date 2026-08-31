@@ -4,12 +4,13 @@ public class Enemy : MonoBehaviour
 {
     public int health;
     public int speed = 5;
-    //public Player player;
+    public PlayerController player;
 
     private Rigidbody enemyRb;
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
+        player = FindObjectOfType<PlayerController>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,7 +26,7 @@ public class Enemy : MonoBehaviour
 
     void MoveTowardsPlayer()
     {
-        // Vector3 moveDirection = player.transform.position - transform.position;
-        // enemyRb.velocity = moveDirection.normalized * speed;
+        Vector3 moveDirection = player.transform.position - transform.position;
+        enemyRb.linearVelocity = moveDirection.normalized * speed;
     }
 }
