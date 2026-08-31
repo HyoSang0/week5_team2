@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 323092004508986298}
   - component: {fileID: 6984720053005533983}
   - component: {fileID: 8395726565185516229}
+  - component: {fileID: 6708359983110595955}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -148,7 +149,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3619340856543788439}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22bb57678b1ad564086d3c19fce12de4, type: 3}
   m_Name: 
@@ -156,3 +157,18 @@ MonoBehaviour:
   health: 5
   speed: 5
   player: {fileID: 0}
+--- !u!114 &6708359983110595955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3619340856543788439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a937741f936a8f34aa80650420a5076a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTemp
+  health: 0
+  speed: 5
+  knockbackForce: 5

@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
-        player = FindObjectOfType<PlayerController>();
+        player = FindAnyObjectByType<PlayerController>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
