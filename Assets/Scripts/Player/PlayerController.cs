@@ -1,10 +1,16 @@
 using UnityEngine;
 
+
 public class PlayerController : MonoBehaviour
 {
+    private CapsuleCollider collider;
+    
     public float moveSpeed;
+    public float rushSpeed;
     private InputSystem_Actions inputActions;
     private Rigidbody rb;
+
+    private bool isRushing = false;
 
     private Vector2 moveInput;
 
@@ -12,6 +18,7 @@ public class PlayerController : MonoBehaviour
     {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+        collider = GetComponent<CapsuleCollider>();
     }
     void Start()
     {
@@ -33,7 +40,25 @@ public class PlayerController : MonoBehaviour
     {
         // Translate 기반 이동
         Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y);
-        transform.Translate(moveDir * moveSpeed * Time.deltaTime);
-        
+        if (!isRushing)
+        {
+            transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(moveDir * rushSpeed * Time.deltaTime);
+        }
+    }
+
+    public void StartRush()
+    {
+        isRushing = true;
+        collider.radius = 2;
+    }
+
+    public void EndRush()
+    {
+        isRushing = false;
+        collider.radius = 0.5f;
     }
 }
