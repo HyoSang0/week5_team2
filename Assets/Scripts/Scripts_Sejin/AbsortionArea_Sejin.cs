@@ -46,7 +46,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         }
 
         enemies.Add(enemy);
-        enemy.speed *= slowMultiplier;
+        enemy.speed =(int)(enemy.speed * slowMultiplier);
     }
 
     private void OnTriggerExit(Collider other)
@@ -59,7 +59,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (enemy == null)
             return;
 
-        enemy.speed /= slowMultiplier;
+        enemy.speed = (int)(enemy.speed / slowMultiplier);
         enemies.Remove(enemy);
     }
 
@@ -106,7 +106,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         foreach (Enemy enemy in enemies)
         {
             if (enemy != null)
-                enemy.speed /= slowMultiplier;
+                enemy.speed = (int)(enemy.speed * slowMultiplier);
         }
 
         enemies.Clear();
