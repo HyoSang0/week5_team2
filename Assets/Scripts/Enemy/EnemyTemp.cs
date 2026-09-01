@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyTemp : MonoBehaviour
 {
     public int health = 5;
-    public int speed = 5;
+    public float speed = 5f;
     public int knockbackForce = 10;
     private PlayerController player;
     
