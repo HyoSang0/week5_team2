@@ -155,6 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTemp
   health: 0
   speed: 5
-  knockbackForce: 5
+  knockbackForce: 10
   deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
+  deathEffectForce: 10
   effectCount: 10
+  deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}

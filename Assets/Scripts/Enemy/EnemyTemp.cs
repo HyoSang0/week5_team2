@@ -9,9 +9,11 @@ public class EnemyTemp : MonoBehaviour
     private PlayerController player;
     
     public GameObject deathEffectPrefab;
+    public float deathEffectForce = 5f;
     public int effectCount = 10;
     private Rigidbody enemyRb;
     bool isDead = false;
+    public GameObject deathParticle;
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
@@ -58,7 +60,9 @@ public class EnemyTemp : MonoBehaviour
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
         enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
+        PlayDeathParticle();
+        yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
     }
 
@@ -68,8 +72,15 @@ public class EnemyTemp : MonoBehaviour
         {
             Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);            
-            effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, 5f), ForceMode.Impulse);
+            effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, deathEffectForce), ForceMode.Impulse);
         }
+        PlayDeathParticle();
+    }
+
+    void PlayDeathParticle()
+    {
+        GameObject deathParticleEffect = Instantiate(deathParticle, transform.position, Quaternion.identity);
+        Destroy(deathParticleEffect, 1f);
     }
 
     void OnTriggerEnter(Collider other)
