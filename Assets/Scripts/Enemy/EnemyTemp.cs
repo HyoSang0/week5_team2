@@ -54,6 +54,7 @@ public class EnemyTemp : MonoBehaviour
         }
     }
 
+    //적 사망 코루틴
     IEnumerator Die()
     {
         PlayDeathEffect();
@@ -66,6 +67,7 @@ public class EnemyTemp : MonoBehaviour
         Destroy(gameObject);
     }
 
+    //사망 시 나오는 파편 효과를 생성하는 함수
     public void PlayDeathEffect()
     {
         for (int i = 0; i < effectCount; i++)
@@ -77,12 +79,14 @@ public class EnemyTemp : MonoBehaviour
         PlayDeathParticle();
     }
 
+    //사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수
     void PlayDeathParticle()
     {
         GameObject deathParticleEffect = Instantiate(deathParticle, transform.position, Quaternion.identity);
         Destroy(deathParticleEffect, 1f);
     }
 
+    //혹시 몰라 만들어본 투사체를 발사하는 원거리 적. 
     void ShootBullet()
     {
         Vector3 direction = (player.transform.position - transform.position).normalized;
@@ -90,9 +94,10 @@ public class EnemyTemp : MonoBehaviour
         bullet.GetComponent<Rigidbody>().AddForce(direction * 2.5f, ForceMode.Impulse);
     }
 
+    //혹시 몰라 만들어본 자폭 피해를 주는 로직
     void Explosion()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 5f);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 2.5f);
         foreach (Collider nearbyObject in colliders)
         {
             if (nearbyObject.CompareTag("Player"))
