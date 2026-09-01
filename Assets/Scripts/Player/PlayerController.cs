@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -5,8 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     private CapsuleCollider collider;
     
-    public float moveSpeed;
-    public float rushSpeed;
+    public float moveSpeed = 10f;
+    public float rushSpeed = 20f;
     private InputSystem_Actions inputActions;
     private Rigidbody rb;
 
@@ -42,11 +43,12 @@ public class PlayerController : MonoBehaviour
         Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y);
         if (!isRushing)
         {
-            transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+            transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+            Debug.Log(moveDir * moveSpeed * Time.deltaTime);
         }
         else
         {
-            transform.Translate(moveDir * rushSpeed * Time.deltaTime);
+            transform.Translate(moveDir * rushSpeed * Time.deltaTime, Space.World);
         }
     }
 
