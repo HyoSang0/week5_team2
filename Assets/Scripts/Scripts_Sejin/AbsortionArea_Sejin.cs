@@ -96,7 +96,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
         onGatherEnergy?.Invoke();
         enemyPool.DieEnemy(nearest.gameObject);
-        Debug.Log("absorb at " + Time.time);
+        //Debug.Log("absorb at " + Time.time);
 
         nextAbsorbTime = Time.time + absorbTime;
     }

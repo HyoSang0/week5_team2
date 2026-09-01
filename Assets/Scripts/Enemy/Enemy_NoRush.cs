@@ -1,0 +1,78 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class Enemy_NoRush : Enemy
+{
+    [Header("Enemy Stats")]
+    public int healthNr = 20;
+
+    bool isDeadNr = false;
+    bool isUnBeatNr = false;
+
+    [Header("References")]
+    public PlayerHp playerHp;
+    private Rigidbody enemyRbNr;
+
+    private new void Awake()
+    {
+        enemyRbNr = GetComponent<Rigidbody>();
+        player = FindAnyObjectByType<PlayerController>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.speed = speed;
+        playerHp = player.gameObject.GetComponent<PlayerHp>();
+    }
+    //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
+    protected new void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DropkickRange"))
+        {
+            if(!isUnBeatNr)
+            {
+                StartCoroutine(UnBeatTime());
+            }
+        }
+    }
+    IEnumerator UnBeatTime()
+    {
+        isUnBeatNr = true;
+        playerHp.PlayerAttacked(1);
+        yield return new WaitForSeconds(1);
+        isUnBeatNr = false;
+    }
+
+
+    void TakeDamageNr(int damage)
+    {
+        healthNr -= damage;
+        CheckHealthNr();
+    }
+    IEnumerator DieNr()
+    {
+        PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
+        Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
+        enemyRbNr.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+        // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
+        yield return new WaitForSeconds(0.5f);
+        PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
+        yield return new WaitForSeconds(0.5f);
+        Destroy(gameObject);    // 오브젝트 풀링 사용 시 변경 필요.
+    }
+    protected void CheckHealthNr()
+    {
+        if (healthNr <= 0 && !isDeadNr)
+        {
+            isDeadNr = true;
+            StartCoroutine(DieNr());
+        }
+    }
+
+    //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
+    protected new void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponent<Enemy>().isDead)
+        {
+            TakeDamageNr(1);
+        }
+    }
+}

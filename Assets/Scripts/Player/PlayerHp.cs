@@ -27,6 +27,12 @@ public class PlayerHp : MonoBehaviour
         isUnBeat = false;
     }
 
+    public void PlayerAttacked(int damage)
+    {
+        playerHP -= damage;
+        gameManager.PlayerAttackedUI(playerHP);
+    }
+
     void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -35,8 +41,8 @@ public class PlayerHp : MonoBehaviour
             if (!isUnBeat)
             { 
                 isUnBeat =true;
-                gameManager.PlayerAttacked(--playerHP);
-                if (playerHP == 0) gameManager.PlayerDie();
+                PlayerAttacked(1);
+                if (playerHP <= 0) gameManager.PlayerDie();
                 StartCoroutine(UnBeatTime());
             }
         }
