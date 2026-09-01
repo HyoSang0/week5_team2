@@ -5,7 +5,7 @@ public class EnemyPool : MonoBehaviour
 {
     ObjectPool<GameObject> enemyPool;
     [SerializeField]GameObject EnemyPrefab;
-    public int maxEnemis = 20;
+    public int maxEnemis = 300;
     GameObject[] prewarmedEnemy;
 
 
@@ -27,6 +27,7 @@ public class EnemyPool : MonoBehaviour
     GameObject CreateEnemy()
     {
         GameObject temp = Instantiate(EnemyPrefab);
+        temp.transform.SetParent(transform);
         temp.gameObject.SetActive(false);
         return temp;
     }

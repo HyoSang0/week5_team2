@@ -5,37 +5,44 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] EnemyPool enemyPool;
+    EnemyPool enemyPool;
+    GameManager gameManager;
     bool gameClear = false;
     [SerializeField] float spawnRate = 1f;
-    int gameTime = 40;
     [SerializeField] float worldDia;
     [SerializeField] GameObject player;
+    // 테스트 단계에서 난이도 조절 용이를 위해 SerializeField 적용
+    [SerializeField] bool secondSpawnerActive = true;
+    [SerializeField] bool thirdSpawnerActive = true;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private void Awake()
     {
         player = GameObject.Find("Player");
-
+        enemyPool = GetComponent<EnemyPool>();
+        gameManager = GetComponent<GameManager>();
     }
 
     void Start()
     {
+        StartCoroutine(Spawn(0));
+        if (secondSpawnerActive) StartCoroutine(Spawn(15));
+        if (thirdSpawnerActive) StartCoroutine(Spawn(25));
 
-        StartCoroutine(Spawn());
     }
 
     void Update()
     {
 
     }
-    IEnumerator Spawn()
+    IEnumerator Spawn(int delayTime)
     {
-        worldDia /= 2;
+        yield return new WaitForSeconds(delayTime);
+        float dia = worldDia / 2;
         while (!gameClear)
         {
             int rand = Random.Range(0, 360);
-            enemyPool.SpawnEnemy(AngleToVector(rand, worldDia-1), new Quaternion(0, 0, 0, 0));
+            enemyPool.SpawnEnemy(AngleToVector(rand, dia-1), new Quaternion(0, 0, 0, 0));
             yield return new WaitForSeconds(spawnRate);
             if (spawnRate > 0.2) spawnRate -= 0.1f;
         }

@@ -172,3 +172,5 @@ MonoBehaviour:
   health: 0
   speed: 5
   knockbackForce: 5
+  deathEffectPrefab: {fileID: 0}
+  effectCount: 10
