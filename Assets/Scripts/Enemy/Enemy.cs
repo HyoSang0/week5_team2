@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     public int health = 5;
     public int speed = 5;
     public int knockbackForce = 10;
-    bool isDead = false;
+    public bool isDead = false;
 
     [Header("References")]
     public PlayerController player;

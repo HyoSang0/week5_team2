@@ -47,7 +47,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void PlayerAttacked(int hp)
+    // UI는 한 곳에서 관리하는 것이 좋음
+    public void PlayerAttackedUI(int hp)
     {
         hpText.text = hp + " / 5";
     }
