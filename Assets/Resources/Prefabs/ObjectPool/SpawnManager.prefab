@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7714212931956025289}
   - component: {fileID: 3212654699710281966}
   m_Layer: 0
-  m_Name: TestSpawnManager
+  m_Name: SpawnManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,3 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnManager
   enemyPool: {fileID: 4138692899814425954, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
+  spawnRate: 1
+  worldDia: 35
+  player: {fileID: 297091579951512518, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}

@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
   EnemyPrefab: {fileID: 3619340856543788439, guid: 05fbded4ee6dba243af73a61dbbe3cfe, type: 3}
-  maxEnemis: 20
+  maxEnemis: 200
