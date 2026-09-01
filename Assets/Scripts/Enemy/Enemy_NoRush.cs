@@ -14,6 +14,8 @@ public class Enemy_NoRush : Enemy
     public PlayerHp playerHp;
     private Rigidbody enemyRbNr;
 
+    Material[] mat;
+
     private new void Awake()
     {
         enemyRbNr = GetComponent<Rigidbody>();
@@ -21,6 +23,12 @@ public class Enemy_NoRush : Enemy
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
         playerHp = player.gameObject.GetComponent<PlayerHp>();
+        mat = new Material[5];
+        for(int i = 0; i < 5; i++)
+        { 
+            mat[i]= transform.GetChild(i).GetComponent<MeshRenderer>().material;
+        }
+
     }
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
     protected new void OnTriggerEnter(Collider other)
@@ -45,7 +53,21 @@ public class Enemy_NoRush : Enemy
     void TakeDamageNr(int damage)
     {
         healthNr -= damage;
+        StartCoroutine(PlayHitEffect());
         CheckHealthNr();
+    }
+    IEnumerator PlayHitEffect()
+    {
+        for(int i = 0; i < mat.Length; i++)
+        {
+            mat[i].color = Color.red;
+        }
+        yield return new WaitForSeconds(.2f);
+        for(int i = 0; i < mat.Length; i++)
+        {
+            mat[i].color = Color.gray;
+
+        }
     }
     IEnumerator DieNr()
     {
