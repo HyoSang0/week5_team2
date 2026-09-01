@@ -8,7 +8,8 @@ public class EnemyTemp : MonoBehaviour
     public int knockbackForce = 5;
     private PlayerController player;
     
-
+    public GameObject deathEffectPrefab;
+    public int effectCount = 10;
     private Rigidbody enemyRb;
     bool isDead = false;
     void Awake()
@@ -53,11 +54,21 @@ public class EnemyTemp : MonoBehaviour
 
     IEnumerator Die()
     {
+        PlayDeathEffect();
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
         enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
         yield return new WaitForSeconds(1f);
         Destroy(gameObject);
+    }
+
+    public void PlayDeathEffect()
+    {
+        for (int i = 0; i < effectCount; i++)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            Instantiate(deathEffectPrefab, transform.position + randomOffset, Quaternion.identity);
+        }
     }
 
     void OnTriggerEnter(Collider other)
