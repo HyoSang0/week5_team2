@@ -13,8 +13,8 @@ public class EnemyPool : MonoBehaviour
     {
         enemyPool = new ObjectPool<GameObject>(
         createFunc: CreateEnemy,
-        actionOnGet: enemy => enemy.SetActive(true),
-        actionOnRelease: enemy => enemy.SetActive(false),
+        actionOnGet: enemy => GetEnemy(enemy),
+        actionOnRelease: enemy => ReleaseEnemy(enemy),
         actionOnDestroy: enemy => Destroy(enemy),
         maxSize: maxEnemis
         );
@@ -24,6 +24,19 @@ public class EnemyPool : MonoBehaviour
         for (int i = 0; i < maxEnemis; i++) prewarmedEnemy[i] = enemyPool.Get();
         for (int i = 0; i < maxEnemis; i++) enemyPool.Release(prewarmedEnemy[i]);
     }
+
+    void GetEnemy(GameObject enemy)
+    {
+        enemy.SetActive(true);
+        EnemyTemp enemyTemp = enemy.gameObject.GetComponent<EnemyTemp>();
+        enemyTemp.Initialize();
+    }
+    void ReleaseEnemy(GameObject enemy)
+    {
+        enemy.SetActive(false);
+    }
+
+
     GameObject CreateEnemy()
     {
         GameObject temp = Instantiate(EnemyPrefab);
@@ -43,5 +56,10 @@ public class EnemyPool : MonoBehaviour
         enemy.transform.position = pos;
         enemy.transform.rotation = rot;
     }
+    public void DieEnemy(GameObject obj)
+    {
+        enemyPool.Release(obj);
+    }
+
 
 }
