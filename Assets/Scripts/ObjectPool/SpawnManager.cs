@@ -26,6 +26,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         StartCoroutine(Spawn(0));
+        StartCoroutine(Spawn(0));
         if (secondSpawnerActive) StartCoroutine(Spawn(15));
         if (thirdSpawnerActive) StartCoroutine(Spawn(25));
 
