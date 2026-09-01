@@ -7627,6 +7627,18 @@ PrefabInstance:
       propertyPath: EnemyPrefab
       value: 
       objectReference: {fileID: 3619340856543788439, guid: 65ef6f26693c58849a3900c7eab6bb4f, type: 3}
+    - target: {fileID: 4138692899814425954, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
+      propertyPath: BasicEnemyPrefab
+      value: 
+      objectReference: {fileID: 3619340856543788439, guid: 05fbded4ee6dba243af73a61dbbe3cfe, type: 3}
+    - target: {fileID: 4138692899814425954, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
+      propertyPath: NoRushEnemyPrefab
+      value: 
+      objectReference: {fileID: 2850225975201428742, guid: 8c9249676a476354885bf886b5473882, type: 3}
+    - target: {fileID: 4138692899814425954, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
+      propertyPath: NoAbsortEnemyPrefab
+      value: 
+      objectReference: {fileID: 1152331714916846004, guid: c7ca4fc2aaac4b547897a513715d1a87, type: 3}
     - target: {fileID: 5640504550197100497, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
       propertyPath: player
       value: 

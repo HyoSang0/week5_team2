@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using static EnemyPool;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -25,28 +26,52 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(Spawn(0));
-        StartCoroutine(Spawn(0));
-        if (secondSpawnerActive) StartCoroutine(Spawn(15));
-        if (thirdSpawnerActive) StartCoroutine(Spawn(25));
-
+        // 게임 난이도 디자인
+        //StartCoroutine(Spawn(PoolType.Basic, 1f));
+        //StartCoroutine(Spawn(PoolType.NoAbsort, 1.5f));
     }
 
     void Update()
     {
 
     }
-    IEnumerator Spawn(int delayTime)
+    IEnumerator Spawn(PoolType poolType, float spawnRate)
     {
+        yield return null;
+
+        float dia = worldDia / 2;
+        // 아래는 프로토 타입 형태. 수정할 것. 소환하는 부분은 또 따로 함수로 뺄 것.
+        if (PoolType.Basic == poolType)
+        {
+            while (!gameClear)
+            {
+                int rand = Random.Range(0, 360);
+                enemyPool.SpawnEnemy(AngleToVector(rand, dia - 1), EnemyPool.PoolType.Basic);
+                yield return new WaitForSeconds(spawnRate);
+                if (spawnRate > 0.2) spawnRate -= 0.1f;
+            }
+        }
+        if (PoolType.NoAbsort == poolType)
+        {
+            while (!gameClear)
+            {
+                int rand = Random.Range(0, 360);
+                enemyPool.SpawnEnemy(AngleToVector(rand, dia - 1), EnemyPool.PoolType.NoAbsort);
+                yield return new WaitForSeconds(spawnRate);
+                if (spawnRate > 0.2) spawnRate -= 0.1f;
+            }
+        }
+        /*
         yield return new WaitForSeconds(delayTime);
         float dia = worldDia / 2;
+
         while (!gameClear)
         {
             int rand = Random.Range(0, 360);
-            enemyPool.SpawnEnemy(AngleToVector(rand, dia-1), new Quaternion(0, 0, 0, 0));
+            enemyPool.SpawnEnemy(AngleToVector(rand, dia-1), EnemyPool.PoolType.Basic);
             yield return new WaitForSeconds(spawnRate);
             if (spawnRate > 0.2) spawnRate -= 0.1f;
-        }
+        }*/
     }
     // 적 스폰 위치 계산용
     Vector3 AngleToVector(float deg, float dis)

@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
+using static EnemyPool;
 
 public class Enemy : MonoBehaviour
 {
@@ -32,10 +33,28 @@ public class Enemy : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
     }
-    public void Initialize()
+    // 적 기본 설정!
+    public void Initialize(PoolType poolType)
     {
-        health = 5;
-        speed = 5;
+        switch (poolType)
+        {
+            case PoolType.Basic:
+                speed = 5;
+                health = 5;
+                break;
+            case PoolType.Boom:
+                speed = 3;
+                health = 10;
+                break;
+            case PoolType.NoRush:
+                speed = 2;
+                health = 15;
+                break;
+            case PoolType.NoAbsort:
+                speed = 1;
+                health = 20;
+                break;
+        }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected void Start()
