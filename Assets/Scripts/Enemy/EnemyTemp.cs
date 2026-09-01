@@ -3,9 +3,9 @@ using System.Collections;
 
 public class EnemyTemp : MonoBehaviour
 {
-    public int health;
+    public int health = 5;
     public int speed = 5;
-    public int knockbackForce = 5;
+    public int knockbackForce = 10;
     private PlayerController player;
     
     public GameObject deathEffectPrefab;
@@ -67,7 +67,8 @@ public class EnemyTemp : MonoBehaviour
         for (int i = 0; i < effectCount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            Instantiate(deathEffectPrefab, transform.position + randomOffset, Quaternion.identity);
+            GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);            
+            effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, 5f), ForceMode.Impulse);
         }
     }
 
