@@ -2,13 +2,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System.Collections;
+using TMPro;
 
 public class RushAbility_Sejin : MonoBehaviour
 {
+    public TextMeshProUGUI dashEnergyText;
     public float energy = 0.0f;
     public float earnEnergy = 5.0f;
     public float consumeEnergy = 10.0f;
     public float maxEnergy = 30.0f;
+    public float rushSpeed = 50.0f;
+    public float duringTime = 0.2f;
+    public float coolTime = 1.0f;
+    public bool isDashing = false;
+    public bool canDash = false;
+
+    private Rigidbody rb;
     private InputSystem_Actions inputActions;
     private PlayerController playerController;
 
@@ -21,6 +30,7 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         energy = 0.0f;
         inputActions = new InputSystem_Actions();
+        rb = GetComponent<Rigidbody>();
     }
 
     void OnEnable()
@@ -37,38 +47,43 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         playerController = GetComponent<PlayerController>();
         inputActions.Player.Attack.started += StartRush;
-        inputActions.Player.Attack.canceled += EndRush;
     }
 
     private void StartRush(InputAction.CallbackContext ctx)
     {
-        onStartRush.Invoke();
-        isRushing = true;
-        StartCoroutine(ConsumeEnergy());
+        if(CanDash())
+        {
+            onStartRush.Invoke();
+            StartCoroutine(Dash());
+        }
     }
 
-    private void EndRush(InputAction.CallbackContext ctx)
+    private IEnumerator Dash()
     {
-        StopCoroutine(ConsumeEnergy());
-        isRushing = false;
+        canDash = false;
+        isDashing = true;
+        rb.linearVelocity = transform.forward * rushSpeed;
+        rb.useGravity = false;
+        yield return new WaitForSeconds(duringTime);
+        rb.linearVelocity = Vector3.zero;
+        isDashing = false;
+        rb.useGravity = true;
         onEndRush.Invoke();
+        yield return new WaitForSeconds(coolTime);
+        canDash = true;
     }
 
     // Rush 기능을 사용 가능한 Energy 관리 체계
 
-    // Energy 소모 코루틴
-    public IEnumerator ConsumeEnergy()
+    // Energy 소모 함수 & 대쉬 가능 여부 반환 
+    public bool CanDash()
     {
-        while(isRushing)
-        {
-            energy -= consumeEnergy * Time.deltaTime;
-            if(energy < 0.0f)
-            {
-                onEndRush.Invoke();
-                energy = 0.0f;
-            }
-            yield return null;
-        }
+        if (energy < consumeEnergy || isDashing) return false;
+
+        energy -= consumeEnergy;
+        RefreshUI();
+
+        return true;
     }
 
     // Energy 충전 이벤트 수신
@@ -79,6 +94,12 @@ public class RushAbility_Sejin : MonoBehaviour
         {
             energy = maxEnergy;
         }
+        RefreshUI();
+    }
+
+    private void RefreshUI()
+    {
+        dashEnergyText.text = $"Energy : {energy}";
     }
 
     private void OnCollisionEnter(Collision collision)

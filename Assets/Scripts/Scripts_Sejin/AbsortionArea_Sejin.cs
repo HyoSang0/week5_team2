@@ -38,7 +38,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
         if (enemy == null)
         {
-            return;
+            onGatherEnergy.Invoke();
+            // 슬로우
+            // 소량 처치
+            Destroy(other.gameObject);
         }
 
         enemies.Add(enemy);

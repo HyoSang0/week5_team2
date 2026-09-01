@@ -33,9 +33,6 @@ public class MouseController : MonoBehaviour
     void Update()
     {
 
-        
-        
-
         Vector2 mouseScreenPosition = inputActions.Player.Look.ReadValue<Vector2>();
         Ray ray = Camera.main.ScreenPointToRay(mouseScreenPosition);
         Plane plane = new Plane(Vector3.up, Vector3.up);
@@ -45,9 +42,5 @@ public class MouseController : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(new Vector3(targetDirection.x, 0, targetDirection.z));
         }
         
-        
-        //angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
-        //transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-
     }
 }
