@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 490418525817537278}
   - component: {fileID: 4138692899814425954}
+  - component: {fileID: 5640504550197100497}
+  - component: {fileID: 7150038455550139028}
   m_Layer: 0
   m_Name: ObjectPool
   m_TagString: Untagged
@@ -45,4 +47,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
   EnemyPrefab: {fileID: 3619340856543788439, guid: 05fbded4ee6dba243af73a61dbbe3cfe, type: 3}
-  maxEnemis: 20
+  maxEnemis: 300
+--- !u!114 &5640504550197100497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573485585764134324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e0abf17226b34e4ba2951581c8a2e01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnManager
+  spawnRate: 1
+  worldDia: 35
+  player: {fileID: 0}
+  secondSpawnerActive: 1
+  thirdSpawnerActive: 1
+--- !u!114 &7150038455550139028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573485585764134324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a7f991e9b356b4cb97f2b5edee35e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  timeText: {fileID: 0}
+  hpText: {fileID: 0}
+  gameOverText: {fileID: 0}
+  playerHp: {fileID: 0}
+  isUnBeat: 0

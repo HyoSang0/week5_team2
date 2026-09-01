@@ -8,6 +8,7 @@ public class PlayerAttack_Dropkick : MonoBehaviour
 
     public BoxCollider dropkickRangeRb;
     public GameObject kickObject;
+    public float kickSeconds = 0.25f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -45,12 +46,13 @@ public class PlayerAttack_Dropkick : MonoBehaviour
         dropkickRangeRb.enabled = true;
         kickObject.SetActive(true);
         float timeElapsed = 0f;
-        while (timeElapsed < 0.5f)
+        while (timeElapsed < kickSeconds)
         {
             timeElapsed += Time.deltaTime;
-            kickObject.transform.localPosition = new Vector3(0f, 0f, Mathf.Lerp(0f, 1f, timeElapsed / 0.5f));
+            kickObject.transform.localPosition = new Vector3(0f, 0f, Mathf.Lerp(0f, 1f, timeElapsed / kickSeconds));
+            yield return null;
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
         kickObject.transform.localPosition = new Vector3(0f, 0.5f, 0f);
         kickObject.SetActive(false);
         dropkickRangeRb.enabled = false;

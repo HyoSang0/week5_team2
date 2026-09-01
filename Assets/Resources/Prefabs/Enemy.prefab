@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   health: 5
   speed: 5
-  player: {fileID: 0}
+  player: {fileID: -81544851927694006, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}
 --- !u!114 &6708359983110595955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,3 +172,5 @@ MonoBehaviour:
   health: 0
   speed: 5
   knockbackForce: 5
+  deathEffectPrefab: {fileID: 0}
+  effectCount: 10
