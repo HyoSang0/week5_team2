@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GroundInitializer : MonoBehaviour
 {
     public GameObject cube;
+    public GameObject NavObstacle;
 
     // 원의 반지름 (월드 좌표 기준)
     public float radius = 5f;
@@ -15,20 +17,11 @@ public class GroundInitializer : MonoBehaviour
     public int holeCenterX = 10;
     public int holeCenterZ = 10;
 
- // 격자 좌표별 Cube 저장
+    // 격자 좌표별 Cube 저장
     private Dictionary<Vector2Int, GameObject> cubes = new Dictionary<Vector2Int, GameObject>();
     void Start()
     {
         CreateCircle();
-    }
- void Update()
-    {
-        // New Input System으로 Space바 입력
-        if (Keyboard.current != null &&
-            Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            Disable30x30(holeCenterX, holeCenterZ);
-        }
     }
     void CreateCircle()
     {
@@ -41,52 +34,64 @@ public class GroundInitializer : MonoBehaviour
                 float worldX = x * cubeSize;
                 float worldZ = z * cubeSize;
 
-                float distanceSquared =
-                    worldX * worldX +
-                    worldZ * worldZ;
+                float distanceSquared = worldX * worldX + worldZ * worldZ;
 
                 if (distanceSquared <= radius * radius)
                 {
-                    Vector3 position = new Vector3(
-                        worldX,
-                        -1f,
-                        worldZ
-                    );
+                    Vector3 position = new Vector3(worldX, -1f, worldZ);
 
-                    GameObject obj = Instantiate(
-                        cube,
-                        position,
-                        Quaternion.identity
-                    );
+                    GameObject obj = Instantiate(cube, position, Quaternion.identity);
 
-                    cubes.Add(
-                        new Vector2Int(x, z),
-                        obj
-                    );
-                }
-            }
-        }
-        }
-
-    public void Disable30x30(int centerX, int centerZ)
-    {
-        const int size = 30;
-        const int half = size / 2;
-
-        int startX = centerX - half;
-        int startZ = centerZ - half;
-
-        for (int x = startX; x < startX + size; x++)
-        {
-            for (int z = startZ; z < startZ + size; z++)
-            {
-                Vector2Int key = new Vector2Int(x, z);
-
-                if (cubes.TryGetValue(key, out GameObject obj))
-                {
-                    obj.SetActive(false);
+                    cubes.Add(new Vector2Int(x, z), obj);
                 }
             }
         }
     }
+    public void DisableWave1(
+        float centerX,
+        float centerZ,
+        float effectRadius)
+    {
+        int localX = Mathf.RoundToInt(centerX / cubeSize);
+        int localZ = Mathf.RoundToInt(centerZ / cubeSize);
+        int localRadius = Mathf.CeilToInt(effectRadius / cubeSize);
+
+        for (int x = localX - localRadius; x <= localX + localRadius; x++)
+        {
+            for (int z = localZ - localRadius; z <= localZ + localRadius; z++)
+            {
+                if ((x - localX) * (x - localX) + (z - localZ) * (z - localZ) <= localRadius * localRadius)
+                {
+                    Vector2Int key = new Vector2Int(x, z);
+
+                    if (cubes.TryGetValue(key, out GameObject obj))
+                    {
+                        obj.GetComponent<GroundDisableTimer>().DisableFor10Seconds();
+                    }
+                }
+
+            }
+        }
+        GameObject obstacle = Instantiate(NavObstacle, new Vector3(centerX, 0f, centerZ), Quaternion.identity);
+        obstacle.GetComponent<DestroyObstacle>().SetRadius(effectRadius);
+        Destroy(obstacle, 10f);
+    }
+
+    public void DisableWave2(
+        float centerX,
+        float centerZ,
+        float effectRadius,
+        float spreadTime)
+    {
+        // StartCoroutine(
+        //     DisableWaveRoutine(
+        //         centerX,
+        //         centerZ,
+        //         effectRadius,
+        //         spreadTime
+        //     )
+        // );
+    }
+
+
 }
