@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+using TMPro;
 
 // 마우스 우클릭으로 작동하는 흡수 능력
 public class AbsortionAbility_Sejin : MonoBehaviour
 {
+    public TextMeshProUGUI absortEnergyText;
     private InputSystem_Actions inputActions;
     public GameObject AbsortionArea;
 
@@ -59,6 +61,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
                 stamina = 0;
                 StopAbility();
             }
+            RefreshUI();
             yield return null;
         }
     }
@@ -78,6 +81,11 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StopCoroutine(ConsumeStamina());
     }
 
+    private void RefreshUI()
+    {
+        absortEnergyText.text = $"Absort : {stamina}";
+    }
+
     private IEnumerator RegenStamina()
     {
         while (!isStartAbsortion)
@@ -86,7 +94,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
             if(stamina > maxStamina)
             {
                 stamina = maxStamina;
-            }    
+            }
+            RefreshUI();
             yield return null;
         }
     }

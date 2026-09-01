@@ -45,10 +45,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
         }
-        else
-        {
-            transform.Translate(moveDir * rushSpeed * Time.deltaTime, Space.World);
-        }
     }
 
     public void StartRush()
