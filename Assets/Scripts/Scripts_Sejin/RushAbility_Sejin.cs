@@ -26,11 +26,14 @@ public class RushAbility_Sejin : MonoBehaviour
 
     public bool isRushing = false;
 
+    private EnemyPool enemyPool;
+
     void Awake()
     {
         energy = 0.0f;
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+        enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
     }
 
     void OnEnable()
@@ -106,7 +109,7 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Enemy") && isRushing)
         {
-            Destroy(collision.gameObject);
+            enemyPool.DieEnemy(collision.gameObject);
         }
     }
 }

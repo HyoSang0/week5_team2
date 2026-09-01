@@ -12,6 +12,11 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private List<EnemyTemp> enemies = new List<EnemyTemp>();
     private float nextAbsorbTime = 0f;
 
+    private EnemyPool enemyPool;
+    private void Awake()
+    {
+        enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
+    }
     private void Start()
     {
         // StartCoroutine(AbsorbEnemy());
@@ -26,11 +31,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // if(other.gameObject.CompareTag("Enemy"))
-        // {
-        //     onGatherEnergy.Invoke();
-        //     Destroy(other.gameObject);
-        // }
+        
         if (!other.CompareTag("Enemy"))
             return;
 
@@ -41,7 +42,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
             onGatherEnergy.Invoke();
             // 슬로우
             // 소량 처치
-            Destroy(other.gameObject);
+            enemyPool.DieEnemy(other.gameObject);
         }
 
         enemies.Add(enemy);
@@ -94,7 +95,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         enemies.Remove(nearest);
 
         onGatherEnergy?.Invoke();
-        Destroy(nearest.gameObject);
+        enemyPool.DieEnemy(nearest.gameObject);
         Debug.Log("absorb at " + Time.time);
 
         nextAbsorbTime = Time.time + absorbTime;

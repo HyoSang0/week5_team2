@@ -7,6 +7,7 @@ public class EnemyTemp : MonoBehaviour
     public float speed = 5f;
     public int knockbackForce = 10;
     private PlayerController player;
+
     public GameObject deathEffectPrefab;
     public float deathEffectForce = 5f;
     public int effectCount = 10;
@@ -14,17 +15,25 @@ public class EnemyTemp : MonoBehaviour
     bool isDead = false;
     public GameObject deathParticle;
     public GameObject bulletPrefab;
+    EnemyPool enemyPool;
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
         player = FindAnyObjectByType<PlayerController>();
+        enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
+    public void Initialize()
+    {
+        health = 5;
+        speed = 5;
+    }
+    
     // Update is called once per frame
     void Update()
     {
@@ -64,7 +73,8 @@ public class EnemyTemp : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         PlayDeathParticle();
         yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
+        enemyPool.DieEnemy(this.gameObject);
+        //Destroy(gameObject);
     }
 
     //사망 시 나오는 파편 효과를 생성하는 함수
