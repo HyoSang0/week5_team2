@@ -44,11 +44,6 @@ public class PlayerController : MonoBehaviour
         if (!isRushing)
         {
             transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
-            Debug.Log(moveDir * moveSpeed * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate(moveDir * rushSpeed * Time.deltaTime, Space.World);
         }
     }
 

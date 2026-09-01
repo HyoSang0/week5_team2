@@ -15,10 +15,14 @@ public class PlayerAttack_Dropkick : MonoBehaviour
         dropkickRangeRb = GameObject.Find("Dropkick_Range").GetComponent<BoxCollider>();
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        kickObject.SetActive(false);
+    }
+
     void Update()
     {
-        inputActions.Player.Attack.performed += ctx => Dropkick();
+        //inputActions.Player.Attack.performed += ctx => Dropkick();
     }
 
     void OnEnable()
@@ -31,7 +35,7 @@ public class PlayerAttack_Dropkick : MonoBehaviour
         inputActions.Disable();
     }
 
-    void Dropkick()
+    public void Dropkick()
     {
         StartCoroutine(DropkickSequence());
     }

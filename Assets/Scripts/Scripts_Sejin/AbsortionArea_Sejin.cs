@@ -9,6 +9,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if(other.gameObject.CompareTag("Enemy"))
         {
             onGatherEnergy.Invoke();
+            // 슬로우
+            // 소량 처치
             Destroy(other.gameObject);
         }
     }
