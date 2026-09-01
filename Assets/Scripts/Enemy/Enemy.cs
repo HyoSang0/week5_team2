@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
@@ -21,10 +22,15 @@ public class Enemy : MonoBehaviour
     public GameObject deathEffectPrefab;
     public GameObject deathParticle;
     public GameObject bulletPrefab;
+
+    [Header("NavMesh")]
+    public NavMeshAgent navMeshAgent;
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
         player = FindAnyObjectByType<PlayerController>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.speed = speed;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,7 +41,8 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveTowardsPlayer();
+        // MoveTowardsPlayer();
+        navMeshAgent.SetDestination(player.transform.position);
     }
     //플레이어에게 이동하는 코드. Update에서 호출됨. NavMesh로 변경될 수 있음. 
     void MoveTowardsPlayer()
