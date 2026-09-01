@@ -39,7 +39,12 @@ public class EnemyTemp : MonoBehaviour
     void TakeDamage(int damage)
     {
         health -= damage;
-        if(health <= 0)
+        CheckHealth();
+    }
+
+    void CheckHealth()
+    {
+        if(health <= 0 && !isDead)
         {
             isDead = true;
             StartCoroutine(Die());
