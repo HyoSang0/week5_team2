@@ -102,6 +102,10 @@ public class Enemy : MonoBehaviour
     {
         GameObject deathParticleEffect = Instantiate(deathParticle, transform.position, Quaternion.identity);
         Destroy(deathParticleEffect, 1f);
+        // GameObject deathParticleEffect = ParticlePool.Instance.particlePool.Get();
+        // deathParticleEffect.transform.position = transform.position;
+        // deathParticleEffect.transform.rotation = Quaternion.identity;
+        // ParticlePool.Instance.particlePool.Release(deathParticleEffect);
     }
 
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 

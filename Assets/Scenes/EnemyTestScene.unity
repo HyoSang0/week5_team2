@@ -10574,6 +10574,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1573485585764134324, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1615168375}
+    - targetCorrespondingSourceObject: {fileID: 1573485585764134324, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1615168378}
   m_SourcePrefab: {fileID: 100100000, guid: 899aea74dd713e14587eeca025ceb550, type: 3}
 --- !u!114 &1615168373 stripped
 MonoBehaviour:
@@ -10608,6 +10611,20 @@ MonoBehaviour:
   gameOverText: {fileID: 1713723594}
   playerHp: {fileID: 807583308}
   isUnBeat: 0
+--- !u!114 &1615168378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1615168374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66ab95b19f02e24280ab8fba2758032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParticlePool
+  particlePrefab: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
+  maxParticles: 50
 --- !u!1 &1713723592
 GameObject:
   m_ObjectHideFlags: 0
