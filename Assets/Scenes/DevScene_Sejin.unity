@@ -1293,6 +1293,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  slowMultiplier: 0.1
+  absorbTime: 0.5
 --- !u!1 &1479031626
 GameObject:
   m_ObjectHideFlags: 0
