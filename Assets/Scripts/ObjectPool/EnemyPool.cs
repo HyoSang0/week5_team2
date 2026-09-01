@@ -28,8 +28,8 @@ public class EnemyPool : MonoBehaviour
     void GetEnemy(GameObject enemy)
     {
         enemy.SetActive(true);
-        EnemyTemp enemyTemp = enemy.gameObject.GetComponent<EnemyTemp>();
-        enemyTemp.Initialize();
+        Enemy Enemy = enemy.gameObject.GetComponent<Enemy>();
+        Enemy.Initialize();
     }
     void ReleaseEnemy(GameObject enemy)
     {
