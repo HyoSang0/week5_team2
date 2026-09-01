@@ -76,22 +76,4 @@ public class GroundInitializer : MonoBehaviour
         obstacle.GetComponent<DestroyObstacle>().SetRadius(effectRadius);
         Destroy(obstacle, 10f);
     }
-
-    public void DisableWave2(
-        float centerX,
-        float centerZ,
-        float effectRadius,
-        float spreadTime)
-    {
-        // StartCoroutine(
-        //     DisableWaveRoutine(
-        //         centerX,
-        //         centerZ,
-        //         effectRadius,
-        //         spreadTime
-        //     )
-        // );
-    }
-
-
 }
