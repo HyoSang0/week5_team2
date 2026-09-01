@@ -7,13 +7,13 @@ public class EnemyTemp : MonoBehaviour
     public int speed = 5;
     public int knockbackForce = 10;
     private PlayerController player;
-    
     public GameObject deathEffectPrefab;
     public float deathEffectForce = 5f;
     public int effectCount = 10;
     private Rigidbody enemyRb;
     bool isDead = false;
     public GameObject deathParticle;
+    public GameObject bulletPrefab;
     void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
@@ -81,6 +81,25 @@ public class EnemyTemp : MonoBehaviour
     {
         GameObject deathParticleEffect = Instantiate(deathParticle, transform.position, Quaternion.identity);
         Destroy(deathParticleEffect, 1f);
+    }
+
+    void ShootBullet()
+    {
+        Vector3 direction = (player.transform.position - transform.position).normalized;
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        bullet.GetComponent<Rigidbody>().AddForce(direction * 2.5f, ForceMode.Impulse);
+    }
+
+    void Explosion()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 5f);
+        foreach (Collider nearbyObject in colliders)
+        {
+            if (nearbyObject.CompareTag("Player"))
+            {
+                // 플레이어에게 폭발 피해를 주는 로직을 여기에 작성
+            }
+        }
     }
 
     void OnTriggerEnter(Collider other)

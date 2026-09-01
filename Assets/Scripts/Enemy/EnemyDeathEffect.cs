@@ -12,6 +12,7 @@ public class EnemyDeathEffect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //일정 시간 후 파괴
         timer += Time.deltaTime;
         if(timer >= 1f)
         {

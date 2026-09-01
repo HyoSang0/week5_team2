@@ -13,10 +13,9 @@ GameObject:
   - component: {fileID: 7803123558813494216}
   - component: {fileID: 323092004508986298}
   - component: {fileID: 6984720053005533983}
-  - component: {fileID: 8395726565185516229}
   - component: {fileID: 6708359983110595955}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: EnemyTemp 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,21 +141,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &8395726565185516229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3619340856543788439}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22bb57678b1ad564086d3c19fce12de4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: 5
-  speed: 5
-  player: {fileID: -81544851927694006, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}
 --- !u!114 &6708359983110595955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,8 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTemp
   health: 5
   speed: 5
-  knockbackForce: 5
-  deathEffectPrefab: {fileID: 0}
-  deathEffectForce: 5
+  knockbackForce: 10
+  deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
+  deathEffectForce: 10
   effectCount: 10
-  deathParticle: {fileID: 0}
+  deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
