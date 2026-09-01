@@ -26,6 +26,11 @@ public class Enemy : MonoBehaviour
         enemyRb = GetComponent<Rigidbody>();
         player = FindAnyObjectByType<PlayerController>();
     }
+    public void Initialize()
+    {
+        health = 5;
+        speed = 5;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected void Start()
     {

@@ -9,7 +9,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     public float slowMultiplier;
     public float absorbTime;
 
-    private List<EnemyTemp> enemies = new List<EnemyTemp>();
+    private List<Enemy> enemies = new List<Enemy>();
     private float nextAbsorbTime = 0f;
 
     private EnemyPool enemyPool;
@@ -35,7 +35,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (!other.CompareTag("Enemy"))
             return;
 
-        EnemyTemp enemy = other.GetComponentInParent<EnemyTemp>();
+        Enemy enemy = other.GetComponentInParent<Enemy>();
 
         if (enemy == null)
         {
@@ -54,7 +54,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (!other.CompareTag("Enemy"))
             return;
 
-        EnemyTemp enemy = other.GetComponent<EnemyTemp>();
+        Enemy enemy = other.GetComponent<Enemy>();
 
         if (enemy == null)
             return;
@@ -69,10 +69,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (Time.time < nextAbsorbTime)
             return;
 
-        EnemyTemp nearest = null;
+        Enemy nearest = null;
         float minDistance = float.MaxValue;
 
-        foreach (EnemyTemp enemy in enemies)
+        foreach (Enemy enemy in enemies)
         {
             if (enemy == null)
                 continue;
@@ -103,7 +103,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     private void OnDisable()
     {
-        foreach (EnemyTemp enemy in enemies)
+        foreach (Enemy enemy in enemies)
         {
             if (enemy != null)
                 enemy.speed /= slowMultiplier;
