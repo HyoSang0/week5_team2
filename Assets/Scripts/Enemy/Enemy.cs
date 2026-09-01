@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
 
     [Header("References")]
     public PlayerController player;
-    private Rigidbody enemyRb;
+    protected Rigidbody enemyRb;
 
     [Header("Death Effects")]
     public float deathEffectForce = 5f;
@@ -116,7 +116,8 @@ public class Enemy : MonoBehaviour
     //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
     protected void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponent<Enemy>().isDead)
+        if((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
+            && collision.gameObject.GetComponent<Enemy>().isDead)
         {
             TakeDamage(5);
         }
