@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
 {
     [Header("Enemy Stats")]
     public int health = 5;
-    public int speed = 5;
+    public float speed = 5f;
     public int knockbackForce = 10;
     public bool isDead = false;
     public PoolType poolType;
@@ -56,19 +56,19 @@ public class Enemy : MonoBehaviour
         switch (poolType)
         {
             case PoolType.Basic:
-                speed = 3;
+                speed = 5f;
                 health = 5;
                 break;
             case PoolType.Boom:
-                speed = 2;
+                speed = 3f;
                 health = 10;
                 break;
             case PoolType.NoRush:
-                speed = 2;
+                speed = 2f;
                 health = 20;
                 break;
             case PoolType.NoAbsort:
-                speed = 1;
+                speed = 1f;
                 health = 5;
                 break;
         }
@@ -83,6 +83,7 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     protected void Update()
     {
+        navMeshAgent.speed = speed;
         // MoveTowardsPlayer();
         if (!isDead)
         {
