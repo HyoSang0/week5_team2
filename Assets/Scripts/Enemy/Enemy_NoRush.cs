@@ -61,12 +61,12 @@ public class Enemy_NoRush : Enemy
     {
         for(int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = Color.red;
+            mat[i].color = Color.gray;
         }
         yield return new WaitForSeconds(.1f);
         for(int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = ChangeColor("gray");
+            mat[i].color = Color.red;
 
         }
     }
@@ -93,7 +93,7 @@ public class Enemy_NoRush : Enemy
         yield return new WaitForSeconds(0.5f);
         
         yield return new WaitForSeconds(0.1f);
-        ChangeColor("gray");
+        ChangeColor("red");
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
     protected void CheckHealthNr()
