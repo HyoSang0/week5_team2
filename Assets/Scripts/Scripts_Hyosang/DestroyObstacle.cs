@@ -14,4 +14,10 @@ public class DestroyObstacle : MonoBehaviour
         navMeshObstacle.radius = destroyRadius;
         navMeshObstacle.height = destroyHeight;
     }
+
+    public void SetRadius(float radius)
+    {
+        destroyRadius = radius;
+        navMeshObstacle.radius = radius;
+    }
 }
