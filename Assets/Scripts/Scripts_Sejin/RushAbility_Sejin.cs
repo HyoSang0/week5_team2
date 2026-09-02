@@ -13,17 +13,21 @@ public class RushAbility_Sejin : MonoBehaviour
     public float maxEnergy = 30.0f;
     public float rushSpeed = 50.0f;
     public float duringTime = 0.2f;
-    public float noDamageTime = 0.3f;
+    public float noDamageTime = 5.0f;
     public float coolTime = 1.0f;
     public bool isDashing = false;
-    public bool canDash = false;
+
+    private Coroutine dashRoutine;
+    private Coroutine unbeatRoutine;
 
     private Rigidbody rb;
     private InputSystem_Actions inputActions;
     private PlayerController playerController;
+    private PlayerHp playerHp;
 
     public UnityEvent onStartRush;
     public UnityEvent onEndRush;
+    public UnityEvent onBeatable;
 
     public bool isRushing = false;
 
@@ -35,6 +39,7 @@ public class RushAbility_Sejin : MonoBehaviour
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
+        playerHp = GetComponent<PlayerHp>();
     }
 
     void OnEnable()
@@ -57,25 +62,30 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         if(CanDash())
         {
+            
             onStartRush.Invoke();
-            StartCoroutine(Dash());
+            if (dashRoutine != null)
+            {
+                StopCoroutine(dashRoutine);
+            }
+            dashRoutine = StartCoroutine(Dash_Move());
+
+            playerHp.UpdateUnBeatTime(noDamageTime);
         }
     }
 
-    private IEnumerator Dash()
+    private IEnumerator Dash_Move()
     {
-        canDash = false;
         isDashing = true;
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
+        Debug.Log("No Damage Start");
         yield return new WaitForSeconds(duringTime);
         rb.linearVelocity = Vector3.zero;
-        isDashing = false;
         rb.useGravity = true;
-        yield return new WaitForSeconds(noDamageTime);
         onEndRush.Invoke();
         yield return new WaitForSeconds(coolTime);
-        canDash = true;
+        isDashing = false;
     }
 
     // Rush 기능을 사용 가능한 Energy 관리 체계
@@ -113,7 +123,6 @@ public class RushAbility_Sejin : MonoBehaviour
         {
             Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             enemy.Die(true);
-            
         }
     }
 }
