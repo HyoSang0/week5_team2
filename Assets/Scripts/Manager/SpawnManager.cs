@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         // 게임 난이도 디자인
-        StartCoroutine(Spawn(PoolType.Basic, 1f, 0, 100));
+        StartCoroutine(Spawn(PoolType.Basic, 0.3f, 0, 100));
         StartCoroutine(Spawn(PoolType.NoAbsort, 1, 20, 3));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 7, 1));
     }
