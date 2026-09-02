@@ -50,12 +50,10 @@ public class PlayerController : MonoBehaviour
     public void StartRush()
     {
         isRushing = true;
-        collider.radius = 2;
     }
 
     public void EndRush()
     {
         isRushing = false;
-        collider.radius = 0.5f;
     }
 }
