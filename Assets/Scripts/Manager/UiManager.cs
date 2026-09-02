@@ -54,7 +54,7 @@ public class UiManager : MonoBehaviour
         if(tempTimer > 2)
         {
             tempTimer = 0;
-            Debug.Log(pHp.playerHP + " / " + pHp.maxPlayerHP);
+            // Debug.Log(pHp.playerHP + " / " + pHp.maxPlayerHP);
         }
     }
 }

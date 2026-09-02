@@ -34,7 +34,7 @@ public class Enemy_NoRush : Enemy
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
     protected new void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DropkickRange"))
+        if (other.CompareTag("Foot"))
         {
             if(!isUnBeatNr)
             {
@@ -91,8 +91,8 @@ public class Enemy_NoRush : Enemy
         enemyRbNr.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
         yield return new WaitForSeconds(0.5f);
-        PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
-        yield return new WaitForSeconds(0.5f);
+        
+        yield return new WaitForSeconds(0.1f);
         ChangeColor("gray");
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
