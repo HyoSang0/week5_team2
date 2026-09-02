@@ -42,12 +42,8 @@ public class Enemy : MonoBehaviour
         navMeshAgent.speed = speed;
         trail = GetComponentInChildren<TrailRenderer>();
         coll = GetComponent<BoxCollider>();
-<<<<<<< HEAD
         rend = GetComponent<Renderer>();
    }
-=======
-    }
->>>>>>> a44e0cdb2e5dbe3e1468279edefcb579ea4b01ff
 
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
@@ -135,27 +131,15 @@ public class Enemy : MonoBehaviour
             trail.enabled = false;
             // navMeshAgent.enabled = true;
             coll.isTrigger = false;
-<<<<<<< HEAD
             enemyRb.constraints = RigidbodyConstraints.FreezeRotationX;
             enemyRb.constraints = RigidbodyConstraints.FreezeRotationZ;
             yield return new WaitForSeconds(0.1f);
             
-=======
-            yield return new WaitForSeconds(0.5f);
-
->>>>>>> a44e0cdb2e5dbe3e1468279edefcb579ea4b01ff
         }
         else
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
-<<<<<<< HEAD
-=======
-        if (poolType != PoolType.Basic)
-        {
-            Debug.Log("Other Guy Dead");
-        }
->>>>>>> a44e0cdb2e5dbe3e1468279edefcb579ea4b01ff
         enemyPool.DieEnemy(gameObject, poolType);
     }
 
@@ -180,10 +164,25 @@ public class Enemy : MonoBehaviour
         }
         else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
         {
-            TakeDamage(5);
+            if(gameObject.CompareTag("Enemy"))
+            {
+                TakeDamage(5);
+            }
         }
     }
 
+    //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
+    //protected void OnCollisionEnter(Collision collision)
+    //{
+    //    if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
+    //        && collision.gameObject.GetComponent<Enemy>().isDead)
+    //    {
+    //        // GameObject otherObj = collision.gameObject;
+    //        // Vector3 direction = transform.position - otherObj.transform.position;
+    //        // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
+    //        TakeDamage(5);
+    //    }
+    //}
     //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦. >> 현재 사용하지 않는 기능입니다. 
     protected void OnCollisionEnter(Collision collision)
     {
