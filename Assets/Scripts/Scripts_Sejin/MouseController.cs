@@ -1,7 +1,4 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.LightTransport;
 
 public class MouseController : MonoBehaviour
 {
