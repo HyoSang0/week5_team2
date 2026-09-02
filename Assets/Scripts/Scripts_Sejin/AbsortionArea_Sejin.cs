@@ -44,7 +44,6 @@ public class AbsortionArea_Sejin : MonoBehaviour
             // 소량 처치
             enemy.Die(false);
         }
-
         enemies.Add(enemy);
         enemy.speed =(int)(enemy.speed * slowMultiplier);
     }

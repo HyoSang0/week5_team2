@@ -2454,6 +2454,7 @@ MonoBehaviour:
   maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
+  noDamageTime: 0.3
   coolTime: 1
   isDashing: 0
   canDash: 0
@@ -4997,6 +4998,7 @@ MonoBehaviour:
   maxEnergy: 30
   rushSpeed: 50
   duringTime: 0.2
+  noDamageTime: 0.3
   coolTime: 1
   isDashing: 0
   canDash: 0

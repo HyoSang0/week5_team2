@@ -5,6 +5,7 @@ public class NoAbsortEnemy : Enemy
 {
     new protected IEnumerator Die()
     {
+        Debug.Log("Big Guy Dead");
         PlayDeathEffect();
         // 통나무처럼 굴러감
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;

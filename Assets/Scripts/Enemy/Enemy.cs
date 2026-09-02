@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
     [Header("Death Effects")]
     public float deathEffectForce = 5f;
     public int effectCount = 10;
+    public TrailRenderer trail;
     
     [Header("Prefabs")]
     public GameObject deathEffectPrefab;
@@ -34,6 +35,7 @@ public class Enemy : MonoBehaviour
         player = FindAnyObjectByType<PlayerController>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
+        trail = GetComponentInChildren<TrailRenderer>();
    }
 
     // 적 기본 설정!
@@ -103,12 +105,17 @@ public class Enemy : MonoBehaviour
     {
         if (isKnockback)
         {
+            trail.enabled = true;
+            
             PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
             Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
             enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
             // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
+            // navMeshAgent.enabled = false;
             yield return new WaitForSeconds(0.5f);
-            PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
+            // PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
+            trail.enabled = false;
+            // navMeshAgent.enabled = true;
             yield return new WaitForSeconds(0.5f);
         }
         else
@@ -128,7 +135,7 @@ public class Enemy : MonoBehaviour
             GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);            
             effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, deathEffectForce), ForceMode.Impulse);
         }
-        PlayDeathParticle();
+        // PlayDeathParticle();
     }
 
     //사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수
