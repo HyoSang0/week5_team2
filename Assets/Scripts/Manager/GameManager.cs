@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,11 +13,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI timeText;
     [SerializeField] TextMeshProUGUI hpText;
     [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] TextMeshProUGUI scoreText;
 
     [SerializeField] PlayerHp playerHp;
 
     public GameObject gameOverGroup;
 
+    public int score;
     float timeLimit;
 
     bool isGameOver = false;
@@ -49,7 +52,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        scoreText.text = string.Format("SCORE : {0}", score);
     }
 
     public void GameClear()
@@ -102,5 +105,10 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
+    }
+
+    public void AddScore(int newScore)
+    {
+        score += newScore;
     }
 }

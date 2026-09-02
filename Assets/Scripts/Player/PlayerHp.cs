@@ -74,4 +74,14 @@ public class PlayerHp : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HealPack") && playerHP < 5) 
+        {
+            playerHP += 1;
+            gameManager.PlayerAttackedUI(playerHP);
+            Destroy(other.gameObject);
+        }
+    }
+
 }

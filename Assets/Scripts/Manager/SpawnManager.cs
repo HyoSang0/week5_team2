@@ -12,6 +12,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] float spawnRate = 1f;
     [SerializeField] float worldDia;
     [SerializeField] GameObject player;
+    [SerializeField] GameObject healPack;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private void Awake()
@@ -28,20 +29,20 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(Spawn(PoolType.Basic, 0.1f, 5, 100));
         StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
         StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
-        StartCoroutine(Spawn(PoolType.Boom, 1f, 10, 1f));
+        StartCoroutine(Spawn(PoolType.Boom, 1f, 10, 3f));
         StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 5, 2));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 20, 1));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 30, 1.5f));
         StartCoroutine(Spawn(PoolType.Boom, 0.3f, 30, 1f));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 40, 2));
-        StartCoroutine(Spawn(PoolType.Boom, 0.2f, 40, 10f));
+        StartCoroutine(Spawn(PoolType.Boom, 0.5f, 40, 10f));
         StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 45, 1));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 50, 3));
-        StartCoroutine(Spawn(PoolType.Boom, 0.1f, 50, 10f));
+        StartCoroutine(Spawn(PoolType.Boom, 0.2f, 50, 10f));
 
-
-
-
+        // 힐팩 소환
+        Invoke("SpawnHealPack", 20f);
+        Invoke("SpawnHealPack", 45f);
     }
 
     /// <summary>
@@ -69,9 +70,10 @@ public class SpawnManager : MonoBehaviour
             time -= spawnRate;
         }
     }
-    void SpawnBoom()
+    void SpawnHealPack()
     {
-        // 좌표 지정 및 바로 터뜨리기
+        int rand = Random.Range(0, 360);
+        Instantiate(healPack, AngleToVector(rand, worldDia / 4 - 1), Quaternion.identity);
     }
 
 
