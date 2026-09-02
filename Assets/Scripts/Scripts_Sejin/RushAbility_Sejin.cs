@@ -13,6 +13,7 @@ public class RushAbility_Sejin : MonoBehaviour
     public float maxEnergy = 30.0f;
     public float rushSpeed = 50.0f;
     public float duringTime = 0.2f;
+    public float noDamageTime = 0.3f;
     public float coolTime = 1.0f;
     public bool isDashing = false;
     public bool canDash = false;
@@ -71,6 +72,7 @@ public class RushAbility_Sejin : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         isDashing = false;
         rb.useGravity = true;
+        yield return new WaitForSeconds(noDamageTime);
         onEndRush.Invoke();
         yield return new WaitForSeconds(coolTime);
         canDash = true;

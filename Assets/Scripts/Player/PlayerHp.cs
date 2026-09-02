@@ -9,6 +9,7 @@ public class PlayerHp : MonoBehaviour
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     bool isUnBeat = false;
+    bool isRushing = false;
     public int playerHP = 5;
     public int maxPlayerHP = 5;
 
@@ -36,7 +37,7 @@ public class PlayerHp : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
         {
 
             if (!isUnBeat)
@@ -47,5 +48,15 @@ public class PlayerHp : MonoBehaviour
                 StartCoroutine(UnBeatTime());
             }
         }
+    }
+
+    public void StartRush()
+    {
+        isUnBeat = true;
+    }
+
+    public void EndRush()
+    {
+        isUnBeat = false;
     }
 }
