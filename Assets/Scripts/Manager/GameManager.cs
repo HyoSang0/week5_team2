@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,9 +11,12 @@ public class GameManager : MonoBehaviour
     [Header("Text")]
     [SerializeField] TextMeshProUGUI timeText;
     [SerializeField] TextMeshProUGUI hpText;
-    [SerializeField] TextMeshProUGUI gameOverText;    
+    [SerializeField] TextMeshProUGUI gameOverText;
 
     [SerializeField] PlayerHp playerHp;
+
+    public GameObject gameOverGroup;
+
     float timeLimit;
 
     bool isGameOver = false;
@@ -34,7 +38,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        gameOverText.gameObject.SetActive(false);
+        // gameOverText.gameObject.SetActive(false);
+        gameOverGroup.SetActive(false);
         hpText.text = "5 / 5";
         timeLimit = 60;
         StartCoroutine(StartTimer(timeLimit));
@@ -50,7 +55,8 @@ public class GameManager : MonoBehaviour
     public void GameClear()
     {
         isGameOver = true;
-        gameOverText.gameObject.SetActive(true);
+        gameOverGroup.SetActive(true);
+        // gameOverText.gameObject.SetActive(true);
         gameOverText.text = "YOU WIN";
         gameOverText.color = Color.yellow;
         Time.timeScale = 0;
@@ -59,7 +65,8 @@ public class GameManager : MonoBehaviour
     public void PlayerDie()
     {
         isGameOver = true;
-        gameOverText.gameObject.SetActive(true);
+        gameOverGroup.SetActive(true);
+        // gameOverText.gameObject.SetActive(true);
         gameOverText.text = "YOU DIE";
         gameOverText.color = Color.red;
         Time.timeScale = 0;
@@ -89,5 +96,11 @@ public class GameManager : MonoBehaviour
                 yield break;
             }
         }
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
     }
 }

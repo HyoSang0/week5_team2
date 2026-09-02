@@ -5,7 +5,7 @@ public class EnemyDeathEffect : MonoBehaviour
     EnemyPool enemyPool;
     float timer = 0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         enemyPool = GetComponentInParent<EnemyPool>();
     }
