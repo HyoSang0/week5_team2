@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public int knockbackForce = 10;
     public bool isDead = false;
     public PoolType poolType;
+    private BoxCollider coll;
 
     [Header("References")]
     public PlayerController player;
@@ -36,6 +37,7 @@ public class Enemy : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
         trail = GetComponentInChildren<TrailRenderer>();
+        coll = GetComponent<BoxCollider>();
    }
 
     // 적 기본 설정!
@@ -105,9 +107,11 @@ public class Enemy : MonoBehaviour
     {
         if (isKnockback)
         {
+            
             trail.enabled = true;
             navMeshAgent.enabled = false;
-            
+            coll.isTrigger = true;
+            enemyRb.constraints = RigidbodyConstraints.FreezePositionY;
             PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
             Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
             enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
@@ -116,7 +120,9 @@ public class Enemy : MonoBehaviour
             // PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
             trail.enabled = false;
             navMeshAgent.enabled = true;
+            coll.isTrigger = false;
             yield return new WaitForSeconds(0.5f);
+            
         }
         else
         {
@@ -156,6 +162,10 @@ public class Enemy : MonoBehaviour
     protected void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("DropkickRange"))
+        {
+            TakeDamage(5);
+        }
+        else if (other.CompareTag("Enemy"))
         {
             TakeDamage(5);
         }
