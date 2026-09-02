@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
     public bool isDead = false;
     public PoolType poolType;
     public BoxCollider coll;
+    public int enemyScore = 0;
 
     [Header("References")]
     public PlayerController player;
@@ -44,11 +45,11 @@ public class Enemy : MonoBehaviour
         coll = GetComponent<BoxCollider>();
         rend = GetComponent<Renderer>();
    }
-
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
     {
         ChangeMaterial(true);
+        enemyScore = 0;
         this.poolType = poolType;
         enemyPool = pool;
         isDead = false;
@@ -109,6 +110,7 @@ public class Enemy : MonoBehaviour
         if (health <= 0 && !isDead)
         {
             isDead = true;
+            GameManager.Instance.AddScore(enemyScore);
             StartCoroutine(Die(true));
         }
     }
@@ -160,12 +162,14 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("DropkickRange"))
         {
+            enemyScore += 1;
             TakeDamage(5);
         }
         else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
         {
             if(gameObject.CompareTag("Enemy"))
             {
+                enemyScore = other.gameObject.GetComponent<Enemy>().enemyScore + 1;
                 TakeDamage(5);
             }
         }
