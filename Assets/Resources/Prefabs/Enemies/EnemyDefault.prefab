@@ -168,6 +168,8 @@ MonoBehaviour:
   deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
   bulletPrefab: {fileID: 0}
   navMeshAgent: {fileID: 2376927853862297865}
+  liveMaterial: {fileID: 2100000, guid: f8d1ba1678c6a3649a240c4859f7d445, type: 2}
+  deathMaterial: {fileID: 2100000, guid: 21e63e167d347af41bf48d167842f172, type: 2}
 --- !u!195 &2376927853862297865
 NavMeshAgent:
   m_ObjectHideFlags: 0
