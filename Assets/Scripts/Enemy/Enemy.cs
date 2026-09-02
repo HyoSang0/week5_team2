@@ -55,11 +55,11 @@ public class Enemy : MonoBehaviour
         switch (poolType)
         {
             case PoolType.Basic:
-                speed = 5;
+                speed = 3;
                 health = 5;
                 break;
             case PoolType.Boom:
-                speed = 3;
+                speed = 2;
                 health = 10;
                 break;
             case PoolType.NoRush:
