@@ -3,7 +3,7 @@ using System.Collections;
 
 public class NoAbsortEnemy : Enemy
 {
-    new protected IEnumerator Die()
+    public override IEnumerator Die(bool isKnockback)
     {
         Debug.Log("Big Guy Dead");
         PlayDeathEffect();

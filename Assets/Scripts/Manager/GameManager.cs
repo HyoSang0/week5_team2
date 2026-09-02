@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] PlayerHp playerHp;
     float timeLimit;
-    float timeElapsed = 0;
 
     bool isGameOver = false;
     public bool isUnBeat = false;
@@ -37,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         gameOverText.gameObject.SetActive(false);
         hpText.text = "5 / 5";
-        timeLimit = 40;
+        timeLimit = 60;
         StartCoroutine(StartTimer(timeLimit));
     }
 
@@ -45,11 +44,12 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeElapsed += Time.deltaTime;
+        
     }
 
     public void GameClear()
     {
+        isGameOver = true;
         gameOverText.gameObject.SetActive(true);
         gameOverText.text = "YOU WIN";
         gameOverText.color = Color.yellow;
@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDie()
     {
+        isGameOver = true;
         gameOverText.gameObject.SetActive(true);
         gameOverText.text = "YOU DIE";
         gameOverText.color = Color.red;

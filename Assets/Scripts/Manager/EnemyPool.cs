@@ -31,12 +31,12 @@ public class EnemyPool : MonoBehaviour
     private void Awake()
     {
         BasicEnemyPool = CreatPool(PoolType.Basic);
-        //BoomEnemyPool = CreatPool(PoolType.Boom);
+        BoomEnemyPool = CreatPool(PoolType.Boom);
         NoRushEnemyPool = CreatPool(PoolType.NoRush);
         NoAbsortEnemyPool = CreatPool(PoolType.NoAbsort);
 
         PrewarmedObject(BasicEnemyPool, 300);
-        //PrewarmedObject(BoomEnemyPool, 10);
+        PrewarmedObject(BoomEnemyPool, 10);
         PrewarmedObject(NoRushEnemyPool, 10);
         PrewarmedObject(NoAbsortEnemyPool, 10);
     }
@@ -78,7 +78,7 @@ public class EnemyPool : MonoBehaviour
         switch (poolType)
         {
             case PoolType.Basic:
-                Debug.Log("Here");
+                // Debug.Log("Here");
                 BasicEnemyPool.Release(obj);
                 break;
             case PoolType.Boom:
@@ -88,6 +88,7 @@ public class EnemyPool : MonoBehaviour
                 NoRushEnemyPool.Release(obj);
                 break;
             case PoolType.NoAbsort:
+                Debug.Log("Big Guy is Dead");
                 NoAbsortEnemyPool.Release(obj);
                 break;
         }

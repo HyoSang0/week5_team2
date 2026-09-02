@@ -65,17 +65,17 @@ public class Enemy : MonoBehaviour
                 break;
         }
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    protected void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     protected void Update()
     {
         // MoveTowardsPlayer();
-        navMeshAgent.SetDestination(player.transform.position);
+        if (!isDead)
+        {
+            navMeshAgent.SetDestination(player.transform.position);
+        }
+        
+        
     }
     //플레이어에게 이동하는 코드. Update에서 호출됨. NavMesh로 변경될 수 있음. 
     protected void MoveTowardsPlayer()
@@ -101,28 +101,31 @@ public class Enemy : MonoBehaviour
             StartCoroutine(Die(true));
         }
     }
-    public IEnumerator Die(bool isKnockback)
+    public virtual IEnumerator Die(bool isKnockback)
     {
         if (isKnockback)
         {
             trail.enabled = true;
+            navMeshAgent.enabled = false;
             
             PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
             Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
             enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
             // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
-            // navMeshAgent.enabled = false;
             yield return new WaitForSeconds(0.5f);
             // PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
             trail.enabled = false;
-            // navMeshAgent.enabled = true;
+            navMeshAgent.enabled = true;
             yield return new WaitForSeconds(0.5f);
         }
         else
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
-
+        if(poolType != PoolType.Basic)
+        {
+            Debug.Log("Other Guy Dead");
+        }
         enemyPool.DieEnemy(gameObject, poolType);
     }
 
@@ -164,6 +167,9 @@ public class Enemy : MonoBehaviour
         if((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
             && collision.gameObject.GetComponent<Enemy>().isDead)
         {
+            // GameObject otherObj = collision.gameObject;
+            // Vector3 direction = transform.position - otherObj.transform.position;
+            // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
             TakeDamage(5);
         }
     }
