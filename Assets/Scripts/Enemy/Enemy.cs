@@ -171,31 +171,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
-    //protected void OnCollisionEnter(Collision collision)
-    //{
-    //    if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
-    //        && collision.gameObject.GetComponent<Enemy>().isDead)
-    //    {
-    //        // GameObject otherObj = collision.gameObject;
-    //        // Vector3 direction = transform.position - otherObj.transform.position;
-    //        // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
-    //        TakeDamage(5);
-    //    }
-    //}
-    //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦. >> 현재 사용하지 않는 기능입니다. 
-    protected void OnCollisionEnter(Collision collision)
-    {
-        if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
-            && collision.gameObject.GetComponent<Enemy>().isDead)
-        {
-            // GameObject otherObj = collision.gameObject;
-            // Vector3 direction = transform.position - otherObj.transform.position;
-            // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
-            TakeDamage(5);
-        }
-    }
-
     public virtual void ChangeMaterial(bool isLive)
     {
         if(poolType == PoolType.NoRush) return;
