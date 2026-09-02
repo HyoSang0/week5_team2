@@ -24,7 +24,9 @@ public class Enemy_NoRush : Enemy
         navMeshAgent.speed = speed;
         playerHp = player.gameObject.GetComponent<PlayerHp>();
         mat = new Material[5];
-        for(int i = 0; i < 5; i++)
+        enemyPool = GetComponentInParent<EnemyPool>();
+
+        for (int i = 0; i < 5; i++)
         { 
             mat[i]= transform.GetChild(i).GetComponent<MeshRenderer>().material;
         }
@@ -62,14 +64,28 @@ public class Enemy_NoRush : Enemy
         {
             mat[i].color = Color.red;
         }
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(.1f);
         for(int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = Color.gray;
+            mat[i].color = ChangeColor("gray");
 
         }
     }
-    IEnumerator DieNr()
+    Color ChangeColor(string color)
+    {
+        if (color == "red")
+        {
+            return Color.red;
+        }
+        else if (color == "gray")
+        {
+            return Color.gray;
+        }
+        return Color.white;
+    }
+
+
+     IEnumerator DieNr()
     {
         PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
@@ -78,7 +94,8 @@ public class Enemy_NoRush : Enemy
         yield return new WaitForSeconds(0.5f);
         PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
         yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);    // 오브젝트 풀링 사용 시 변경 필요.
+        ChangeColor("gray");
+        enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
     protected void CheckHealthNr()
     {

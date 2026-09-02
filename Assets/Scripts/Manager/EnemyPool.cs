@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Pool;
+using static EnemyPool;
 
 public class EnemyPool : MonoBehaviour
 {
@@ -71,8 +72,29 @@ public class EnemyPool : MonoBehaviour
     /// 적이 죽었을 때 호출되는 함수. 적을 풀에 반환한다.
     /// </summary>
     /// <param name="obj">죽은 적의 게임 오브젝트 타입</param>
-    public void DieEnemy(GameObject obj)
+    /// <param name="poolType">죽은 적의 풀 타입</param>
+    public void DieEnemy(GameObject obj, PoolType poolType)
     {
+        GameObject thisObject = null;
+
+        switch (poolType)
+        {
+            case PoolType.Basic:
+                thisObject = BasicEnemyPool.Get();
+                break;
+            case PoolType.Boom:
+                thisObject = BoomEnemyPool.Get();
+                break;
+            case PoolType.NoRush:
+                thisObject = NoRushEnemyPool.Get();
+                break;
+            case PoolType.NoAbsort:
+                thisObject = NoAbsortEnemyPool.Get();
+                break;
+        }
+
+
+
         BasicEnemyPool.Release(obj);
     }
 

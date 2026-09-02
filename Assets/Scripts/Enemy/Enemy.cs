@@ -10,10 +10,12 @@ public class Enemy : MonoBehaviour
     public int speed = 5;
     public int knockbackForce = 10;
     public bool isDead = false;
+    PoolType poolType;
 
     [Header("References")]
     public PlayerController player;
     protected Rigidbody enemyRb;
+    protected EnemyPool enemyPool;
 
     [Header("Death Effects")]
     public float deathEffectForce = 5f;
@@ -32,10 +34,13 @@ public class Enemy : MonoBehaviour
         player = FindAnyObjectByType<PlayerController>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
+        enemyPool = GetComponentInParent<EnemyPool>();
     }
+
     // 적 기본 설정!
     public void Initialize(PoolType poolType)
     {
+        this.poolType = poolType;
         switch (poolType)
         {
             case PoolType.Basic:
@@ -89,19 +94,26 @@ public class Enemy : MonoBehaviour
         if(health <= 0 && !isDead)
         {
             isDead = true;
-            StartCoroutine(Die());
+            StartCoroutine(Die(true));
         }
     }
-    protected IEnumerator Die()
+    public IEnumerator Die(bool isKnockback)
     {
-        PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
-        Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
-        // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
-        yield return new WaitForSeconds(0.5f);
-        PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
-        yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);    // 오브젝트 풀링 사용 시 변경 필요.
+        if (isKnockback)
+        {
+            PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
+            Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
+            enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+            // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
+            yield return new WaitForSeconds(0.5f);
+            PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
+            yield return new WaitForSeconds(0.5f);
+        }
+        else
+        {
+            // 이곳에 흡수 공격 사망 이펙트 추가 가능
+        }
+        enemyPool.DieEnemy(gameObject, poolType);
     }
 
     //사망 시 나오는 파편 효과를 생성하는 함수

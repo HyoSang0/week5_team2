@@ -109,7 +109,9 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Enemy") && isRushing)
         {
-            enemyPool.DieEnemy(collision.gameObject);
+            Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+            enemy.Die(true);
+            
         }
     }
 }

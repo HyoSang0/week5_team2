@@ -27,40 +27,39 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         // 게임 난이도 디자인
-        //StartCoroutine(Spawn(PoolType.Basic, 1f));
-        //StartCoroutine(Spawn(PoolType.NoAbsort, 1.5f));
+        StartCoroutine(Spawn(PoolType.Basic, 1f, 0, 100));
+        StartCoroutine(Spawn(PoolType.NoAbsort, 1, 20, 3));
+        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 7, 1));
     }
 
-    void Update()
+    /// <summary>
+    /// 적을 소환하는 코루틴
+    /// </summary>
+    /// <param name="poolType">적의 enum 타입</param>
+    /// <param name="spawnRate">소환 주기</param>
+    /// <param name="delay">시작 지연 시간</param>
+    /// <param name="continueTime">지속 시간</param>
+    /// <returns></returns>
+    IEnumerator Spawn(PoolType poolType, float spawnRate, float delay, float continueTime)
     {
-
-    }
-    IEnumerator Spawn(PoolType poolType, float spawnRate)
-    {
-        yield return null;
+        yield return new WaitForSeconds(delay);
 
         float dia = worldDia / 2;
-        // 아래는 프로토 타입 형태. 수정할 것. 소환하는 부분은 또 따로 함수로 뺄 것.
-        if (PoolType.Basic == poolType)
+
+        float time = continueTime;
+
+
+        while (!gameClear && time > 0)
         {
-            while (!gameClear)
-            {
-                int rand = Random.Range(0, 360);
-                enemyPool.SpawnEnemy(AngleToVector(rand, dia - 1), EnemyPool.PoolType.Basic);
-                yield return new WaitForSeconds(spawnRate);
-                if (spawnRate > 0.2) spawnRate -= 0.1f;
-            }
+            int rand = Random.Range(0, 360);
+            enemyPool.SpawnEnemy(AngleToVector(rand, dia - 1), poolType);
+            yield return new WaitForSeconds(spawnRate);
+            time -= spawnRate;
         }
-        if (PoolType.NoAbsort == poolType)
-        {
-            while (!gameClear)
-            {
-                int rand = Random.Range(0, 360);
-                enemyPool.SpawnEnemy(AngleToVector(rand, dia - 1), EnemyPool.PoolType.NoAbsort);
-                yield return new WaitForSeconds(spawnRate);
-                if (spawnRate > 0.2) spawnRate -= 0.1f;
-            }
-        }
+                
+
+
+
         /*
         yield return new WaitForSeconds(delayTime);
         float dia = worldDia / 2;
@@ -73,6 +72,8 @@ public class SpawnManager : MonoBehaviour
             if (spawnRate > 0.2) spawnRate -= 0.1f;
         }*/
     }
+
+
     // 적 스폰 위치 계산용
     Vector3 AngleToVector(float deg, float dis)
     {

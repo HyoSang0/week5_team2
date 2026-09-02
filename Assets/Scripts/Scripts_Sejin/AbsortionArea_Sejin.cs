@@ -42,7 +42,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
             onGatherEnergy.Invoke();
             // 슬로우
             // 소량 처치
-            enemyPool.DieEnemy(other.gameObject);
+            enemy.Die(false);
         }
 
         enemies.Add(enemy);
@@ -95,7 +95,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         enemies.Remove(nearest);
 
         onGatherEnergy?.Invoke();
-        enemyPool.DieEnemy(nearest.gameObject);
+        nearest.Die(false);
+        //enemyPool.DieEnemy(nearest.gameObject);
         //Debug.Log("absorb at " + Time.time);
 
         nextAbsorbTime = Time.time + absorbTime;
