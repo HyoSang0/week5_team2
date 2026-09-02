@@ -42,6 +42,7 @@ public class Enemy : MonoBehaviour
 
         this.poolType = poolType;
         enemyPool = pool;
+        isDead = false;
         switch (poolType)
         {
             case PoolType.Basic:

@@ -27,9 +27,22 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         // 게임 난이도 디자인
-        StartCoroutine(Spawn(PoolType.Basic, 0.3f, 0, 100));
-        StartCoroutine(Spawn(PoolType.NoAbsort, 1, 20, 3));
-        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 7, 1));
+        StartCoroutine(Spawn(PoolType.Basic, 0.5f, 0, 10));
+        StartCoroutine(Spawn(PoolType.Basic, 0.1f, 5, 100));
+        StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
+        StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
+        // StartCoroutine(Spawn(PoolType.Boom, 1f, 10, 1f));
+        StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 20, 1));
+        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 20, 1));
+        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 30, 1.5f));
+        // StartCoroutine(Spawn(PoolType.Boom, 0.3f, 30, 1f));
+        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 40, 2));
+        StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 45, 1));
+        StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 50, 3));
+        // StartCoroutine(Spawn(PoolType.Boom, 0.1f, 57, 1f));
+
+
+
     }
 
     /// <summary>
@@ -56,21 +69,10 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(spawnRate);
             time -= spawnRate;
         }
-                
-
-
-
-        /*
-        yield return new WaitForSeconds(delayTime);
-        float dia = worldDia / 2;
-
-        while (!gameClear)
-        {
-            int rand = Random.Range(0, 360);
-            enemyPool.SpawnEnemy(AngleToVector(rand, dia-1), EnemyPool.PoolType.Basic);
-            yield return new WaitForSeconds(spawnRate);
-            if (spawnRate > 0.2) spawnRate -= 0.1f;
-        }*/
+    }
+    void SpawnBoom()
+    {
+        // 좌표 지정 및 바로 터뜨리기
     }
 
 
@@ -84,7 +86,7 @@ public class SpawnManager : MonoBehaviour
         if(Mathf.Abs(player.transform.position.x - spawnPos.x) < 5 && Mathf.Abs(player.transform.position.z - spawnPos.z) < 5)
         {
             // 0 이면 음수(시계 반대 방향), 1이면 양수 방향. 
-            float value = (Random.Range(0, 2) == 0) ? -40f : 40f;
+            float value = (Random.Range(0, 2) == 0) ? -50f : 50f;
             rad = (deg + value) * Mathf.Deg2Rad;
             spawnPos = new Vector3(Mathf.Cos(rad) * dis, 0, Mathf.Sin(rad) * dis);
         }

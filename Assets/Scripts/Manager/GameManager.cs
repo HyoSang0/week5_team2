@@ -20,8 +20,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gameOverText.gameObject.SetActive(false);
-        hpText.text = "5 / 5";
-        time = 40;
+        hpText.text = playerHp.playerHP + " / " + playerHp.playerHP;
+        time = 60;
         StartCoroutine(StartTimer(time));
     }
 
