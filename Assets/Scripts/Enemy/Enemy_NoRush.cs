@@ -24,7 +24,6 @@ public class Enemy_NoRush : Enemy
         navMeshAgent.speed = speed;
         playerHp = player.gameObject.GetComponent<PlayerHp>();
         mat = new Material[5];
-        enemyPool = GetComponentInParent<EnemyPool>();
 
         for (int i = 0; i < 5; i++)
         { 

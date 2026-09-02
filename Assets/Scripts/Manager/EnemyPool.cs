@@ -75,27 +75,21 @@ public class EnemyPool : MonoBehaviour
     /// <param name="poolType">죽은 적의 풀 타입</param>
     public void DieEnemy(GameObject obj, PoolType poolType)
     {
-        GameObject thisObject = null;
-
         switch (poolType)
         {
             case PoolType.Basic:
-                thisObject = BasicEnemyPool.Get();
+                BasicEnemyPool.Release(obj);
                 break;
             case PoolType.Boom:
-                thisObject = BoomEnemyPool.Get();
+                BoomEnemyPool.Release(obj);
                 break;
             case PoolType.NoRush:
-                thisObject = NoRushEnemyPool.Get();
+                NoRushEnemyPool.Release(obj);
                 break;
             case PoolType.NoAbsort:
-                thisObject = NoAbsortEnemyPool.Get();
+                NoAbsortEnemyPool.Release(obj);
                 break;
         }
-
-
-
-        BasicEnemyPool.Release(obj);
     }
 
     ObjectPool<GameObject> CreatPool(PoolType poolType)
@@ -136,7 +130,7 @@ public class EnemyPool : MonoBehaviour
     {
         enemy.SetActive(true);
         Enemy Enemy = enemy.gameObject.GetComponent<Enemy>();
-        Enemy.Initialize(poolType); // ToDo: Enemy에서 PoolType에 따라 초기화 해주는 함수 제작
+        Enemy.Initialize(poolType, this);
     }
 
     // 오브젝트 풀 미리 생성해두는 함수.

@@ -95,8 +95,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         enemies.Remove(nearest);
 
         onGatherEnergy?.Invoke();
-        nearest.Die(false);
-        //enemyPool.DieEnemy(nearest.gameObject);
+
+        StartCoroutine(nearest.Die(false));
         //Debug.Log("absorb at " + Time.time);
 
         nextAbsorbTime = Time.time + absorbTime;

@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     public int speed = 5;
     public int knockbackForce = 10;
     public bool isDead = false;
-    PoolType poolType;
+    public PoolType poolType;
 
     [Header("References")]
     public PlayerController player;
@@ -34,13 +34,14 @@ public class Enemy : MonoBehaviour
         player = FindAnyObjectByType<PlayerController>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = speed;
-        enemyPool = GetComponentInParent<EnemyPool>();
-    }
+   }
 
     // 적 기본 설정!
-    public void Initialize(PoolType poolType)
+    public void Initialize(PoolType poolType, EnemyPool pool)
     {
+
         this.poolType = poolType;
+        enemyPool = pool;
         switch (poolType)
         {
             case PoolType.Basic:
@@ -53,11 +54,11 @@ public class Enemy : MonoBehaviour
                 break;
             case PoolType.NoRush:
                 speed = 2;
-                health = 15;
+                health = 20;
                 break;
             case PoolType.NoAbsort:
                 speed = 1;
-                health = 20;
+                health = 5;
                 break;
         }
     }
@@ -113,6 +114,7 @@ public class Enemy : MonoBehaviour
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
+
         enemyPool.DieEnemy(gameObject, poolType);
     }
 

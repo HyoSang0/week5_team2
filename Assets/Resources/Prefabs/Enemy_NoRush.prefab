@@ -280,6 +280,7 @@ MonoBehaviour:
   speed: 2
   knockbackForce: 10
   isDead: 0
+  poolType: 2
   player: {fileID: 0}
   deathEffectForce: 5
   effectCount: 10
