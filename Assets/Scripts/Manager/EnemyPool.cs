@@ -4,7 +4,7 @@ using static EnemyPool;
 
 public class EnemyPool : MonoBehaviour
 {
-    [SerializeField]GameObject BasicEnemyPrefab;
+    [SerializeField] GameObject BasicEnemyPrefab;
     [SerializeField] GameObject BoomEnemyPrefab;
     [SerializeField] GameObject NoRushEnemyPrefab;
     [SerializeField] GameObject NoAbsortEnemyPrefab;
@@ -66,7 +66,12 @@ public class EnemyPool : MonoBehaviour
                 break;
         }
         thisObject.transform.position = pos;
-        thisObject.transform.rotation = new Quaternion();
+        thisObject.transform.rotation = Quaternion.identity;
+        // 2. 새로운 위치에서 활성화
+        thisObject.SetActive(true);
+
+        // 3. 적 상태 초기화
+        thisObject.GetComponent<Enemy>().Initialize(poolType, this);
     }
     /// <summary>
     /// 적이 죽었을 때 호출되는 함수. 적을 풀에 반환한다.
@@ -130,9 +135,9 @@ public class EnemyPool : MonoBehaviour
 
     void GetEnemy(GameObject enemy, PoolType poolType)
     {
-        enemy.SetActive(true);
-        Enemy Enemy = enemy.gameObject.GetComponent<Enemy>();
-        Enemy.Initialize(poolType, this);
+        // enemy.SetActive(true);
+        // Enemy Enemy = enemy.gameObject.GetComponent<Enemy>();
+        // Enemy.Initialize(poolType, this);
     }
 
     // 오브젝트 풀 미리 생성해두는 함수.
