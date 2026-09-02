@@ -10413,7 +10413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnManager
   spawnRate: 1
-  worldDia: 20
+  worldDia: 30
   player: {fileID: 1030247234}
 --- !u!114 &3762724242395655325
 MonoBehaviour:
