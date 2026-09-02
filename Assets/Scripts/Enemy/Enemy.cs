@@ -179,6 +179,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void ChangeMaterial(bool isLive)
     {
+        if(poolType == PoolType.NoRush) return;
         if (isLive)
         {
             rend.material = liveMaterial;
