@@ -78,6 +78,7 @@ public class EnemyPool : MonoBehaviour
         switch (poolType)
         {
             case PoolType.Basic:
+                Debug.Log("Here");
                 BasicEnemyPool.Release(obj);
                 break;
             case PoolType.Boom:
