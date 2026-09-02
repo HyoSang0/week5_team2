@@ -9,6 +9,7 @@ TagManager:
   - DropkickRange
   - NoAbsortEnemy
   - Foot
+  - HealPack
   layers:
   - Default
   - TransparentFX
