@@ -163,8 +163,8 @@ MonoBehaviour:
   deathEffectForce: 5
   effectCount: 10
   trail: {fileID: 0}
-  deathEffectPrefab: {fileID: 0}
-  deathParticle: {fileID: 0}
+  deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
+  deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
   bulletPrefab: {fileID: 0}
   navMeshAgent: {fileID: 0}
   ground: {fileID: 0}

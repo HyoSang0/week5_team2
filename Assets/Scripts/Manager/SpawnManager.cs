@@ -12,9 +12,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] float spawnRate = 1f;
     [SerializeField] float worldDia;
     [SerializeField] GameObject player;
-    // 테스트 단계에서 난이도 조절 용이를 위해 SerializeField 적용
-    [SerializeField] bool secondSpawnerActive = true;
-    [SerializeField] bool thirdSpawnerActive = true;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private void Awake()

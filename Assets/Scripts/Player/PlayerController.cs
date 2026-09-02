@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    // private CapsuleCollider collider;
     
     public float moveSpeed = 10f;
     public float rushSpeed = 20f;
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
     {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+        // collider = GetComponent<CapsuleCollider>();
     }
     void Start()
     {

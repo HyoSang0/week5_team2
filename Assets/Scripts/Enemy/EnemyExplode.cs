@@ -13,7 +13,7 @@ public class EnemyExplode : Enemy
         
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-   new protected IEnumerator Die()
+   public override IEnumerator Die(bool isKnockback)
     {
         PlayDeathEffect();
         GameObject a = Instantiate(groundWarningEffect, transform.position, Quaternion.identity);
