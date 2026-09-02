@@ -15,6 +15,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 moveInput;
 
+    // 맵 밖으로 못나가도록
+    Vector3 centor = Vector3.zero;
+    float radius = 15f;
+
     void Awake()
     {
         inputActions = new InputSystem_Actions();
@@ -45,6 +49,17 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
         }
+
+        Vector3 nowPos = transform.position;
+        Vector3 centerToPlayer = nowPos - centor;
+        centerToPlayer.y = 0;
+
+        if (centerToPlayer.magnitude > radius)
+        {
+            Vector3 newPos = centor + centerToPlayer.normalized * radius;
+            newPos.y = -0.9f;
+            transform.position = newPos;
+        }
     }
 
     public void StartRush()
@@ -55,5 +70,10 @@ public class PlayerController : MonoBehaviour
     public void EndRush()
     {
         isRushing = false;
+    }
+
+    void LimitMovement()
+    {
+
     }
 }

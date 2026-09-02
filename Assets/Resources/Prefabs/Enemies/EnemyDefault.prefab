@@ -160,7 +160,7 @@ MonoBehaviour:
   knockbackForce: 1000
   isDead: 0
   poolType: 0
-  player: {fileID: -81544851927694006, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}
+  player: {fileID: 0}
   deathEffectForce: 5
   effectCount: 10
   trail: {fileID: 0}
