@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
 public class AbsortionArea_Sejin : MonoBehaviour
@@ -26,6 +27,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private void Update()
     {
         TryAbsorb();
+        TryAbsorbSlow();
     }
 
 
@@ -35,33 +37,36 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (!other.CompareTag("Enemy"))
             return;
 
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-
-        if (enemy == null)
-        {
-            onGatherEnergy.Invoke();
-            // 슬로우
-            // 소량 처치
-            enemy.Die(false);
-        }
+        Enemy enemy = other.GetComponent<Enemy>();
+        
         enemies.Add(enemy);
-        enemy.speed =(int)(enemy.speed * slowMultiplier);
+        //NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
+        //agent.speed = agent.speed * slowMultiplier;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Enemy"))
             return;
-
+        
         Enemy enemy = other.GetComponent<Enemy>();
+        //NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
 
-        if (enemy == null)
-            return;
-
-        enemy.speed = (int)(enemy.speed / slowMultiplier);
+        //agent.speed = agent.speed / slowMultiplier;
         enemies.Remove(enemy);
     }
 
+    private void TryAbsorbSlow()
+    {
+        foreach (Enemy enemy in enemies)
+        {
+            NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
+            if (agent.speed == enemy.speed)
+            {
+                agent.speed *= slowMultiplier;
+            }
+        }
+    }
     private void TryAbsorb()
     {
         // 아직 쿨다운 중
@@ -94,20 +99,16 @@ public class AbsortionArea_Sejin : MonoBehaviour
         enemies.Remove(nearest);
 
         onGatherEnergy?.Invoke();
-
+        Debug.Log($"nearest Speed : {nearest.speed}");
         StartCoroutine(nearest.Die(false));
-        //Debug.Log("absorb at " + Time.time);
+        
 
         nextAbsorbTime = Time.time + absorbTime;
     }
 
     private void OnDisable()
     {
-        foreach (Enemy enemy in enemies)
-        {
-            if (enemy != null)
-                enemy.speed = (int)(enemy.speed * slowMultiplier);
-        }
+        
 
         enemies.Clear();
     }
