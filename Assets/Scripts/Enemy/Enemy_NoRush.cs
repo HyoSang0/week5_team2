@@ -34,7 +34,7 @@ public class Enemy_NoRush : Enemy
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
     protected new void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DropkickRange"))
+        if (other.CompareTag("Foot"))
         {
             if(!isUnBeatNr)
             {

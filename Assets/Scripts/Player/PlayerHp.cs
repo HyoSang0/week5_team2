@@ -36,6 +36,7 @@ public class PlayerHp : MonoBehaviour
     {
         playerHP -= damage;
         gameManager.PlayerAttackedUI(playerHP);
+        if (playerHP <= 0) gameManager.PlayerDie();
     }
 
     public void UpdateUnBeatTime(float time)
@@ -66,7 +67,7 @@ public class PlayerHp : MonoBehaviour
             {
                 isUnBeat = true;
                 PlayerAttacked(1);
-                if (playerHP <= 0) gameManager.PlayerDie();
+                
                 UpdateUnBeatTime(2f);
             }
             
