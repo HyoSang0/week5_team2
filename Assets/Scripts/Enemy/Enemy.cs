@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour
     public float deathEffectForce = 5f;
     public int effectCount = 10;
     public TrailRenderer trail;
-    
+
     [Header("Prefabs")]
     public GameObject deathEffectPrefab;
     public GameObject deathParticle;
@@ -38,7 +38,7 @@ public class Enemy : MonoBehaviour
         navMeshAgent.speed = speed;
         trail = GetComponentInChildren<TrailRenderer>();
         coll = GetComponent<BoxCollider>();
-   }
+    }
 
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
@@ -66,6 +66,12 @@ public class Enemy : MonoBehaviour
                 health = 5;
                 break;
         }
+
+        enemyRb.linearVelocity = Vector3.zero;
+        enemyRb.angularVelocity = Vector3.zero;
+        navMeshAgent.speed = speed;
+        coll.isTrigger = false;
+        trail.enabled = false;
     }
 
     // Update is called once per frame
@@ -76,13 +82,11 @@ public class Enemy : MonoBehaviour
         {
             navMeshAgent.SetDestination(player.transform.position);
         }
-        
-        
     }
     //플레이어에게 이동하는 코드. Update에서 호출됨. NavMesh로 변경될 수 있음. 
     protected void MoveTowardsPlayer()
     {
-        if(isDead) return;
+        if (isDead) return;
         Vector3 moveDirection = player.transform.position - transform.position;
         enemyRb.MovePosition(transform.position + moveDirection.normalized * speed * Time.deltaTime);
         enemyRb.linearVelocity = moveDirection.normalized * speed;
@@ -97,7 +101,7 @@ public class Enemy : MonoBehaviour
     //단 Die 코루틴은 넉백 사망 등을 고려해 만들어졌기 때문에 사망형태에 따라 변경할 필요가 있을 수 있음. 
     protected void CheckHealth()
     {
-        if(health <= 0 && !isDead)
+        if (health <= 0 && !isDead)
         {
             isDead = true;
             StartCoroutine(Die(true));
@@ -107,7 +111,7 @@ public class Enemy : MonoBehaviour
     {
         if (isKnockback)
         {
-            
+
             trail.enabled = true;
             navMeshAgent.enabled = false;
             coll.isTrigger = true;
@@ -122,13 +126,13 @@ public class Enemy : MonoBehaviour
             navMeshAgent.enabled = true;
             coll.isTrigger = false;
             yield return new WaitForSeconds(0.5f);
-            
+
         }
         else
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
-        if(poolType != PoolType.Basic)
+        if (poolType != PoolType.Basic)
         {
             Debug.Log("Other Guy Dead");
         }
@@ -141,7 +145,7 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < effectCount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);            
+            GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
             effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, deathEffectForce), ForceMode.Impulse);
         }
         // PlayDeathParticle();
@@ -161,7 +165,7 @@ public class Enemy : MonoBehaviour
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 
     protected void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("DropkickRange"))
+        if (other.CompareTag("DropkickRange"))
         {
             TakeDamage(5);
         }
@@ -174,7 +178,7 @@ public class Enemy : MonoBehaviour
     //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
     protected void OnCollisionEnter(Collision collision)
     {
-        if((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
+        if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
             && collision.gameObject.GetComponent<Enemy>().isDead)
         {
             // GameObject otherObj = collision.gameObject;
