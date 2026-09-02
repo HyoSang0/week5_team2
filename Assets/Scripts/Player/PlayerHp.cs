@@ -10,6 +10,7 @@ public class PlayerHp : MonoBehaviour
     [SerializeField] GameManager gameManager;
     bool isUnBeat = false;
     public int playerHP = 5;
+    public int maxPlayerHP = 5;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

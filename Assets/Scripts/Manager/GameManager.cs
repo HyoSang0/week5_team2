@@ -1,34 +1,51 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+    [Header("Text")]
     [SerializeField] TextMeshProUGUI timeText;
     [SerializeField] TextMeshProUGUI hpText;
-    [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] TextMeshProUGUI gameOverText;    
 
     [SerializeField] PlayerHp playerHp;
-    float time;
-
+    float timeLimit;
+    float timeElapsed = 0;
 
     bool isGameOver = false;
     public bool isUnBeat = false;
 
+    void Awake()
+    {
+        
+        Instance = this;
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     void Start()
     {
         gameOverText.gameObject.SetActive(false);
         hpText.text = "5 / 5";
-        time = 40;
-        StartCoroutine(StartTimer(time));
+        timeLimit = 40;
+        StartCoroutine(StartTimer(timeLimit));
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        
+        timeElapsed += Time.deltaTime;
     }
 
     public void GameClear()
