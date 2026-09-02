@@ -29,7 +29,7 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
         StartCoroutine(Spawn(PoolType.Basic, 0.1f, 10, 100));
         StartCoroutine(Spawn(PoolType.Boom, 1f, 10, 1f));
-        StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 20, 1));
+        StartCoroutine(Spawn(PoolType.NoAbsort, 1f, 5, 2));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 20, 1));
         StartCoroutine(Spawn(PoolType.NoRush, 0.5f, 30, 1.5f));
         StartCoroutine(Spawn(PoolType.Boom, 0.3f, 30, 1f));

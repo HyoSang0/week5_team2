@@ -171,20 +171,23 @@ public class Enemy : MonoBehaviour
         }
         else if (other.CompareTag("Enemy"))
         {
-            TakeDamage(5);
+            if(gameObject.CompareTag("Enemy"))
+            {
+                TakeDamage(5);
+            }
         }
     }
 
     //OnCollisionEnter에서 적이 죽은 적과 충돌했는지 검사하여 연쇄 충돌 효과 만듦.
-    protected void OnCollisionEnter(Collision collision)
-    {
-        if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
-            && collision.gameObject.GetComponent<Enemy>().isDead)
-        {
-            // GameObject otherObj = collision.gameObject;
-            // Vector3 direction = transform.position - otherObj.transform.position;
-            // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
-            TakeDamage(5);
-        }
-    }
+    //protected void OnCollisionEnter(Collision collision)
+    //{
+    //    if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
+    //        && collision.gameObject.GetComponent<Enemy>().isDead)
+    //    {
+    //        // GameObject otherObj = collision.gameObject;
+    //        // Vector3 direction = transform.position - otherObj.transform.position;
+    //        // collision.gameObject.GetComponent<Enemy>().enemyRb.AddForce(direction * knockbackForce, ForceMode.Impulse);
+    //        TakeDamage(5);
+    //    }
+    //}
 }
