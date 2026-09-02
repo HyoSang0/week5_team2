@@ -45,6 +45,7 @@ public class Enemy : MonoBehaviour
         rend = GetComponent<Renderer>();
    }
 
+
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
     {
@@ -129,16 +130,16 @@ public class Enemy : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
             trail.enabled = false;
-            // navMeshAgent.enabled = true;
-            coll.isTrigger = false;
-            enemyRb.constraints = RigidbodyConstraints.FreezeRotationX;
-            enemyRb.constraints = RigidbodyConstraints.FreezeRotationZ;
-            yield return new WaitForSeconds(0.1f);
-            
+            navMeshAgent.enabled = true;
+            yield return new WaitForSeconds(0.5f);
         }
         else
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
+        }
+        if(poolType != PoolType.Basic)
+        {
+            Debug.Log("Other Guy Dead");
         }
         enemyPool.DieEnemy(gameObject, poolType);
     }

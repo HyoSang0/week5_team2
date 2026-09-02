@@ -71,7 +71,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 35e165fd1b25d9845bb6e3103f461a59, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -165,9 +165,10 @@ MonoBehaviour:
   effectCount: 10
   trail: {fileID: 0}
   deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
-  deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
   bulletPrefab: {fileID: 0}
   navMeshAgent: {fileID: 0}
+  liveMaterial: {fileID: 2100000, guid: 35e165fd1b25d9845bb6e3103f461a59, type: 2}
+  deathMaterial: {fileID: 2100000, guid: 21e63e167d347af41bf48d167842f172, type: 2}
   ground: {fileID: 0}
   groundWarningEffect: {fileID: 7802569021834342776, guid: 71fdf0a0c41c6d1419fcafa10231bf3b, type: 3}
   radius: 3

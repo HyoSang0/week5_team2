@@ -91,8 +91,8 @@ public class Enemy_NoRush : Enemy
         enemyRbNr.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
         yield return new WaitForSeconds(0.5f);
-        PlayDeathParticle();    // 사망 시 나오는 모래먼지 같은 파티클 시스템 작동 함수. 
-        yield return new WaitForSeconds(0.5f);
+        
+        yield return new WaitForSeconds(0.1f);
         ChangeColor("gray");
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }

@@ -71,7 +71,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: f8d1ba1678c6a3649a240c4859f7d445, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -102,7 +102,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3619340856543788439}
-  m_Material: {fileID: 13400000, guid: 5fb1fcb597ad0964ca2d28b6368d1ed9, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -160,7 +160,7 @@ MonoBehaviour:
   knockbackForce: 1000
   isDead: 0
   poolType: 0
-  player: {fileID: -81544851927694006, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}
+  player: {fileID: 0}
   deathEffectForce: 5
   effectCount: 10
   trail: {fileID: 0}
@@ -168,6 +168,8 @@ MonoBehaviour:
   deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
   bulletPrefab: {fileID: 0}
   navMeshAgent: {fileID: 2376927853862297865}
+  liveMaterial: {fileID: 2100000, guid: f8d1ba1678c6a3649a240c4859f7d445, type: 2}
+  deathMaterial: {fileID: 2100000, guid: 21e63e167d347af41bf48d167842f172, type: 2}
 --- !u!195 &2376927853862297865
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -198,6 +200,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8572922627127228912}
     m_Modifications:
+    - target: {fileID: 6991781800901730581, guid: a635cd7cc06c1004888706cff998576c, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7630729203474514886, guid: a635cd7cc06c1004888706cff998576c, type: 3}
       propertyPath: m_Name
       value: Trail
