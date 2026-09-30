@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour
     private Renderer rend;
     public Material liveMaterial;
     public Material deathMaterial;
-    protected void Awake()
+    protected virtual void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
         player = FindAnyObjectByType<PlayerController>();
@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
         trail = GetComponentInChildren<TrailRenderer>();
         coll = GetComponent<BoxCollider>();
         rend = GetComponent<Renderer>();
-   }
+    }
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
     {
@@ -81,7 +81,7 @@ public class Enemy : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected void Update()
+    protected virtual void Update()
     {
         navMeshAgent.speed = speed;
         // MoveTowardsPlayer();
@@ -137,7 +137,7 @@ public class Enemy : MonoBehaviour
             enemyRb.constraints = RigidbodyConstraints.FreezeRotationX;
             enemyRb.constraints = RigidbodyConstraints.FreezeRotationZ;
             yield return new WaitForSeconds(0.1f);
-            
+
         }
         else
         {
@@ -159,7 +159,7 @@ public class Enemy : MonoBehaviour
     }
 
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 
-    protected void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("DropkickRange"))
         {
@@ -168,7 +168,7 @@ public class Enemy : MonoBehaviour
         }
         else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
         {
-            if(gameObject.CompareTag("Enemy"))
+            if (gameObject.CompareTag("Enemy"))
             {
                 enemyScore = other.gameObject.GetComponent<Enemy>().enemyScore + 1;
                 TakeDamage(5);
@@ -178,7 +178,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void ChangeMaterial(bool isLive)
     {
-        if(poolType == PoolType.NoRush) return;
+        if (poolType == PoolType.NoRush) return;
         if (isLive)
         {
             rend.material = liveMaterial;

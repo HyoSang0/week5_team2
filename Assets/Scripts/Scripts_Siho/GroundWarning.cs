@@ -17,7 +17,7 @@ public class GroundWarning : MonoBehaviour
     public float testCenterZ = 0f;
     public float testRadius = 3f;
 
-void Start()
+    void Start()
     {
         ground = GameObject.Find("GroundInitializer").GetComponent<GroundInitializer>();
         // Play(ground, testCenterX,testCenterZ, testRadius);
@@ -25,7 +25,7 @@ void Start()
     public void Play(GroundInitializer ground, float centerX, float centerZ, float radius)
     {
         transform.position = new Vector3(centerX, -0.89f, centerZ);
-        if(ground == null)
+        if (ground == null)
             return;
 
         CreateOutline(radius);
@@ -45,7 +45,7 @@ void Start()
 
         for (int i = 0; i < segments; i++)
         {
-            float angle =i / segments * Mathf.PI * 2f;
+            float angle = (float)i / segments * Mathf.PI * 2f;
 
             float x = Mathf.Cos(angle) * radius;
             float z = Mathf.Sin(angle) * radius;
