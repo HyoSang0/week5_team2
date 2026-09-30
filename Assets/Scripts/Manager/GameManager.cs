@@ -1,10 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,9 +24,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        
-        Instance = this;
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
         }

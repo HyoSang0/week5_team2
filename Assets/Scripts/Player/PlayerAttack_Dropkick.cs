@@ -1,6 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using UnityEngine;
 
+[Obsolete]
 public class PlayerAttack_Dropkick : MonoBehaviour
 {
     private InputSystem_Actions inputActions;
