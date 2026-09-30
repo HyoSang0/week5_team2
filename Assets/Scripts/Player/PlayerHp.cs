@@ -16,6 +16,12 @@ public class PlayerHp : MonoBehaviour
     private float currentTime = 0;
 
     public Coroutine unbeatRoutine;
+    private AbsortionAbility_Sejin absorb;
+
+    private void Awake()
+    {
+        absorb = GetComponent<AbsortionAbility_Sejin>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -60,18 +66,27 @@ public class PlayerHp : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
-        {
+        if (!collision.gameObject.CompareTag("Enemy") &&
+            !collision.gameObject.CompareTag("NoAbsortEnemy"))
+            return;
 
-            if (!isUnBeat)
-            {
-                isUnBeat = true;
-                PlayerAttacked(1);
-                
-                UpdateUnBeatTime(2f);
-            }
-            
-        }
+        Enemy enemy = collision.gameObject.GetComponentInParent<Enemy>();
+
+        if (enemy != null && enemy.isDead)
+            return;
+
+        if (absorb != null &&
+            absorb.State == AbsortionAbility_Sejin.AbsorptionState.Active &&
+            enemy != null &&
+            enemy.TryAbsorb())
+            return;
+
+        if (isUnBeat)
+            return;
+
+        isUnBeat = true;
+        PlayerAttacked(1);
+        UpdateUnBeatTime(2f);
     }
 
     private void OnTriggerEnter(Collider other)
