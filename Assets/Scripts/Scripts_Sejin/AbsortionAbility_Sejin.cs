@@ -1,7 +1,6 @@
-using UnityEngine;
-using System.Collections;
-using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 // 마우스 우클릭으로 작동하는 흡수 능력
 public class AbsortionAbility_Sejin : MonoBehaviour
@@ -51,34 +50,15 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StopAbility();
     }
 
-    private IEnumerator ConsumeStamina()
-    {
-        while(isStartAbsortion)
-        {
-            stamina -= remainingStamina * Time.deltaTime;
-            if(stamina < 0)
-            {
-                stamina = 0;
-                StopAbility();
-            }
-            RefreshUI();
-            yield return null;
-        }
-    }
-
     private void StartAbility()
     {
         AbsortionArea.SetActive(true);
         isStartAbsortion = true;
-        StartCoroutine(ConsumeStamina());
-        StopCoroutine(RegenStamina());
     }
     private void StopAbility()
     {
         AbsortionArea.SetActive(false);
         isStartAbsortion = false;
-        StartCoroutine(RegenStamina());
-        StopCoroutine(ConsumeStamina());
     }
 
     private void RefreshUI()
@@ -86,17 +66,31 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         absortEnergyText.text = $"Absort : {stamina}";
     }
 
-    private IEnumerator RegenStamina()
+    private void Update()
     {
-        while (!isStartAbsortion)
+        if (isStartAbsortion)
+            HandleConsum();
+        else
+            HandleRegenStamina();
+        RefreshUI();
+    }
+
+    private void HandleConsum()
+    {
+        stamina -= remainingStamina * Time.deltaTime;
+        if (stamina < 0)
         {
-            stamina += regenStamina * Time.deltaTime;
-            if(stamina > maxStamina)
-            {
-                stamina = maxStamina;
-            }
-            RefreshUI();
-            yield return null;
+            stamina = 0;
+            StopAbility();
+        }
+    }
+
+    private void HandleRegenStamina()
+    {
+        stamina += regenStamina * Time.deltaTime;
+        if (stamina > maxStamina)
+        {
+            stamina = maxStamina;
         }
     }
 }
