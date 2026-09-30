@@ -2804,8 +2804,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  slowMultiplier: 0.1
-  absorbTime: 0.5
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!65 &852579208
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2949,7 +2950,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -10.0000305}
+  m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &984024945
@@ -3343,7 +3344,8 @@ MonoBehaviour:
   absortEnergyText: {fileID: 668412447}
   AbsortionArea: {fileID: 1180328029}
   stamina: 30
-  remainingStamina: 10
+  staminaCost: 1
+  areaDuration: 0.15
   regenStamina: 10
   maxStamina: 30
   isStartAbsortion: 0
