@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Events;
 
 public class AbsortionArea_Sejin : MonoBehaviour
@@ -9,82 +7,103 @@ public class AbsortionArea_Sejin : MonoBehaviour
     public UnityEvent onGatherEnergy;
     public float slowMultiplier;
     public float absorbTime;
+    private HashSet<Enemy> enemySet = new HashSet<Enemy>();
+    private HashSet<Enemy> absorbSet = new HashSet<Enemy>();
 
-    private List<Enemy> enemies = new List<Enemy>();
-    private float nextAbsorbTime = 0f;
-
-    private EnemyPool enemyPool;
+    private float holdingTime = 0f;
+    [SerializeField]
+    private float targetAddTime = 0.1f;
     private void Awake()
     {
-        enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
+
     }
-    private void Start()
+
+    private void OnEnable()
     {
-        // StartCoroutine(AbsorbEnemy());
-        nextAbsorbTime = Time.time + absorbTime;
+        absorbSet.Clear();
+        enemySet.Clear();
+        holdingTime = 0f;
+    }
+
+    private void OnDisable()
+    {
+        AbsorbAll();
+        enemySet.Clear();
     }
 
     private void Update()
     {
-        TryAbsorb();
-        TryAbsorbSlow();
+        // 홀딩 타임 증가
+        holdingTime += Time.deltaTime;
+        // 홀딩 타임이 애딩 타임 오바
+        if (holdingTime >= targetAddTime)
+        {
+            // 타겟 추가
+            var nextTarget = NextAbsorbTarget();
+            if (nextTarget != null)
+            {
+                enemySet.Remove(nextTarget);
+                absorbSet.Add(nextTarget);
+                // 흡수 대상 지정 → 노란 오러 셸 표시
+                nextTarget.OnAbsorbTarget(true);
+            }
+            // 홀딩 타임 초기화
+            holdingTime = 0f;
+        }
     }
 
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if (!other.CompareTag("Enemy"))
+            return;
+        Enemy enemy = other.GetComponent<Enemy>();
+        Debug.Log($"OnTrigger Enter {enemy}");
+        if (!absorbSet.Contains(enemy))
+            enemySet.Add(enemy);
+    }
+    private void OnTriggerStay(Collider other)
+    {
         if (!other.CompareTag("Enemy"))
             return;
 
         Enemy enemy = other.GetComponent<Enemy>();
-        
-        enemies.Add(enemy);
-        //NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
-        //agent.speed = agent.speed * slowMultiplier;
+        Debug.Log($"OnTrigger Stay {enemy}");
+        if (!absorbSet.Contains(enemy))
+            enemySet.Add(enemy);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Enemy"))
             return;
-        
+
         Enemy enemy = other.GetComponent<Enemy>();
-        //NavMeshAgent agent = other.GetComponent<NavMeshAgent>();
-
-        //agent.speed = agent.speed / slowMultiplier;
-        enemies.Remove(enemy);
-    }
-
-    private void TryAbsorbSlow()
-    {
-        foreach (Enemy enemy in enemies)
+        Debug.Log($"OnTrigger Exit {enemy}");
+        if (absorbSet.Contains(enemy))
         {
-            NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
-            if (agent.speed == enemy.speed)
-            {
-                agent.speed *= slowMultiplier;
-            }
+            absorbSet.Remove(enemy);
+            // 영역 이탈 시 노란 오러 셸 해제
+            enemy.OnAbsorbTarget(false);
+            var next = NextAbsorbTarget();
+            absorbSet.Add(next);
+            enemySet.Remove(next);
         }
+        else
+            enemySet.Remove(enemy);
     }
-    private void TryAbsorb()
-    {
-        // 아직 쿨다운 중
-        if (Time.time < nextAbsorbTime)
-            return;
 
+    private Enemy NextAbsorbTarget()
+    {
         Enemy nearest = null;
         float minDistance = float.MaxValue;
 
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy enemy in enemySet)
         {
             if (enemy == null)
                 continue;
 
-            float distance = Vector3.Distance(
-                transform.position,
-                enemy.transform.position
-            );
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
 
             if (distance < minDistance)
             {
@@ -93,23 +112,28 @@ public class AbsortionArea_Sejin : MonoBehaviour
             }
         }
 
-        if (nearest == null)
-            return;
-
-        enemies.Remove(nearest);
-
-        onGatherEnergy?.Invoke();
-        Debug.Log($"nearest Speed : {nearest.speed}");
-        StartCoroutine(nearest.Die(false));
-        
-
-        nextAbsorbTime = Time.time + absorbTime;
+        return nearest;
     }
 
-    private void OnDisable()
+    /// <summary>
+    /// 흡수 처리
+    /// </summary>
+    /// <param name="enemy"></param>
+    private void Absorb(Enemy enemy)
     {
-        
+        // 이미 풀로 반환(비활성)된 적은 건너뜀
+        if (!enemy.gameObject.activeInHierarchy)
+            return;
 
-        enemies.Clear();
+        onGatherEnergy?.Invoke();
+        // 이 영역은 OnDisable 중(비활성)에 호출되므로 코루틴은 적 쪽에서 실행
+        enemy.DoDie(false);
+    }
+
+    private void AbsorbAll()
+    {
+        foreach (Enemy target in absorbSet)
+            Absorb(target);
+        absorbSet.Clear();
     }
 }
