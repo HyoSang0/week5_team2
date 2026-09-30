@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class AbsortionArea_Sejin : MonoBehaviour
 {
     public UnityEvent onGatherEnergy;
+    public Transform playerTransform;
     public float slowMultiplier;
     [Tooltip("흡수 쿨 타임")]
     public float absorbTime;
@@ -105,14 +106,14 @@ public class AbsortionArea_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// 두 유닛 중 더 가까운 누가 더 가까운지 확인
+    /// 두 유닛 중 누가 더 가까운지 확인
     /// </summary>
     /// <param name="a">비교대상 1</param>
     /// <param name="b">비교대상 2</param>
     /// <returns>더 가까우면 -1(앞으로), 더 멀면 1(뒤로)</returns>
     int CompareEnemiesDistance(Enemy a, Enemy b)
     {
-        Vector3 myPos = transform.position;
+        Vector3 myPos = playerTransform.position;
         //각 적들과 본인 사이의 거리 계산
         float distA = (myPos - a.transform.position).sqrMagnitude;
         float distB = (myPos - b.transform.position).sqrMagnitude;
