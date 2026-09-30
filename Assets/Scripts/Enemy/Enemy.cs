@@ -75,9 +75,12 @@ public class Enemy : MonoBehaviour
 
         enemyRb.linearVelocity = Vector3.zero;
         enemyRb.angularVelocity = Vector3.zero;
+        navMeshAgent.isStopped = false;
         navMeshAgent.speed = speed;
+        coll.enabled = true;
         coll.isTrigger = false;
-        trail.enabled = false;
+        if (trail != null)
+            trail.enabled = false;
     }
 
     // Update is called once per frame
@@ -115,6 +118,19 @@ public class Enemy : MonoBehaviour
             StartCoroutine(Die(true));
         }
     }
+
+    public bool TryAbsorb()
+    {
+        if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
+            return false;
+
+        isDead = true;
+        navMeshAgent.isStopped = true;
+        coll.enabled = false;
+        StartCoroutine(Die(false));
+        return true;
+    }
+
     public virtual IEnumerator Die(bool isKnockback)
     {
         ChangeMaterial(false);
@@ -143,7 +159,10 @@ public class Enemy : MonoBehaviour
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
-        enemyPool.DieEnemy(gameObject, poolType);
+        if (enemyPool != null)
+            enemyPool.DieEnemy(gameObject, poolType);
+        else
+            Destroy(gameObject);
     }
 
     //사망 시 나오는 파편 효과를 생성하는 함수

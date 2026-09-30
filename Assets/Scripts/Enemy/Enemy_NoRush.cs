@@ -18,6 +18,7 @@ public class Enemy_NoRush : Enemy
 
     protected override void Awake()
     {
+        base.Awake();
         enemyRbNr = GetComponent<Rigidbody>();
         player = FindAnyObjectByType<PlayerController>();
         navMeshAgent = GetComponent<NavMeshAgent>();

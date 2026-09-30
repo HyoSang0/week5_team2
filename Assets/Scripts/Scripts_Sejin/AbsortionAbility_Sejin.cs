@@ -1,49 +1,93 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// 마우스 우클릭으로 작동하는 흡수 능력
 public class AbsortionAbility_Sejin : MonoBehaviour
 {
-    public TextMeshProUGUI absortEnergyText;
+    public enum AbsorptionState
+    {
+        Ready,
+        Active,
+        Cooldown
+    }
+
+    [SerializeField] private GameObject AbsortionArea;
+    [SerializeField, Min(0.01f)] private float activeDuration = 2f;
+    [SerializeField, Min(0f)] private float cooldownDuration = 4f;
+
+    public AbsorptionState State { get; private set; } = AbsorptionState.Ready;
+    public float ActiveDuration => activeDuration;
+    public float CooldownDuration => cooldownDuration;
+    public float RemainingTime => State == AbsorptionState.Ready
+        ? 0f
+        : Mathf.Max(0f, stateEndTime - Time.time);
+
     private InputSystem_Actions inputActions;
-    public GameObject AbsortionArea;
+    private float stateEndTime;
 
-    public float stamina = 30f;
-    public float remainingStamina = 10.0f;
-    public float regenStamina = 10.0f;
-    public float maxStamina = 30f;
-
-    public bool isStartAbsortion = false;
-
-    void Awake()
+    private void Awake()
     {
+        activeDuration = Mathf.Max(0.01f, activeDuration);
+        cooldownDuration = Mathf.Max(0f, cooldownDuration);
         inputActions = new InputSystem_Actions();
-        stamina = maxStamina;
-    }
-
-    void OnEnable()
-    {
-        inputActions.Enable();
-    }
-
-    void OnDisable()
-    {
-        inputActions.Disable();
-    }
-
-    void Start()
-    {
-        inputActions.Player.Ability_Sejin.started += ActiveAbility;
-        inputActions.Player.Ability_Sejin.canceled += DeActiveAbility;
-
         AbsortionArea.SetActive(false);
     }
 
-    private void ActiveAbility(InputAction.CallbackContext context)
+    private void OnEnable()
     {
-        StartAbility();
+        inputActions.Player.Ability_Sejin.performed += OnAbsorbPressed;
+        inputActions.Enable();
     }
+
+    private void OnDisable()
+    {
+        inputActions.Player.Ability_Sejin.performed -= OnAbsorbPressed;
+        inputActions.Disable();
+        AbsortionArea.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        inputActions.Dispose();
+    }
+
+    private void OnAbsorbPressed(InputAction.CallbackContext context)
+    {
+        if (State != AbsorptionState.Ready)
+            return;
+
+        State = AbsorptionState.Active;
+        stateEndTime = Time.time + activeDuration;
+        AbsortionArea.SetActive(true);
+    }
+
+    private void Update()
+    { 
+        if (State == AbsorptionState.Active && Time.time >= stateEndTime)
+        {
+            EndAbsorptionAndStartCooldown();
+        }
+        else if (State == AbsorptionState.Cooldown && Time.time >= stateEndTime)
+        {
+            State = AbsorptionState.Ready;
+        }
+    }
+
+    public void EndAbsorptionAndStartCooldown()
+    {
+        if (State != AbsorptionState.Active)
+            return;
+
+        AbsortionArea.SetActive(false);
+        State = AbsorptionState.Cooldown;
+        stateEndTime = Time.time + cooldownDuration;
+    }
+
+#if false // 이전 홀드형 흡수. 현재는 시간제 능력과 쿨다운으로 대체했다.
+    public float stamina = 30f;
+    public float remainingStamina = 10f;
+    public float regenStamina = 10f;
+    public float maxStamina = 30f;
+    public bool isStartAbsortion;
 
     private void DeActiveAbility(InputAction.CallbackContext context)
     {
@@ -55,42 +99,26 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         AbsortionArea.SetActive(true);
         isStartAbsortion = true;
     }
+
     private void StopAbility()
     {
         AbsortionArea.SetActive(false);
         isStartAbsortion = false;
     }
 
-    private void RefreshUI()
-    {
-        absortEnergyText.text = $"Absort : {stamina}";
-    }
-
-    private void Update()
-    {
-        if (isStartAbsortion)
-            HandleConsum();
-        else
-            HandleRegenStamina();
-        RefreshUI();
-    }
-
     private void HandleConsum()
     {
         stamina -= remainingStamina * Time.deltaTime;
-        if (stamina < 0)
+        if (stamina < 0f)
         {
-            stamina = 0;
+            stamina = 0f;
             StopAbility();
         }
     }
 
     private void HandleRegenStamina()
     {
-        stamina += regenStamina * Time.deltaTime;
-        if (stamina > maxStamina)
-        {
-            stamina = maxStamina;
-        }
+        stamina = Mathf.Min(maxStamina, stamina + regenStamina * Time.deltaTime);
     }
+#endif
 }

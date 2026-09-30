@@ -23,6 +23,9 @@ public class EnemyExplode : Enemy
         // Vector3 pushPoint = transform.position + Vector3.up * 0.5f;
         // enemyRb.AddForceAtPosition(knockbackDirection * knockbackForce, pushPoint, ForceMode.Force);
         yield return new WaitForSeconds(0.1f);
-        Destroy(gameObject);    // 오브젝트 풀링 사용 시 변경 필요.
+        if (enemyPool != null)
+            enemyPool.DieEnemy(gameObject, poolType);
+        else
+            Destroy(gameObject);
     }
 }
