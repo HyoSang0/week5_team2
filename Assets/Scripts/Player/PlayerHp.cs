@@ -28,6 +28,8 @@ public class PlayerHp : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         hpText.text = playerHP + " / 5";
 
+        volume = FindFirstObjectByType<Volume>();
+
         if (volume.profile.TryGet<Vignette>(out var tmpVignette))
         {
             vignette = tmpVignette;
