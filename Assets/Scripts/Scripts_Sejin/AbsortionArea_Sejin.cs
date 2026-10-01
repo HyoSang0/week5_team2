@@ -53,7 +53,6 @@ public class AbsortionArea_Sejin : MonoBehaviour
     {
         area_radus += Time.deltaTime * speed;
         area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
-        CreateOutline(area_radus);
 
         transform.localScale = originScale * area_radus;
     }
