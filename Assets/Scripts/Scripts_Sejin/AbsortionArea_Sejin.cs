@@ -4,21 +4,23 @@ using UnityEngine.Events;
 
 public class AbsortionArea_Sejin : MonoBehaviour
 {
+    [SerializeField] private EnemyAbsorbEffect lightBallPrefab;
+    private Transform playerTarget;
     public UnityEvent onGatherEnergy;
     public float slowMultiplier;
     public float absorbTime;
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 
-    [SerializeField]
-    private float area_radus_max = 8f, area_radus_min = 4f;
+    [SerializeField] private float area_radus_max = 8f, area_radus_min = 4f;
     private float area_radus;
     private Vector3 originScale;
-    [SerializeField]
-    private float speed;
+    [SerializeField] private float speed;
     private void Awake()
     {
         originScale = transform.localScale;
         area_radus = area_radus_min;
+        PlayerController player = GetComponentInParent<PlayerController>();
+        playerTarget = player != null ? player.transform : null;
     }
 
     private void OnEnable()
@@ -79,18 +81,17 @@ public class AbsortionArea_Sejin : MonoBehaviour
     {
         if (enemy == null)
             return;
-        // 이미 풀로 반환(비활성)된 적은 건너뜀
-        if (!enemy.gameObject.activeInHierarchy)
-            return;
 
-        onGatherEnergy?.Invoke();
-        // 이 영역은 OnDisable 중(비활성)에 호출되므로 코루틴은 적 쪽에서 실행
-        enemy.DoDie(false);
+        if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy))
+            enemy.OnAbsorbTarget(false);
     }
 
     private void AbsorbAll()
     {
-        foreach (Enemy target in enemySet)
+        Enemy[] targets = new Enemy[enemySet.Count];
+        enemySet.CopyTo(targets);
+
+        foreach (Enemy target in targets)
             Absorb(target);
     }
 }

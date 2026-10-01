@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 using static EnemyPool;
 
 public class Enemy : MonoBehaviour
@@ -142,6 +143,37 @@ public class Enemy : MonoBehaviour
     {
         if (absorbAura != null && absorbAura.activeSelf != isTarget)
             absorbAura.SetActive(isTarget);
+    }
+
+    public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival)
+    {
+        if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
+            return false;
+
+        if (lightBallPrefab == null || playerTarget == null || enemyPool == null)
+        {          
+            return false;
+        }
+
+        isDead = true;
+        Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
+
+        // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트
+        if (absorbAura != null)
+        {
+            GameObject auraEffect = Instantiate(absorbAura, effectPosition, absorbAura.transform.rotation);
+
+            auraEffect.transform.localScale = absorbAura.transform.lossyScale;
+            auraEffect.SetActive(true);
+            Destroy(auraEffect, 0.35f);
+        }
+
+        EnemyAbsorbEffect lightBall = Instantiate(lightBallPrefab, effectPosition, Quaternion.identity);
+
+        lightBall.Initialize(playerTarget, rewardOnArrival);
+
+        enemyPool.DieEnemy(gameObject, poolType);
+        return true;
     }
 
     public virtual IEnumerator Die(bool isKnockback)

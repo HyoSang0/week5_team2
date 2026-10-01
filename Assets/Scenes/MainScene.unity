@@ -2789,6 +2789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b92a1cc3247de77408c9e274bfeac685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
+  lightBallPrefab: {fileID: 9196570881659283892, guid: 25f40ae7d936a4f4d93055f547b6eb2d, type: 3}
   onGatherEnergy:
     m_PersistentCalls:
       m_Calls:
