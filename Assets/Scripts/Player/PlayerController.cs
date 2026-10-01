@@ -54,13 +54,12 @@ public class PlayerController : MonoBehaviour
         switch (state)
         {
             case State.Charge:
-                speed = chargeSpeed;
+                transform.Translate(moveDir * chargeSpeed * Time.deltaTime, Space.World);
                 break;
             case State.Rush:
-                speed = rushSpeed;
                 break;
             default:
-                speed = moveSpeed;
+                transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
                 break;
         }
 
