@@ -63,6 +63,7 @@ public class RushAbility_Sejin : MonoBehaviour
         if (CanDash())
         {
             onStartRush.Invoke();
+            isRushing = true;
             if (dashRoutine != null)
             {
                 StopCoroutine(dashRoutine);
@@ -83,6 +84,7 @@ public class RushAbility_Sejin : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = true;
         onEndRush.Invoke();
+        isRushing = false;
         yield return new WaitForSeconds(coolTime);
         isDashing = false;
     }
@@ -120,8 +122,11 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy") && isRushing)
         {
-            Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-            enemy.Die(true);
+            Enemy enemy = collision.gameObject.GetComponentInParent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.Kill();
+            }
         }
     }
 }

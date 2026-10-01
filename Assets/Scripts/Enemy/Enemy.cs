@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
     public PlayerController player;
     protected Rigidbody enemyRb;
     protected EnemyPool enemyPool;
+    // 프리팹에 설정된 리지드바디 제약. 풀 재사용 시 복원한다.
+    protected RigidbodyConstraints _defaultConstraints;
 
     [Header("Death Effects")]
     public float deathEffectForce = 5f;
@@ -50,9 +52,12 @@ public class Enemy : MonoBehaviour
         trail = GetComponentInChildren<TrailRenderer>();
         coll = GetComponent<BoxCollider>();
         rend = GetComponent<Renderer>();
+
+        // 사망 처리 중 변경된 제약을 복원하기 위해 프리팹 기본값을 먼저 보관한다.
+        _defaultConstraints = enemyRb.constraints;
     }
     // 적 기본 설정!
-    public void Initialize(PoolType poolType, EnemyPool pool)
+    public virtual void Initialize(PoolType poolType, EnemyPool pool)
     {
         // 풀 재사용 시 이전 흡수 오러가 남지 않도록 먼저 해제
         OnAbsorbTarget(false);
@@ -83,6 +88,8 @@ public class Enemy : MonoBehaviour
 
         enemyRb.linearVelocity = Vector3.zero;
         enemyRb.angularVelocity = Vector3.zero;
+        // 사망 처리 중 바뀐 리지드바디 제약을 프리팹 기본값으로 복원
+        enemyRb.constraints = _defaultConstraints;
         navMeshAgent.speed = speed;
         coll.isTrigger = false;
         trail.enabled = false;
@@ -116,17 +123,32 @@ public class Enemy : MonoBehaviour
     //단 Die 코루틴은 넉백 사망 등을 고려해 만들어졌기 때문에 사망형태에 따라 변경할 필요가 있을 수 있음. 
     protected void CheckHealth()
     {
-        if (health <= 0 && !isDead)
+        if (health <= 0)
         {
-            isDead = true;
-            GameManager.Instance.AddScore(enemyScore);
-            StartCoroutine(Die(true));
+            Kill();
         }
     }
-    // 외부에서 사망 처리를 요청할 때 사용. 코루틴을 적 자신이 실행하므로 호출자가 비활성 상태여도 동작함.
+    /// <summary>
+    /// 외부에서 사망 처리를 요청할 때 사용. 코루틴을 적 자신이 실행하므로 호출자가 비활성 상태여도 동작함.
+    /// isDead가 true면 중복 실행하지 않는다. 점수 처리는 하지 않는다.
+    /// </summary>
+    /// <param name="isKnockback">넉백 사망 여부</param>
     public void DoDie(bool isKnockback)
     {
+        if (isDead) return;
+        isDead = true;
         StartCoroutine(Die(isKnockback));
+    }
+    /// <summary>
+    /// 적을 즉시 사망 처리하고 점수를 등록한다. isDead가 true면 중복 실행하지 않는다.
+    /// GameManager.Instance.AddScore(enemyScore)를 호출한 뒤 넉백 사망(Die(true))을 시작한다.
+    /// </summary>
+    public void Kill()
+    {
+        if (isDead) return;
+        isDead = true;
+        GameManager.Instance.AddScore(enemyScore);
+        StartCoroutine(Die(true));
     }
 
     protected virtual void OnDisable()
@@ -150,30 +172,43 @@ public class Enemy : MonoBehaviour
         if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
             return false;
 
-        if (lightBallPrefab == null || playerTarget == null || enemyPool == null)
-        {          
+        if (playerTarget == null || enemyPool == null)
+        {
             return false;
         }
 
         isDead = true;
         Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
 
-        // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트
+        // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트 (원본이 비활성일 수 있어 Get에서 명시 활성화)
         if (absorbAura != null)
         {
-            GameObject auraEffect = Instantiate(absorbAura, effectPosition, absorbAura.transform.rotation);
+            GameObject auraEffect = EffectPool.Get("AbsorbAuraFlash_" + poolType, () => Instantiate(absorbAura), effectPosition, absorbAura.transform.rotation);
 
             auraEffect.transform.localScale = absorbAura.transform.lossyScale;
             auraEffect.SetActive(true);
-            Destroy(auraEffect, 0.35f);
+            EffectPool.ReleaseAfter(auraEffect, 0.35f);
         }
 
-        EnemyAbsorbEffect lightBall = Instantiate(lightBallPrefab, effectPosition, Quaternion.identity);
+        if (lightBallPrefab != null)
+        {
+            EnemyAbsorbEffect lightBall = EffectPool.Get(lightBallPrefab.gameObject, effectPosition, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
 
-        lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);
+        lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);            
+        }
+
+        // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
+        OnAbsorbed();
 
         enemyPool.DieEnemy(gameObject, poolType);
         return true;
+    }
+
+    /// <summary>
+    /// 흡수 사망 시 TryAbsorb이 풀 반환 전에 호출하는 훅. 기본 동작은 없으며 자폭 등 즉시 처리가 필요한 subclass에서 override한다.
+    /// </summary>
+    protected virtual void OnAbsorbed()
+    {
     }
 
     public virtual IEnumerator Die(bool isKnockback)
@@ -195,8 +230,8 @@ public class Enemy : MonoBehaviour
             trail.enabled = false;
             // navMeshAgent.enabled = true;
             coll.isTrigger = false;
-            enemyRb.constraints = RigidbodyConstraints.FreezeRotationX;
-            enemyRb.constraints = RigidbodyConstraints.FreezeRotationZ;
+            // X·Z 회전을 한 번에 고정 (개별로 대입하면 뒤의 값으로 덮어써짐)
+            enemyRb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             yield return new WaitForSeconds(0.1f);
 
         }
@@ -213,8 +248,12 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < effectCount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-            effect.GetComponent<Rigidbody>().AddForce(randomOffset.normalized * Random.Range(1f, deathEffectForce), ForceMode.Impulse);
+            GameObject effect = EffectPool.Get(deathEffectPrefab, transform.position, Quaternion.identity);
+            // 풀 재사용 시 이전 관성이 남지 않도록 속도를 완전히 되돌린 뒤 튕겨낸다.
+            Rigidbody effectRb = effect.GetComponent<Rigidbody>();
+            effectRb.linearVelocity = Vector3.zero;
+            effectRb.angularVelocity = Vector3.zero;
+            effectRb.AddForce(randomOffset.normalized * Random.Range(1f, deathEffectForce), ForceMode.Impulse);
         }
         // PlayDeathParticle();
     }
@@ -239,7 +278,8 @@ public class Enemy : MonoBehaviour
 
     public virtual void ChangeMaterial(bool isLive)
     {
-        if (poolType == PoolType.NoRush) return;
+        // NoRush는 루트에 Renderer가 없을 수 있어 rend가 null일 수 있다.
+        if (poolType == PoolType.NoRush || rend == null) return;
         if (isLive)
         {
             rend.material = liveMaterial;
