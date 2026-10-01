@@ -8,59 +8,48 @@ public class AbsortionArea_Sejin : MonoBehaviour
     public float slowMultiplier;
     public float absorbTime;
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
-    private HashSet<Enemy> absorbSet = new HashSet<Enemy>();
 
-    private float holdingTime = 0f;
     [SerializeField]
-    private float targetAddTime = 0.1f;
+    private float area_radus_max = 8f, area_radus_min = 4f;
+    private float area_radus;
+    private Vector3 originScale;
+    [SerializeField]
+    private float speed;
     private void Awake()
     {
-
+        originScale = transform.localScale;
+        area_radus = area_radus_min;
     }
 
     private void OnEnable()
     {
-        absorbSet.Clear();
         enemySet.Clear();
-        holdingTime = 0f;
+        transform.localScale = originScale * area_radus_min;
+        area_radus = area_radus_min;
     }
 
     private void OnDisable()
     {
         AbsorbAll();
         enemySet.Clear();
+        area_radus = area_radus_min;
     }
 
     private void Update()
     {
-        // 홀딩 타임 증가
-        holdingTime += Time.deltaTime;
-        // 홀딩 타임이 애딩 타임 오바
-        if (holdingTime >= targetAddTime)
-        {
-            // 타겟 추가
-            var nextTarget = NextAbsorbTarget();
-            if (nextTarget != null)
-            {
-                enemySet.Remove(nextTarget);
-                absorbSet.Add(nextTarget);
-                // 흡수 대상 지정 → 노란 오러 셸 표시
-                nextTarget.OnAbsorbTarget(true);
-            }
-            // 홀딩 타임 초기화
-            holdingTime = 0f;
-        }
-    }
+        area_radus += Time.deltaTime * speed;
+        area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
 
+        transform.localScale = originScale * area_radus;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Enemy"))
             return;
         Enemy enemy = other.GetComponent<Enemy>();
-        Debug.Log($"OnTrigger Enter {enemy}");
-        if (!absorbSet.Contains(enemy))
-            enemySet.Add(enemy);
+        enemy.OnAbsorbTarget(true);
+        enemySet.Add(enemy);
     }
     private void OnTriggerStay(Collider other)
     {
@@ -68,9 +57,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
             return;
 
         Enemy enemy = other.GetComponent<Enemy>();
-        Debug.Log($"OnTrigger Stay {enemy}");
-        if (!absorbSet.Contains(enemy))
-            enemySet.Add(enemy);
+        enemy.OnAbsorbTarget(true);
+        enemySet.Add(enemy);
     }
 
     private void OnTriggerExit(Collider other)
@@ -79,40 +67,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
             return;
 
         Enemy enemy = other.GetComponent<Enemy>();
-        Debug.Log($"OnTrigger Exit {enemy}");
-        if (absorbSet.Contains(enemy))
-        {
-            absorbSet.Remove(enemy);
-            // 영역 이탈 시 노란 오러 셸 해제
-            enemy.OnAbsorbTarget(false);
-            var next = NextAbsorbTarget();
-            absorbSet.Add(next);
-            enemySet.Remove(next);
-        }
-        else
-            enemySet.Remove(enemy);
-    }
-
-    private Enemy NextAbsorbTarget()
-    {
-        Enemy nearest = null;
-        float minDistance = float.MaxValue;
-
-        foreach (Enemy enemy in enemySet)
-        {
-            if (enemy == null)
-                continue;
-
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                nearest = enemy;
-            }
-        }
-
-        return nearest;
+        enemy.OnAbsorbTarget(false);
+        enemySet.Remove(enemy);
     }
 
     /// <summary>
@@ -134,8 +90,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     private void AbsorbAll()
     {
-        foreach (Enemy target in absorbSet)
+        foreach (Enemy target in enemySet)
             Absorb(target);
-        absorbSet.Clear();
     }
 }

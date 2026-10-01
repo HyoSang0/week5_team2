@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Events;
 using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class RushAbility_Sejin : MonoBehaviour
 {
@@ -60,9 +60,8 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private void StartRush(InputAction.CallbackContext ctx)
     {
-        if(CanDash())
+        if (CanDash())
         {
-            
             onStartRush.Invoke();
             if (dashRoutine != null)
             {
@@ -119,7 +118,7 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy") && isRushing)
+        if (collision.gameObject.CompareTag("Enemy") && isRushing)
         {
             Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             enemy.Die(true);
