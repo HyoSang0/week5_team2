@@ -13,6 +13,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     public float remainingStamina = 10.0f;
     public float regenStamina = 10.0f;
     public float maxStamina = 30f;
+    [Tooltip("흡수 능력을 \"활성화\"하는데 필요한 비용")]
+    public float activateStamina;
 
     public bool isStartAbsortion = false;
 
@@ -52,6 +54,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     private void StartAbility()
     {
+        if (stamina < activateStamina)
+            return;
+        stamina -= activateStamina;
         AbsortionArea.SetActive(true);
         isStartAbsortion = true;
     }
