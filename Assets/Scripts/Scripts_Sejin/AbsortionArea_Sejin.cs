@@ -82,7 +82,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private void TryAbsorb()
     {
         // 아직 쿨다운 중
-        if (Time.time < nextAbsorbTime)
+        if (Time.time < nextAbsorbTime || enemies.Count <= 0)
             return;
 
         //이미 없어진 적들은 제외
@@ -99,10 +99,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
         for (int curAbsorbIndex = 0; curAbsorbIndex < absorableCount; curAbsorbIndex++)
         {
             Enemy absorbTarget = enemies[curAbsorbIndex];
-            onGatherEnergy?.Invoke();
             //Debug.Log($"nearest Speed : {absorbTarget.speed}");
             StartCoroutine(absorbTarget.Die(false));
         }
+        onGatherEnergy?.Invoke();
         nextAbsorbTime = Time.time + absorbTime;
     }
 

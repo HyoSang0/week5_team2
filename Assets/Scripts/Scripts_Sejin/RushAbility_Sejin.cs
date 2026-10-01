@@ -8,7 +8,7 @@ public class RushAbility_Sejin : MonoBehaviour
 {
     public TextMeshProUGUI dashEnergyText;
     public float energy = 0.0f;
-    public float earnEnergy = 5.0f;
+    public float earnEnergy = 10.0f;
     public float consumeEnergy = 10.0f;
     public float maxEnergy = 30.0f;
     public float rushSpeed = 50.0f;
@@ -60,9 +60,9 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private void StartRush(InputAction.CallbackContext ctx)
     {
-        if(CanDash())
+        if (CanDash())
         {
-            
+
             onStartRush.Invoke();
             if (dashRoutine != null)
             {
@@ -101,7 +101,9 @@ public class RushAbility_Sejin : MonoBehaviour
         return true;
     }
 
-    // Energy 충전 이벤트 수신
+    /// <summary>
+    /// Energy 충전 이벤트 수신
+    /// </summary>
     public void RegenEnergy()
     {
         energy += earnEnergy;
@@ -119,7 +121,7 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy") && isRushing)
+        if (collision.gameObject.CompareTag("Enemy") && isRushing)
         {
             Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             enemy.Die(true);
