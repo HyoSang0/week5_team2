@@ -1,0 +1,49 @@
+# Unity Build workflow (template).
+# By default every branch push triggers a build. To restrict which branches
+# build, either:
+#   1. Replace the "'**'" entry below with specific branch patterns, e.g.:
+#        branches: ['main', 'develop', 'feature/**']
+#   2. Or keep '**' and add a guard like:
+#        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/develop')
+#      on the build step.
+name: Unity Build
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+    inputs:
+      clean:
+        description: 'Clean Library folder before building'
+        type: boolean
+        default: false
+
+# One build per ref at a time; a newer push cancels the in-progress run.
+concurrency:
+  group: unity-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: [self-hosted, windows, unity]
+    timeout-minutes: 180
+    steps:
+      # clean: false keeps the Library folder (Unity cache) between builds;
+      # lfs: true pulls LFS-tracked assets needed by the build.
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          clean: false
+          lfs: true
+
+      - name: Build
+        shell: cmd
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .ci\build.ps1 -Mode Build ${{ inputs.clean && '-Clean' || '' }}
+
+      # Runs even when the build was cancelled or the runner was killed,
+      # so the build record is finalized and reported.
+      - name: Finalize
+        if: always()
+        shell: cmd
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .ci\build.ps1 -Mode Finalize -JobStatus ${{ job.status }}
