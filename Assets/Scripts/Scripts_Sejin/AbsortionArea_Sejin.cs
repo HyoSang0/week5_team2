@@ -17,7 +17,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     private EnemyPool enemyPool;
     [Tooltip("한번에 흡수 가능한 적 수")]
-    private float maxAbsorbCount = 5f;
+    private float maxAbsorbCount = 15f;
 
     private void Awake()
     {
@@ -93,13 +93,14 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
         //흡수 가능한 적 수랑 현재 배열에 들어있는 적 수 비교 (OutOfRange 방지)
         float absorableCount = maxAbsorbCount < enemies.Count ? maxAbsorbCount : enemies.Count;
+        Debug.Log($"흡수 가능 개수 : {absorableCount}");
 
-        //가장 가까운 적 5마리 죽이기
+        //가장 가까운 적 {maxAbsorbCount} 마리 죽이기
         for (int curAbsorbIndex = 0; curAbsorbIndex < absorableCount; curAbsorbIndex++)
         {
             Enemy absorbTarget = enemies[curAbsorbIndex];
             onGatherEnergy?.Invoke();
-            Debug.Log($"nearest Speed : {absorbTarget.speed}");
+            //Debug.Log($"nearest Speed : {absorbTarget.speed}");
             StartCoroutine(absorbTarget.Die(false));
         }
         nextAbsorbTime = Time.time + absorbTime;
