@@ -18,9 +18,9 @@ public class NoAbsortEnemy : Enemy
 
         yield return new WaitForSeconds(0.5f);
         coll.isTrigger = false;
-        enemyRb.constraints = RigidbodyConstraints.FreezeRotationX;
-        enemyRb.constraints = RigidbodyConstraints.FreezeRotationZ;
+        // X·Z 회전을 한 번에 고정 (개별로 대입하면 뒤의 값으로 덮어써짐)
+        enemyRb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         yield return new WaitForSeconds(0.1f);
-        Destroy(gameObject);    // 오브젝트 풀링 사용 시 변경 필요.
+        enemyPool.DieEnemy(gameObject, poolType);    // 파괴 대신 풀로 반환
     }
 }

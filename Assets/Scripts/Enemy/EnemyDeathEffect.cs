@@ -2,23 +2,24 @@ using UnityEngine;
 
 public class EnemyDeathEffect : MonoBehaviour
 {
-    EnemyPool enemyPool;
+    const float LIFETIME = 1f;
+
     float timer = 0f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+
+    private void OnEnable()
     {
-        enemyPool = GetComponentInParent<EnemyPool>();
+        // 풀 재사용 시마다 생존 타이머를 초기화한다.
+        timer = 0f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //일정 시간 후 파괴
+        //일정 시간 후 풀에 반환
         timer += Time.deltaTime;
-        if(timer >= 1f)
+        if(timer >= LIFETIME)
         {
-            Destroy(gameObject);
-            //enemyPool.Release(this.gameObject);
+            EffectPool.Release(gameObject);
         }
     }
 }

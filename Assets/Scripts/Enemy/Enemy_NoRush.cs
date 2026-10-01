@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Enemy_NoRush : Enemy
 {
@@ -12,16 +11,20 @@ public class Enemy_NoRush : Enemy
 
     [Header("References")]
     public PlayerHp playerHp;
-    private Rigidbody enemyRbNr;
+
+    // 풀 재사용 시 복원하기 위해 Awake에서 캐시하는 프리팹 초기 체력
+    private int _defaultHealthNr;
 
     Material[] mat;
 
     protected override void Awake()
     {
-        enemyRbNr = GetComponent<Rigidbody>();
-        player = FindAnyObjectByType<PlayerController>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.speed = speed;
+        // 부모 Awake에서 enemyRb/coll/trail/rend/navMeshAgent를 초기화하므로 반드시 먼저 호출한다.
+        base.Awake();
+
+        // 프리팹 인스펙터에 설정된 체력을 기억해 재사용 시 복원한다.
+        _defaultHealthNr = healthNr;
+
         playerHp = player.gameObject.GetComponent<PlayerHp>();
         mat = new Material[5];
 
@@ -30,6 +33,25 @@ public class Enemy_NoRush : Enemy
             mat[i] = transform.GetChild(i).GetComponent<MeshRenderer>().material;
         }
 
+    }
+    /// <summary>
+    /// 풀 재사용 시 base.Initialize을 호출한 뒤 NoRush 전용 상태(체력/사망/무적 플래그, 히트 색)를
+    /// 프리팹 기본값으로 복원한다.
+    /// </summary>
+    /// <param name="poolType">소환 풀 타입</param>
+    /// <param name="pool">소유 풀</param>
+    public override void Initialize(EnemyPool.PoolType poolType, EnemyPool pool)
+    {
+        base.Initialize(poolType, pool);
+
+        // 재사용 시 무적/미초기화 상태로 스폰되지 않도록 NoRush 전용 상태를 되돌린다.
+        healthNr = _defaultHealthNr;
+        isDeadNr = false;
+        isUnBeatNr = false;
+        for (int i = 0; i < mat.Length; i++)
+        {
+            mat[i].color = Color.red;
+        }
     }
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
     protected override void OnTriggerEnter(Collider other)
@@ -88,7 +110,7 @@ public class Enemy_NoRush : Enemy
     {
         PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-        enemyRbNr.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
         yield return new WaitForSeconds(0.5f);
 

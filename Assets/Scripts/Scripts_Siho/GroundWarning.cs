@@ -19,14 +19,25 @@ public class GroundWarning : MonoBehaviour
 
     void Start()
     {
-        ground = GameObject.Find("GroundInitializer").GetComponent<GroundInitializer>();
+        // 재사용 시 매번 Find를 다시 하지 않도록 비어 있을 때만 조회한다.
+        if (ground == null)
+            ground = GameObject.Find("GroundInitializer").GetComponent<GroundInitializer>();
         // Play(ground, testCenterX,testCenterZ, testRadius);
     }
+
+    /// <summary>
+    /// warning 반경을 중심으로 경고 표시를 시작한다.
+    /// ground와 centerX/centerZ/radius를 받아 외곽선을 그리고 채우기 코루틴을 다시 시작한다.
+    /// </summary>
     public void Play(GroundInitializer ground, float centerX, float centerZ, float radius)
     {
         transform.position = new Vector3(centerX, -0.89f, centerZ);
         if (ground == null)
             return;
+
+        // 풀 재사용 대비: 이전 코루틴과 채움 상태를 초기화한다.
+        StopAllCoroutines();
+        fill.localScale = new Vector3(0.005f, 0.005f, 0.005f);
 
         CreateOutline(radius);
         StartCoroutine(
@@ -98,6 +109,6 @@ public class GroundWarning : MonoBehaviour
             radius
         );
 
-        Destroy(gameObject);
+        EffectPool.Release(gameObject);
     }
 }

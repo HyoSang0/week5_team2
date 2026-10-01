@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Pool;
 using static EnemyPool;
 
@@ -14,7 +15,8 @@ public class EnemyPool : MonoBehaviour
     ObjectPool<GameObject> NoRushEnemyPool;
     ObjectPool<GameObject> NoAbsortEnemyPool;
 
-    int maxEnemies = 300;
+    // 풀에 보관 가능한 최대 수. 기존 maxEnemies(300)와 분리해 반납 시 즉시 파괴되지 않도록 한다.
+    int maxPoolSize = 1000;
 
 
     // 적들을 한 번에 관리하기 위한 enum 타입.
@@ -65,13 +67,31 @@ public class EnemyPool : MonoBehaviour
                 thisObject = NoAbsortEnemyPool.Get();
                 break;
         }
-        thisObject.transform.position = pos;
+        // 소환 위치가 NavMesh 위에 있는지 확인하고, 없으면 주변에서 가장 가까운Valid한 위치를 찾는다.
+        bool hasNavPosition = NavMesh.SamplePosition(pos, out NavMeshHit navHit, 3f, NavMesh.AllAreas);
+        Vector3 spawnPosition = hasNavPosition ? navHit.position : pos;
+        if (!hasNavPosition)
+        {
+            Debug.LogWarning($"{pos} 주변 3m 안에서 NavMesh를 찾지 못해 원위치에 소환합니다.");
+        }
+
+        thisObject.transform.position = spawnPosition;
         thisObject.transform.rotation = Quaternion.identity;
         // 2. 새로운 위치에서 활성화
         thisObject.SetActive(true);
 
         // 3. 적 상태 초기화
-        thisObject.GetComponent<Enemy>().Initialize(poolType, this);
+        Enemy enemy = thisObject.GetComponent<Enemy>();
+        enemy.Initialize(poolType, this);
+
+        // 활성화 직후에도 NavMesh에 올라가지 못했다면 찾아둔 위치로 Warp 시도
+        if (enemy.navMeshAgent != null && !enemy.navMeshAgent.isOnNavMesh)
+        {
+            if (hasNavPosition)
+            {
+                enemy.navMeshAgent.Warp(navHit.position);
+            }
+        }
     }
     /// <summary>
     /// 적이 죽었을 때 호출되는 함수. 적을 풀에 반환한다.
@@ -106,7 +126,7 @@ public class EnemyPool : MonoBehaviour
             actionOnGet: enemy => GetEnemy(enemy, poolType),
             actionOnRelease: enemy => enemy.gameObject.SetActive(false),
             actionOnDestroy: enemy => Destroy(enemy),
-            maxSize: maxEnemies
+            maxSize: maxPoolSize
             );
     }
     GameObject CreateEnemy(PoolType poolType)
