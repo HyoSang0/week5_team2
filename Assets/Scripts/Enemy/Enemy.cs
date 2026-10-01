@@ -115,6 +115,17 @@ public class Enemy : MonoBehaviour
             StartCoroutine(Die(true));
         }
     }
+
+    public void DieAbsorbedEnemy()
+    {
+        if (!isDead)
+        {
+            isDead = true;
+            StartCoroutine(Die(false));
+        }
+
+    }
+
     public virtual IEnumerator Die(bool isKnockback)
     {
         ChangeMaterial(false);
