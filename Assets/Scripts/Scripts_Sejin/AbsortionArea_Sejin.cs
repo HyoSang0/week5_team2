@@ -15,6 +15,17 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private Vector3 originScale;
     [SerializeField]
     private float speed;
+
+
+    // effect 영역
+
+    [SerializeField]
+    LineRenderer outline;
+
+    public float warningTime = 3f;
+    public int segments = 64;
+    public float outlineWidth = 0.08f;
+
     private void Awake()
     {
         originScale = transform.localScale;
@@ -39,6 +50,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     {
         area_radus += Time.deltaTime * speed;
         area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
+        CreateOutline(area_radus);
 
         transform.localScale = originScale * area_radus;
     }
@@ -92,5 +104,26 @@ public class AbsortionArea_Sejin : MonoBehaviour
     {
         foreach (Enemy target in enemySet)
             Absorb(target);
+    }
+
+
+    private void CreateOutline(float radius)
+    {
+        outline.positionCount = segments;
+        outline.loop = true;
+        outline.useWorldSpace = false;
+
+        outline.startWidth = outlineWidth;
+        outline.endWidth = outlineWidth;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = (float)i / segments * Mathf.PI * 2f;
+
+            float x = Mathf.Cos(angle) * radius / 8;
+            float z = Mathf.Sin(angle) * radius / 8;
+
+            outline.SetPosition(i, new Vector3(x, 0.01f, z));
+        }
     }
 }
