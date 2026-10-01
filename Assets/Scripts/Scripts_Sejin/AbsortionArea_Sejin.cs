@@ -100,6 +100,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         {
             Enemy absorbTarget = enemies[curAbsorbIndex];
             //Debug.Log($"nearest Speed : {absorbTarget.speed}");
+            enemies.Remove(absorbTarget);
             StartCoroutine(absorbTarget.Die(false));
         }
         onGatherEnergy?.Invoke();
