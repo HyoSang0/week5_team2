@@ -121,6 +121,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
     /// <param name="enemy"></param>
     private void Absorb(Enemy enemy)
     {
+        if (enemy == null)
+            return;
         // 이미 풀로 반환(비활성)된 적은 건너뜀
         if (!enemy.gameObject.activeInHierarchy)
             return;
