@@ -14,8 +14,8 @@ public class GroundInitializer : MonoBehaviour
     // 큐브 한 칸의 크기
     public float cubeSize = 0.2f;
 
-    public int holeCenterX = 10;
-    public int holeCenterZ = 10;
+    //public int holeCenterX = 10;
+    //public int holeCenterZ = 10;
 
     // 격자 좌표별 Cube 저장
     private Dictionary<Vector2Int, GameObject> cubes = new Dictionary<Vector2Int, GameObject>();

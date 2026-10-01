@@ -44,8 +44,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         indicator.useWorldSpace = true;
         indicator.loop = true;
         indicator.positionCount = indicatorSegments;
-        indicator.startWidth = 0.04f;
-        indicator.endWidth = 0.04f;
+        indicator.startWidth = 0.2f;
+        indicator.endWidth = 0.2f;
         indicator.numCapVertices = 2;
     }
 
