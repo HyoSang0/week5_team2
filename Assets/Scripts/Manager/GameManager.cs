@@ -83,17 +83,13 @@ public class GameManager : MonoBehaviour
         while (curTime > 0)
         {
             curTime -= Time.deltaTime;
+            // 0 미만으로 내려가지 않게 방지
+            curTime = Mathf.Max(0, curTime);
             // 소수점 2자리 까지 표현
-            timeText.text = string.Format("{0:0.##}", curTime);
+            timeText.text = curTime.ToString("F2");
             yield return null;
-
-            if (curTime <= 0)
-            {
-                curTime = 0;
-                GameClear();
-                yield break;
-            }
         }
+        GameClear();
     }
 
     public void RestartGame()
