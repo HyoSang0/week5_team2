@@ -3,24 +3,16 @@ using UnityEngine.InputSystem;
 
 public class MouseController : MonoBehaviour
 {
-    [SerializeField] private bool oneStick;
     private InputSystem_Actions inputActions;
     private bool gamepadConnected = false;
     private Vector2 lastTargetDirection = new Vector2();
 
     public Vector2 lookInput;
-    public Vector3 worldPosition;
-    public float angle;
-
     void Awake()
     {
         inputActions = new InputSystem_Actions();
     }
 
-    void Start()
-    {
-
-    }
     void OnEnable()
     {
         inputActions.Enable();
