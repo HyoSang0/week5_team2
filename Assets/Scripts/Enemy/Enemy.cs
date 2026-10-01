@@ -145,7 +145,7 @@ public class Enemy : MonoBehaviour
             absorbAura.SetActive(isTarget);
     }
 
-    public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival)
+    public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival, Transform uiWorldMarker)
     {
         if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
             return false;
@@ -170,7 +170,7 @@ public class Enemy : MonoBehaviour
 
         EnemyAbsorbEffect lightBall = Instantiate(lightBallPrefab, effectPosition, Quaternion.identity);
 
-        lightBall.Initialize(playerTarget, rewardOnArrival);
+        lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);
 
         enemyPool.DieEnemy(gameObject, poolType);
         return true;

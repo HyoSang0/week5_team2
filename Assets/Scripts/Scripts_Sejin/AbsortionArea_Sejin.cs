@@ -12,6 +12,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 
     [SerializeField] private float area_radus_max = 8f, area_radus_min = 4f;
+    [SerializeField] private Transform _uiWorldMarker;
     private float area_radus;
     private Vector3 originScale;
     [SerializeField]
@@ -94,7 +95,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (enemy == null)
             return;
 
-        if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy))
+        if (enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy, _uiWorldMarker))
             enemy.OnAbsorbTarget(false);
     }
 
