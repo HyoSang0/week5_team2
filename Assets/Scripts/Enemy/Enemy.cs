@@ -35,6 +35,11 @@ public class Enemy : MonoBehaviour
     private Renderer rend;
     public Material liveMaterial;
     public Material deathMaterial;
+
+    [Header("Absorb Aura")]
+    // 흡수 대상 표시용 오러 셸(프리팹에 미리 배치된 자식, OnAbsorbTarget으로 켜고 끔)
+    [SerializeField] private GameObject absorbAura;
+
     protected virtual void Awake()
     {
         enemyRb = GetComponent<Rigidbody>();
@@ -48,6 +53,8 @@ public class Enemy : MonoBehaviour
     // 적 기본 설정!
     public void Initialize(PoolType poolType, EnemyPool pool)
     {
+        // 풀 재사용 시 이전 흡수 오러가 남지 않도록 먼저 해제
+        OnAbsorbTarget(false);
         ChangeMaterial(true);
         enemyScore = 0;
         this.poolType = poolType;
@@ -115,6 +122,28 @@ public class Enemy : MonoBehaviour
             StartCoroutine(Die(true));
         }
     }
+    // 외부에서 사망 처리를 요청할 때 사용. 코루틴을 적 자신이 실행하므로 호출자가 비활성 상태여도 동작함.
+    public void DoDie(bool isKnockback)
+    {
+        StartCoroutine(Die(isKnockback));
+    }
+
+    protected virtual void OnDisable()
+    {
+        // 풀 반환 시 오러 셸이 남지 않도록 해제
+        OnAbsorbTarget(false);
+    }
+
+    /// <summary>
+    /// 흡수 대상으로 지정/해제될 때 프리팹에 미리 배치된 노란 오러 셸을 켜고 끈다.
+    /// </summary>
+    /// <param name="isTarget">true면 표시, false면 숨김</param>
+    public void OnAbsorbTarget(bool isTarget)
+    {
+        if (absorbAura != null && absorbAura.activeSelf != isTarget)
+            absorbAura.SetActive(isTarget);
+    }
+
     public virtual IEnumerator Die(bool isKnockback)
     {
         ChangeMaterial(false);
