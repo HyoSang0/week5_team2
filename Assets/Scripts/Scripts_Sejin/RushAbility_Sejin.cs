@@ -74,7 +74,7 @@ public class RushAbility_Sejin : MonoBehaviour
             }
             dashRoutine = StartCoroutine(Dash_Move());
 
-            playerHp.UpdateUnBeatTime(noDamageTime);
+            playerHp.UpdateUnBeatTime(noDamageTime, false);
         }
     }
 

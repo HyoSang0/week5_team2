@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player_Unbeat
+  m_Name: MT_Player_Hit
   m_Shader: {fileID: -6465566751694194690, guid: 78e20732f60d74f4ca157d58706e5769, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -55,6 +55,6 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0.78431374}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
