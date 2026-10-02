@@ -164,8 +164,8 @@ MonoBehaviour:
   coll: {fileID: 0}
   enemyScore: 0
   player: {fileID: 0}
-  deathEffectForce: 5
-  effectCount: 10
+  deathEffectForce: 50
+  effectCount: 5
   trail: {fileID: 0}
   deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
   bulletPrefab: {fileID: 0}
