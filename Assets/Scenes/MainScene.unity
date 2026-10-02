@@ -11020,10 +11020,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e0abf17226b34e4ba2951581c8a2e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnManager
-  spawnRate: 1
+  _schedule: {fileID: 11400000, guid: 5e7c300d776f02c4a9e9199adaee5566, type: 2}
   worldDia: 30
   player: {fileID: 1030247234}
   healPack: {fileID: 3839627512098332680, guid: 729fbc52a92c835468e1654b2b657e70, type: 3}
+  _estimateDuration: 60
+  _minPrewarm: 5
+  _maxPrewarm: 300
+  _prewarmPerFrame: 30
+  _minPlayerDistance: 6
+  _navSampleRadius: 1
+  _maxSpawnAttempts: 8
 --- !u!114 &3762724242395655325
 MonoBehaviour:
   m_ObjectHideFlags: 0

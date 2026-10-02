@@ -53,7 +53,8 @@ public class PlayerHp : MonoBehaviour
         darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
         SetVignetteIntensity(attackedVignetteIntensity);
         gameManager.PlayerAttackedUI(playerHP);
-        if (playerHP <= 0) gameManager.PlayerDie();
+        if (playerHP <= 0)
+            gameManager.PlayerDie();
     }
 
     public void UpdateUnBeatTime(float time)
