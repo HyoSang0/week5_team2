@@ -17,16 +17,18 @@ public class DarkVignette : MonoBehaviour
     {
         if (vignetteImage != null)
         {
-            vignetteMaterial = vignetteImage.material;
+            //원본 Material을 복사하여 새로운 Material 생성 및 할당
+            vignetteMaterial = new Material(vignetteImage.material);
+            vignetteImage.material = vignetteMaterial;
+
             // Shader 내부의 변수 이름을 ID로 변환하여 가져오기
             sizePropertyId = Shader.PropertyToID("_VignetteSize");
             vignetteMaterial.SetFloat(sizePropertyId, minSize);
         }
     }
 
-    // 셰이더 내부의 변수 이름을 ID로 변환하여 캐싱 (최적화)
     /// <summary>
-    /// 플레이어의 체력이 변할 때(피격, 회복 등) 호출하여 어두운 정도를 조절합니다.
+    /// 플레이어의 체력이 변할 때(피격, 회복 등) 호출하여 어두운 정도 조절
     /// </summary>
     /// <param name="currentHp">현재 체력</param>
     /// <param name="maxHp">최대 체력</param>

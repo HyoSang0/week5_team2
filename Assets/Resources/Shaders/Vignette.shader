@@ -6,7 +6,7 @@ Shader "UI/ProceduralVignette"
         _Color ("Tint", Color) = (0,0,0,1)
         
         [Header(Vignette Settings)]
-        _VignetteSize ("Vignette Size (어둠 시작점)", Range(0.1, 3.0)) = 1.0
+        _VignetteSize ("Vignette Size (어둠 시작점)", Range(0.1, 10.0)) = 1.0
         _VignettePower ("Vignette Power (부드러움)", Range(0.1, 5.0)) = 2.0
 
         // UI 마스크 등 캔버스 시스템 호환을 위한 필수 속성들
