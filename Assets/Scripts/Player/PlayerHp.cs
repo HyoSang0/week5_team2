@@ -49,6 +49,7 @@ public class PlayerHp : MonoBehaviour
     public void PlayerAttacked(int damage)
     {
         playerHP -= damage;
+        SetVignetteIntensity(attackedVignetteIntensity);
         gameManager.PlayerAttackedUI(playerHP);
         if (playerHP <= 0) gameManager.PlayerDie();
     }
@@ -88,7 +89,6 @@ public class PlayerHp : MonoBehaviour
             {
                 isUnBeat = true;
                 PlayerAttacked(1);
-                SetVignetteIntensity(attackedVignetteIntensity);
                 UpdateUnBeatTime(2f);
             }
 
