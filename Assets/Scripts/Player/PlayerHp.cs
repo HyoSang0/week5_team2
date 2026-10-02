@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,18 +15,26 @@ public class PlayerHp : MonoBehaviour
     [SerializeField] DarkVignette darkVignette;
     [SerializeField] private float attackedVignetteIntensity = 0.35f;
     private Vignette vignette;
-    public bool isUnBeat = false;
     public int playerHP = 5;
     public int maxPlayerHP = 5;
 
-    public float endUnBeatTime = 0;
-    private float currentTime = 0;
+    [Header("플레이어 무적 상태 표시 관련")]
+    public bool isUnBeatHit = false;
+    public bool isUnBeatDash = false;
+    public float endUnBeatTimeHit = 0;
+    private float currentTimeHit = 0;
 
-    public Coroutine unbeatRoutine;
+    public Coroutine unbeatRoutineHit;
+    public Coroutine unbeatRoutineDash;
+    [SerializeField] MeshRenderer playerMeshRenderer;
+    [Tooltip("플레이어가 무적 상태일 때 적용할 머티리얼 (0: 기본, 1: 피격 무적)")]
+    public List<Material> playerMaterials = new List<Material>();
+    public GameObject dashShield;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        dashShield.SetActive(false);
         rb = GetComponent<Rigidbody>();
         hpText.text = playerHP + " / 5";
 
@@ -39,41 +48,59 @@ public class PlayerHp : MonoBehaviour
         SetVignetteIntensity(0.0f);
     }
 
-    // Update is called once per frame
-    public IEnumerator UnBeatTime(float sec)
+    public IEnumerator UnBeatTimeForHit(float sec)
     {
-        isUnBeat = true;
+        //무적 상태 이펙트 보여주기
+        playerMeshRenderer.material = playerMaterials[1];
+        currentTimeHit = 0f;
+        while (currentTimeHit < sec)
+        {
+            currentTimeHit += Time.deltaTime;
+            yield return null;
+        }
+        SetVignetteIntensity(0.0f);
+        playerMeshRenderer.material = playerMaterials[0];
+        isUnBeatHit = false;
+    }
+
+    public IEnumerator UnBeatTimeForDash(float sec)
+    {
+        dashShield.SetActive(true);
         yield return new WaitForSeconds(sec);
-        isUnBeat = false;
+        dashShield.SetActive(false);
+        isUnBeatDash = false; ;
     }
 
     public void PlayerAttacked(int damage)
     {
+        //플레이어 체력 감소 처리
         playerHP -= damage;
+        //체력에 따라 시야 vignette 어둡기 처리
         darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
+        //피격 vignette 처리
         SetVignetteIntensity(attackedVignetteIntensity);
+        // UI 처리
         gameManager.PlayerAttackedUI(playerHP);
+
+        // 사망 처리
         if (playerHP <= 0)
-            gameManager.PlayerDie();
-    }
-
-    public void UpdateUnBeatTime(float time)
-    {
-        endUnBeatTime = Mathf.Max(endUnBeatTime, currentTime + time);
-    }
-
-    void Update()
-    {
-        currentTime += Time.deltaTime;
-        // endUnBeatTime가 현재 시간보다 작으면 isUnBeat = false, 그 외에는 isUnBeat = true;
-        if (currentTime < endUnBeatTime)
         {
-            isUnBeat = true;
+            gameManager.PlayerDie();
+        }
+    }
+
+    public void UpdateUnBeatTime(float time, bool isHit)
+    {
+        if (isHit)
+        {
+            isUnBeatHit = true;
+            unbeatRoutineHit = StartCoroutine(UnBeatTimeForHit(time));
+            endUnBeatTimeHit = Mathf.Max(endUnBeatTimeHit, currentTimeHit + time);
         }
         else
         {
-            isUnBeat = false;
-            SetVignetteIntensity(0.0f);
+            isUnBeatDash = true;
+            unbeatRoutineDash = StartCoroutine(UnBeatTimeForDash(time));
         }
     }
 
@@ -87,14 +114,12 @@ public class PlayerHp : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
         {
-
-            if (!isUnBeat)
+            Debug.Log("Player Attacked");
+            if (!isUnBeatHit && !isUnBeatDash)
             {
-                isUnBeat = true;
                 PlayerAttacked(1);
-                UpdateUnBeatTime(2f);
+                UpdateUnBeatTime(2f, true);
             }
-
         }
     }
 

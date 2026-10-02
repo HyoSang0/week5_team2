@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3800686565489211084}
   - component: {fileID: 7973333003156157629}
   - component: {fileID: 8357368428774649323}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
