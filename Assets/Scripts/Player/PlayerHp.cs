@@ -11,6 +11,7 @@ public class PlayerHp : MonoBehaviour
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     [SerializeField] private Volume volume;
+    [SerializeField] DarkVignette darkVignette;
     [SerializeField] private float attackedVignetteIntensity = 0.35f;
     private Vignette vignette;
     public bool isUnBeat = false;
@@ -49,6 +50,7 @@ public class PlayerHp : MonoBehaviour
     public void PlayerAttacked(int damage)
     {
         playerHP -= damage;
+        darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
         SetVignetteIntensity(attackedVignetteIntensity);
         gameManager.PlayerAttackedUI(playerHP);
         if (playerHP <= 0) gameManager.PlayerDie();
