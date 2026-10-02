@@ -50,7 +50,8 @@ public class Enemy_NoRush : Enemy
         isUnBeatNr = false;
         for (int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = Color.red;
+            // mat[i].color = Color.red;
+            mat[i] = liveMaterial;
         }
     }
     //OnTriggerEnter에서 드롭킥을 맞았는지 검사. 맞았으면 플레이어에게 반사 대미지.
@@ -83,12 +84,12 @@ public class Enemy_NoRush : Enemy
     {
         for (int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = Color.gray;
+            mat[i] = deathMaterial;
         }
         yield return new WaitForSeconds(.1f);
         for (int i = 0; i < mat.Length; i++)
         {
-            mat[i].color = Color.red;
+            mat[i] = liveMaterial;
 
         }
     }
