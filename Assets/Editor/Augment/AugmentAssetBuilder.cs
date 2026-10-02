@@ -20,6 +20,7 @@ public static class AugmentAssetBuilder
     private const string PREFAB_FOLDER = "Assets/Prefabs/Augment";
     private const string DATABASE_PATH = DATA_FOLDER + "/AugmentDatabase.asset";
     private const string PREFAB_PATH = PREFAB_FOLDER + "/AugmentSystem.prefab";
+    private const string FONT_ASSET_PATH = "Assets/Fonts/DOSGothic SDF.asset";
 
     private const float PANEL_DIM_ALPHA = 0.72f;
 
@@ -358,7 +359,7 @@ public static class AugmentAssetBuilder
         template.pivot = new Vector2(0f, 1f);
         template.sizeDelta = new Vector2(280f, 34f);
         TextMeshProUGUI text = template.gameObject.AddComponent<TextMeshProUGUI>();
-        text.font = TMP_Settings.defaultFontAsset;
+        text.font = GetKoreanFontAsset();
         text.fontSize = 26f;
         text.alignment = TextAlignmentOptions.MidlineLeft;
         text.color = Color.white;
@@ -461,7 +462,7 @@ public static class AugmentAssetBuilder
 
     /// <summary>
     /// parent 아래 center 기준 위치/크기의 TextMeshProUGUI GameObject를 만들어 반환한다.
-    /// 프로젝트 TMP 기본 폰트를 사용한다.
+    /// 한글 폰트(DOSGothic SDF)를 사용한다.
     /// </summary>
     private static TextMeshProUGUI CreateText(string name, RectTransform parent, string value, float size,
         Vector2 anchoredPosition, Vector2 scale, TextAlignmentOptions alignment)
@@ -470,13 +471,23 @@ public static class AugmentAssetBuilder
         Center(rect, anchoredPosition, scale);
 
         TextMeshProUGUI text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-        text.font = TMP_Settings.defaultFontAsset;
+        text.font = GetKoreanFontAsset();
         text.text = value;
         text.fontSize = size;
         text.alignment = alignment;
         text.color = Color.white;
         text.richText = true;
         return text;
+    }
+
+    /// <summary>
+    /// FONT_ASSET_PATH의 한글 TMP 폰트 에셋을 읽어 반환한다.
+    /// 에셋이 없으면 TMP_Settings.defaultFontAsset으로 폴백한다.
+    /// </summary>
+    private static TMP_FontAsset GetKoreanFontAsset()
+    {
+        TMP_FontAsset fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_ASSET_PATH);
+        return fontAsset != null ? fontAsset : TMP_Settings.defaultFontAsset;
     }
 
     /// <summary>
