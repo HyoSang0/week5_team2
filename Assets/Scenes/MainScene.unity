@@ -3609,7 +3609,7 @@ MonoBehaviour:
   maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
-  noDamageTime: 0.5
+  noDamageTime: 0.7
   coolTime: 1
   isDashing: 0
   onStartRush:
@@ -3700,6 +3700,7 @@ MonoBehaviour:
   remainingStamina: 10
   regenStamina: 10
   maxStamina: 30
+  activateStamina: 0
   isStartAbsortion: 0
 --- !u!114 &1030247240
 MonoBehaviour:

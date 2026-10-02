@@ -13,7 +13,7 @@ public class RushAbility_Sejin : MonoBehaviour
     public float maxEnergy = 30.0f;
     public float rushSpeed = 50.0f;
     public float duringTime = 0.2f;
-    public float noDamageTime = 5.0f;
+    public float noDamageTime = 0.7f;
     public float coolTime = 1.0f;
     public bool isDashing = false;
 
