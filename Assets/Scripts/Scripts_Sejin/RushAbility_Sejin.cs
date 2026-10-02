@@ -26,7 +26,7 @@ public class RushAbility_Sejin : MonoBehaviour
     private PlayerController playerController;
     private PlayerHp playerHp;
     private GameObject dashReadyEffect;
-    [SerializeField] private Image coolDownImage;
+    private Image coolDownImage;
 
     public UnityEvent onStartRush;
     public UnityEvent onEndRush;
@@ -43,7 +43,6 @@ public class RushAbility_Sejin : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
-        dashReadyEffect = FindFirstObjectByType<DashReadyEffect>().gameObject;
         coolDownImage = GameObject.Find("Fill").GetComponent<Image>();
     }
 
@@ -82,7 +81,7 @@ public class RushAbility_Sejin : MonoBehaviour
     private IEnumerator Dash_Move()
     {
         isDashing = true;
-        dashReadyEffect.SetActive(false);
+        // dashReadyEffect.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
         Debug.Log("No Damage Start");
@@ -99,8 +98,8 @@ public class RushAbility_Sejin : MonoBehaviour
             yield return null;
         }
         coolDownImage.fillAmount = 1;
-        dashReadyEffect.transform.position = transform.position;
-        dashReadyEffect.SetActive(true);
+        // dashReadyEffect.transform.position = transform.position;
+        // dashReadyEffect.SetActive(true);
         isDashing = false;
     }
 
