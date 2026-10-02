@@ -37,12 +37,23 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private EnemyPool enemyPool;
 
-    // 증강 스탯 재계산에 사용할 기준값들
+    [Header("증강 스탯 재계산에 사용할 기준값들")]
+    /// <summary>
+    /// 대쉬 지속 시간
+    /// </summary>
     private float _baseDuringTime;
+    /// <summary>
+    /// 대쉬 쿨타임
+    /// </summary>
     private float _baseCoolTime;
+    /// <summary>
+    /// 대쉬 무적 시간
+    /// </summary>
     private float _baseNoDamageTime;
+    /// <summary>
+    /// 대쉬 속도
+    /// </summary>
     private float _baseRushSpeed;
-
     // 쿨타임 진행 중에 누적된 쿨타임 감소량과 쿨타임 진행 여부
     private float _pendingCooldownReduction;
     private bool _inCooldown;
@@ -134,7 +145,9 @@ public class RushAbility_Sejin : MonoBehaviour
                 StopCoroutine(dashRoutine);
             }
             dashRoutine = StartCoroutine(Dash_Move());
-            playerHp.UpdateUnBeatTime(noDamageTime, false);
+
+            //플레이어한테 무적 상태 걸기
+            playerHp.ApplyDashInvincibility(noDamageTime);
         }
     }
 
@@ -146,12 +159,14 @@ public class RushAbility_Sejin : MonoBehaviour
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
         // dashReadyEffect.SetActive(false);
+
+        //돌진
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
-        Debug.Log("No Damage Start");
-
+        //Debug.Log("No Damage Start");
         yield return new WaitForSeconds(duringTime);
 
+        //돌진 종료 및 쿨타임 계산
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = true;
         onEndRush.Invoke();
