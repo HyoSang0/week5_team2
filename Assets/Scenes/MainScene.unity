@@ -2858,9 +2858,9 @@ MonoBehaviour:
   slowMultiplier: 0.1
   absorbTime: 0.5
   area_radus_max: 8
-  area_radus_min: 4
+  area_radus_min: 1
   _uiWorldMarker: {fileID: 865404703}
-  speed: 1
+  speed: 3
   outline: {fileID: 852579212}
   warningTime: 3
   segments: 64
@@ -3609,7 +3609,7 @@ MonoBehaviour:
   maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
-  noDamageTime: 0.5
+  noDamageTime: 0.7
   coolTime: 1
   isDashing: 0
   onStartRush:
@@ -3700,6 +3700,7 @@ MonoBehaviour:
   remainingStamina: 10
   regenStamina: 10
   maxStamina: 30
+  activateStamina: 0
   isStartAbsortion: 0
 --- !u!114 &1030247240
 MonoBehaviour:
@@ -4337,7 +4338,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1

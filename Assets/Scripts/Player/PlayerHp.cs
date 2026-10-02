@@ -56,7 +56,7 @@ public class PlayerHp : MonoBehaviour
 
     public void UpdateUnBeatTime(float time)
     {
-        endUnBeatTime = currentTime + time;
+        endUnBeatTime = Mathf.Max(endUnBeatTime, currentTime + time);
     }
 
     void Update()
