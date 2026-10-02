@@ -110,7 +110,8 @@ public class Enemy_NoRush : Enemy
     {
         PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+        // 풀 재사용 시 누적되지 않도록 필드 대신 사용 시점에 증강을 적용해 계산한다.
+        enemyRb.AddForce(knockbackDirection * GetAugmentedKnockbackForce(), ForceMode.Impulse);
         // enemyRb.linearVelocity = knockbackDirection * knockbackForce;
         yield return new WaitForSeconds(0.5f);
 
@@ -123,6 +124,7 @@ public class Enemy_NoRush : Enemy
         if (healthNr <= 0 && !isDeadNr)
         {
             isDeadNr = true;
+            AugmentEvents.RaiseEnemyKilled(this);
             StartCoroutine(DieNr());
         }
     }
@@ -132,7 +134,7 @@ public class Enemy_NoRush : Enemy
     {
         if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponent<Enemy>().isDead)
         {
-            TakeDamageNr(1);
+            TakeDamageNr(ApplyChainDamage(1));
         }
     }
 }

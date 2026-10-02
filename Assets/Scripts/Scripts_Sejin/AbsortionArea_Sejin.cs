@@ -5,6 +5,8 @@ using UnityEngine.Events;
 public class AbsortionArea_Sejin : MonoBehaviour
 {
     [SerializeField] private EnemyAbsorbEffect lightBallPrefab;
+    // 빛 구슬의 목적지가 UiMarker 모드일 때 날아갈 위치
+    [SerializeField] private Transform _uiWorldMarker;
     private Transform playerTarget;
     public UnityEvent onGatherEnergy;
     public float slowMultiplier;
@@ -12,8 +14,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 
     [SerializeField] private float area_radus_max = 8f, area_radus_min = 4f;
-    [SerializeField] private Transform _uiWorldMarker;
     private float area_radus;
+    // 증강 스탯 재계산에 사용할 반지름 기준값들
+    private float _baseAreaRadiusMin;
+    private float _baseAreaRadiusMax;
     private Vector3 originScale;
     [SerializeField]
     private float speed;
@@ -23,8 +27,6 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     [SerializeField]
     LineRenderer outline;
-
-    public float warningTime = 3f;
     public int segments = 64;
     public float outlineWidth = 0.08f;
 
@@ -34,10 +36,32 @@ public class AbsortionArea_Sejin : MonoBehaviour
         area_radus = area_radus_min;
         PlayerController player = GetComponentInParent<PlayerController>();
         playerTarget = player != null ? player.transform : null;
+
+        _baseAreaRadiusMin = area_radus_min;
+        _baseAreaRadiusMax = area_radus_max;
     }
+
+    /// <summary>
+    /// PlayerStats의 AbsorbRadius 증강을 기준값에 적용해 area_radus_min, area_radus_max를 재계산한다.
+    /// 두 값 모두 같은 스탯의 배율로 적용한다. PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// </summary>
+    private void ApplyAugmentStats()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return;
+        }
+
+        area_radus_min = PlayerStats.Instance.Apply(StatType.AbsorbRadius, _baseAreaRadiusMin);
+        area_radus_max = PlayerStats.Instance.Apply(StatType.AbsorbRadius, _baseAreaRadiusMax);
+    }
+
 
     private void OnEnable()
     {
+        // Start 실행 시점이 첫 활성화로 밀려 구독 대신 활성화 시점에 현재 스탯을 읽는다.
+        ApplyAugmentStats();
+
         enemySet.Clear();
         transform.localScale = originScale * area_radus_min;
         area_radus = area_radus_min;
@@ -95,7 +119,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (enemy == null)
             return;
 
-        if (enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy, _uiWorldMarker))
+        if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy, _uiWorldMarker))
             enemy.OnAbsorbTarget(false);
     }
 

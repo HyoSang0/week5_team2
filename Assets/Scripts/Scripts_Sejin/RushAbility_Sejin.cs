@@ -33,6 +33,12 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private EnemyPool enemyPool;
 
+    // 증강 스탯 재계산에 사용할 기준값들
+    private float _baseConsumeEnergy;
+    private float _baseCoolTime;
+    private float _baseNoDamageTime;
+    private float _baseRushSpeed;
+
     void Awake()
     {
         energy = 0.0f;
@@ -40,6 +46,11 @@ public class RushAbility_Sejin : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
+
+        _baseConsumeEnergy = consumeEnergy;
+        _baseCoolTime = coolTime;
+        _baseNoDamageTime = noDamageTime;
+        _baseRushSpeed = rushSpeed;
     }
 
     void OnEnable()
@@ -56,10 +67,48 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         playerController = GetComponent<PlayerController>();
         inputActions.Player.Attack.started += StartRush;
+
+        // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged += ApplyAugmentStats;
+        }
+
+        ApplyAugmentStats();
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= ApplyAugmentStats;
+        }
+    }
+
+    /// <summary>
+    /// PlayerStats의 Rush 관련 증강을 기준값에 적용해 consumeEnergy, coolTime, noDamageTime, rushSpeed를 재계산한다.
+    /// PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// </summary>
+    private void ApplyAugmentStats()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return;
+        }
+
+        consumeEnergy = PlayerStats.Instance.Apply(StatType.RushCost, _baseConsumeEnergy);
+        coolTime = PlayerStats.Instance.Apply(StatType.RushCooldown, _baseCoolTime);
+        noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
+        rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
     }
 
     private void StartRush(InputAction.CallbackContext ctx)
     {
+        if (AugmentSelection.IsOpen)
+        {
+            return;
+        }
+
         if (CanDash())
         {
             onStartRush.Invoke();
@@ -100,6 +149,20 @@ public class RushAbility_Sejin : MonoBehaviour
         RefreshUI();
 
         return true;
+    }
+
+    /// <summary>
+    /// amount만큼 대시 Energy를 추가한다. energy는 maxEnergy를 초과하지 않는다.
+    /// 변경된 energy를 RefreshUI로 UI에 반영한다.
+    /// </summary>
+    public void AddEnergy(float amount)
+    {
+        energy += amount;
+        if (energy > maxEnergy)
+        {
+            energy = maxEnergy;
+        }
+        RefreshUI();
     }
 
     // Energy 충전 이벤트 수신

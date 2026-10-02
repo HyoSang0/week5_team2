@@ -33,7 +33,7 @@ public class UiManager : MonoBehaviour
     
     void UpdateHud()
     {
-        hpText.text = string.Format("HP : {0:F0} / 5", pHp.playerHP);
+        hpText.text = string.Format("HP : {0:F0} / {1}", pHp.playerHP, pHp.maxPlayerHP);
         aeText.text = string.Format("AE : {0:F0} / 30", absorb.stamina);
         deText.text = string.Format("DE : {0:F0} / 30", rush.energy);
         hpSlider.value = (float)pHp.playerHP / pHp.maxPlayerHP;

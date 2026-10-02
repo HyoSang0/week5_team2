@@ -147,6 +147,7 @@ public class Enemy : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        AugmentEvents.RaiseEnemyKilled(this);
         GameManager.Instance.AddScore(enemyScore);
         StartCoroutine(Die(true));
     }
@@ -198,6 +199,7 @@ public class Enemy : MonoBehaviour
         }
 
         // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
+        AugmentEvents.RaiseEnemyAbsorbed(this);
         OnAbsorbed();
 
         enemyPool.DieEnemy(gameObject, poolType);
@@ -224,7 +226,8 @@ public class Enemy : MonoBehaviour
 
             PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
             Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-            enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+            // 풀 재사용 시 누적되지 않도록 필드 대신 사용 시점에 증강을 적용해 계산한다.
+            enemyRb.AddForce(knockbackDirection * GetAugmentedKnockbackForce(), ForceMode.Impulse);
 
             yield return new WaitForSeconds(0.5f);
             trail.enabled = false;
@@ -264,16 +267,44 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("DropkickRange"))
         {
             enemyScore += 1;
-            TakeDamage(5);
+            TakeDamage(ApplyChainDamage(5));
         }
         else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
         {
             if (gameObject.CompareTag("Enemy"))
             {
                 enemyScore = other.gameObject.GetComponent<Enemy>().enemyScore + 1;
-                TakeDamage(5);
+                TakeDamage(ApplyChainDamage(5));
             }
         }
+    }
+
+    /// <summary>
+    /// PlayerStats의 KnockbackForce 증강을 적용한 넉백 강도를 반환한다.
+    /// 필드 knockbackForce는 변경하지 않으며, PlayerStats.Instance가 없으면 필드 값을 그대로 반환한다.
+    /// </summary>
+    protected float GetAugmentedKnockbackForce()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return knockbackForce;
+        }
+
+        return PlayerStats.Instance.Apply(StatType.KnockbackForce, knockbackForce);
+    }
+
+    /// <summary>
+    /// baseDamage에 PlayerStats의 ChainDamage 증강을 적용한 정수 피해를 반환한다.
+    /// PlayerStats.Instance가 없으면 baseDamage를 그대로 반환한다.
+    /// </summary>
+    protected int ApplyChainDamage(int baseDamage)
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return baseDamage;
+        }
+
+        return PlayerStats.Instance.ApplyInt(StatType.ChainDamage, baseDamage);
     }
 
     public virtual void ChangeMaterial(bool isLive)

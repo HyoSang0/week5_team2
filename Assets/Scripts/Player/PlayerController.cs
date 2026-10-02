@@ -23,10 +23,15 @@ public class PlayerController : MonoBehaviour
     Vector3 centor = Vector3.zero;
     float radius = 15f;
 
+    // 증강 스탯 재계산에 사용할 moveSpeed의 기준값
+    private float _baseMoveSpeed;
+
     void Awake()
     {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
+
+        _baseMoveSpeed = moveSpeed;
     }
     void Start()
     {
@@ -34,6 +39,14 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Move.canceled += _ => moveInput = Vector2.zero;
         inputActions.Player.Ability_Sejin.started += _ => { SetState(State.Charge); };
         inputActions.Player.Ability_Sejin.canceled += _ => { SetState(State.None); };
+
+        // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged += ApplyAugmentStats;
+        }
+
+        ApplyAugmentStats();
     }
 
     void OnEnable()
@@ -44,6 +57,28 @@ public class PlayerController : MonoBehaviour
     void OnDisable()
     {
         inputActions.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= ApplyAugmentStats;
+        }
+    }
+
+    /// <summary>
+    /// PlayerStats의 MoveSpeed 증강을 기준값에 적용해 moveSpeed를 재계산한다.
+    /// PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// </summary>
+    private void ApplyAugmentStats()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return;
+        }
+
+        moveSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseMoveSpeed);
     }
 
     void Update()

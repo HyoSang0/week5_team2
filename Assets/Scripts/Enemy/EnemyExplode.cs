@@ -40,9 +40,16 @@ public class EnemyExplode : Enemy
 
     /// <summary>
     /// 흡수 사망 시 TryAbsorb의 풀 반환 전에 폭발을 즉시 실행한다.
+    /// 폭탄 수집가 증강이 활성이면 폭발 대신 주변 적을 처치한다.
     /// </summary>
     protected override void OnAbsorbed()
     {
+        if (BombCollectorEffect.IsActive)
+        {
+            BombCollectorEffect.Current.KillAround(transform.position);
+            return;
+        }
+
         Explode();
     }
 }

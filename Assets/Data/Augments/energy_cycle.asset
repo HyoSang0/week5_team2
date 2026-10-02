@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: energy_cycle
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: energy_cycle
+  _displayName: "\uC5D0\uB108\uC9C0 \uC21C\uD658"
+  _description: "\uC801 \uCC98\uCE58 \uC2DC \uC2A4\uD0DC\uBBF8\uB098 +5."
+  _tier: 2
+  _conflictTags: []
+  _modifiers: []
+  _effect: {fileID: 11400000, guid: 5717b0acaae6ebd4f819bf5b9af68f6d, type: 2}

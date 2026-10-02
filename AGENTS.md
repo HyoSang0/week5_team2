@@ -139,3 +139,64 @@ using Game.System;
 ## 8. Code Structure
 
 - Unity Lifecycle 순서와 Inspector 설정을 고려하여 불필요한 `null` check를 추가하지 않는다.
+
+---
+
+## 9. Unity CLI
+
+실행 중인 Editor는 Unity CLI(`com.unity.pipeline` 패키지, 127.0.0.1:7800)로 조회·검증한다.
+
+### 명령
+
+- 형식: `unity cmd <command> --no-banner --json`
+- 상태 확인: `editor_status`, `list_open_scenes`(isDirty 확인), `unity pipeline list`(서버 연결 확인)
+- 컴파일 검증: `recompile` 실행 후 `recompile_status`가 `completed`가 될 때까지 조회하고 `compilationFailed`, `errors`를 확인한다.
+- 콘솔: `console`에는 이전 에러도 남아 있으므로 `timestampUtc`로 최신 항목만 판단한다.
+- 조회: `eval`(조회용 코드만), `get_*_settings`, `get_scene_hierarchy`, `find_assets`, `get_serialized_fields`, `package_list`
+- 프리팹·에셋 생성: `eval` 또는 에디터 스크립트에서 `PrefabUtility.LoadPrefabContents` → `SaveAsPrefabAsset` → `UnloadPrefabContents`를 사용한다. 새 오브젝트가 필요하면 `EditorSceneManager.NewPreviewScene()` 안에서 만들고 닫는다.
+
+### 금지
+
+- 요청 없이 Play 모드 진입, `open_scene`, `save_scene`, 씬(`.unity`) 수정을 하지 않는다. Editor는 사용자가 작업 중이다.
+- 런타임 동작 확인은 사용자가 Play로 한다.
+
+### 주의
+
+- Git Bash에서는 Windows 경로를 슬래시로 쓴다(`C:/Gits/week5_team2`). 백슬래시는 이스케이프되어 경로가 깨진다.
+- 모든 명령이 `Main thread operation timed out`이면 Editor에 모달 창이 떠 있는지 먼저 확인한다(예: git pull 후 씬 외부 변경 알림). 창 선택은 사용자에게 맡긴다.
+
+---
+
+## 10. Orca Orchestration
+
+작업은 Orca 오케스트레이션과 pi 워커로 진행한다.
+
+### 워커 배치
+
+- 담당 파일이 겹쳐 충돌 위험이 있으면 워커 1개로 순차 진행한다.
+- 담당 파일이 겹치지 않으면 병렬로 진행한다.
+- 사용자가 모델을 지정하면 그 모델만 사용한다.
+
+### 실행 순서
+
+1. `orca skills get orchestration`으로 현재 버전 가이드를 확인한다.
+2. `orca orchestration run-create --objective "<목표>"`
+3. `orca terminal create --worktree path:C:/Gits/week5_team2 --title <이름> --command "pi --approve --model <모델>"` 후 `orca terminal wait --for tui-idle`
+4. `orca orchestration worker-start --run <run> --terminal <handle> --worktree path:C:/Gits/week5_team2 --spec "<지시서>"`
+5. `orca orchestration check --run <run> --wait --types "worker_done,escalation,question"`로 대기하고, 처리한 delivery는 `--ack`한다.
+6. 완료 보고를 코드와 Editor 측정으로 검증한 뒤 `worker-release --dispatch <id>`, `orca terminal close --terminal <handle>`.
+
+- 진행 중 추가 지시: `orca orchestration send --to dispatch:<id>`
+- 워커 질문·에스컬레이션 답변: `orca orchestration reply --id <message_id>`
+
+### 모델
+
+- `dgx-spark/qwen3.8-flash-next`: 첫 호출은 모델 로드로 2분 이상 걸릴 수 있다.
+- `zai/glm-5.3-flash`: OpenRouter가 아닌 zai provider로 사용한다.
+
+### 지시서
+
+- 담당 파일 목록(그 외 수정 금지), 다른 워커가 쓰는 공개 API 시그니처, 수용 기준을 명시한다.
+- 이 문서(AGENTS.md)의 코드 규칙과 git 금지를 따르게 한다.
+- 워커 보고서의 이슈를 수정 대상으로 올리기 전에 사용자가 이미 내린 결정과 대조한다.
+- 워커가 컴파일 성공을 보고해도 코디네이터가 `recompile_status`로 다시 확인한다.
