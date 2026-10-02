@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: efficiency
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: efficiency
-  _displayName: "\uC5F0\uBE44"
-  _description: "\uB3CC\uC9C4 \uC2A4\uD0DC\uBBF8\uB098 \uC18C\uBAA8 -30%"
+  _displayName: "\uC7AC\uC815\uBE44"
+  _description: "\uB3CC\uC9C4 \uB300\uAE30 \uC2DC\uAC04 -30%"
   _tier: 1
   _conflictTags: []
   _modifiers:
-  - _stat: 5
+  - _stat: 6
     _percent: -30
     _flat: 0
   _effect: {fileID: 0}

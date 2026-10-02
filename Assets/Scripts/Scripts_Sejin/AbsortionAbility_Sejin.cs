@@ -1,34 +1,34 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// 마우스 우클릭으로 작동하는 흡수 능력
+// 마우스 우클릭을 누르는 동안 흡수 영역을 활성화한다.
 public class AbsortionAbility_Sejin : MonoBehaviour
 {
-    public TextMeshProUGUI absortEnergyText;
+    // public TextMeshProUGUI absortEnergyText;
+
     private InputSystem_Actions inputActions;
     public GameObject AbsortionArea;
 
-    public float stamina = 30f;
-    public float remainingStamina = 10.0f;
-    public float regenStamina = 10.0f;
-    public float maxStamina = 30f;
-    [Tooltip("흡수 능력을 \"활성화\"하는데 필요한 비용")]
-    public float activateStamina;
+    // public float stamina = 30f;
+    // public float remainingStamina = 10.0f;
+    // public float regenStamina = 10.0f;
+    // public float maxStamina = 30f;
+    // [Tooltip("흡수 능력을 활성화하는데 필요한 비용")]
+    // public float activateStamina;
+
+    [Header("Cooldown")]
+    [SerializeField, Min(0f)] private float _cooldownSeconds = 0f;
+    private float _nextAvailableTime;
 
     public bool isStartAbsortion = false;
 
-    // 증강 스탯 재계산에 사용할 기준값들
-    private float _baseMaxStamina;
-    private float _baseRegenStamina;
+    // 증강 스탯 재계산에 사용할 쿨타임 기준값
+    private float _baseCooldownSeconds;
 
     void Awake()
     {
         inputActions = new InputSystem_Actions();
-        stamina = maxStamina;
-
-        _baseMaxStamina = maxStamina;
-        _baseRegenStamina = regenStamina;
+        _baseCooldownSeconds = _cooldownSeconds;
     }
 
     void OnEnable()
@@ -66,8 +66,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// PlayerStats의 MaxStamina, StaminaRegen 증강을 기준값에 적용해 maxStamina, regenStamina를 재계산한다.
-    /// 줄어든 최대치보다 stamina가 크면 maxStamina로 clamp한다. PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// PlayerStats의 AbsorbCooldown 증강을 기준값에 적용해 _cooldownSeconds를 재계산한다.
+    /// PlayerStats.Instance가 없으면 아무것도 하지 않는다.
     /// </summary>
     private void ApplyAugmentStats()
     {
@@ -76,15 +76,11 @@ public class AbsortionAbility_Sejin : MonoBehaviour
             return;
         }
 
-        maxStamina = PlayerStats.Instance.Apply(StatType.MaxStamina, _baseMaxStamina);
-        regenStamina = PlayerStats.Instance.Apply(StatType.StaminaRegen, _baseRegenStamina);
-
-        if (stamina > maxStamina)
-        {
-            stamina = maxStamina;
-        }
+        _cooldownSeconds = PlayerStats.Instance.Apply(StatType.AbsorbCooldown, _baseCooldownSeconds);
     }
 
+    // 입력 시작 이벤트를 받아 흡수 활성화를 시도한다.
+    // context는 입력 이벤트이며 활성 상태가 변경될 수 있다.
     private void ActiveAbility(InputAction.CallbackContext context)
     {
         if (AugmentSelection.IsOpen)
@@ -95,68 +91,70 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StartAbility();
     }
 
+    // 입력 종료 이벤트를 받아 활성화된 흡수를 끝낸다.
+    // context는 입력 이벤트이며 흡수 상태와 쿨타임이 변경될 수 있다.
     private void DeActiveAbility(InputAction.CallbackContext context)
     {
         StopAbility();
     }
 
+    // 현재 시각과 쿨타임 종료 시각을 비교해 흡수 영역을 켠다.
+    // 활성 상태를 isStartAbsortion에 저장한다.
     private void StartAbility()
     {
-        if (stamina < activateStamina)
+        // if (stamina < activateStamina)
+        //     return;
+        // stamina -= activateStamina;
+
+        if (isStartAbsortion || Time.time < _nextAvailableTime)
             return;
-        stamina -= activateStamina;
+
         AbsortionArea.SetActive(true);
         isStartAbsortion = true;
     }
+
+    // 활성화된 흡수 영역을 끄고 다음 사용 가능 시각을 설정한다.
+    // _cooldownSeconds를 사용하며 영역 상태와 _nextAvailableTime을 변경한다.
     private void StopAbility()
     {
+        if (!isStartAbsortion)
+            return;
+
         AbsortionArea.SetActive(false);
         isStartAbsortion = false;
+        _nextAvailableTime = Time.time + _cooldownSeconds;
     }
 
-    private void RefreshUI()
-    {
-        absortEnergyText.text = $"Absort : {stamina}";
-    }
+    // private void RefreshUI()
+    // {
+    //     absortEnergyText.text = $"Absort : {stamina}";
+    // }
 
-    /// <summary>
-    /// amount만큼 흡수 능력의 stamina를 추가한다. stamina는 maxStamina를 초과하지 않는다.
-    /// UI는 Update의 RefreshUI에서 매 프레임 갱신되므로 별도 반영 없이 stamina만 변경한다.
-    /// </summary>
-    public void AddStamina(float amount)
-    {
-        stamina += amount;
-        if (stamina > maxStamina)
-        {
-            stamina = maxStamina;
-        }
-    }
+    // private void Update()
+    // {
+    //     if (isStartAbsortion)
+    //         HandleConsum();
+    //     else
+    //         HandleRegenStamina();
+    //     RefreshUI();
+    // }
 
-    private void Update()
-    {
-        if (isStartAbsortion)
-            HandleConsum();
-        else
-            HandleRegenStamina();
-        RefreshUI();
-    }
+    // private void HandleConsum()
+    // {
+    //     stamina -= remainingStamina * Time.deltaTime;
+    //     if (stamina < 0)
+    //     {
+    //         stamina = 0;
+    //         StopAbility();
+    //     }
+    // }
 
-    private void HandleConsum()
-    {
-        stamina -= remainingStamina * Time.deltaTime;
-        if (stamina < 0)
-        {
-            stamina = 0;
-            StopAbility();
-        }
-    }
-
-    private void HandleRegenStamina()
-    {
-        stamina += regenStamina * Time.deltaTime;
-        if (stamina > maxStamina)
-        {
-            stamina = maxStamina;
-        }
-    }
+    // private void HandleRegenStamina()
+    // {
+    //     stamina += regenStamina * Time.deltaTime;
+    //     if (stamina > maxStamina)
+    //     {
+    //         stamina = maxStamina;
+    //     }
+    // }
 }

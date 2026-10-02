@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: energy_cycle
   _displayName: "\uC5D0\uB108\uC9C0 \uC21C\uD658"
-  _description: "\uC801 \uCC98\uCE58 \uC2DC \uC2A4\uD0DC\uBBF8\uB098 +5."
+  _description: "\uCC98\uCE58\uD560 \uB54C\uB9C8\uB2E4 \uB3CC\uC9C4 \uCFE8\uD0C0\uC784
+    0.2\uCD08 \uAC10\uC18C"
   _tier: 2
   _conflictTags: []
   _modifiers: []

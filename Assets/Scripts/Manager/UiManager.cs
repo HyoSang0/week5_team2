@@ -1,60 +1,84 @@
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+using TMPro;
+
 public class UiManager : MonoBehaviour
 {
-    
     [Header("HUD")]
-    [SerializeField] Slider hpSlider;
-    [SerializeField] Slider aeSlider;
-    [SerializeField] Slider deSlider;
+    [SerializeField] private Slider hpSlider;
+    // [SerializeField] private Slider aeSlider;
+    // [SerializeField] private Slider deSlider;
 
     [Header("Text")]
-    [SerializeField] TextMeshProUGUI hpText;
-    [SerializeField] TextMeshProUGUI aeText;
-    [SerializeField] TextMeshProUGUI deText;
-    
+    [SerializeField] private TextMeshProUGUI hpText;
+    // [SerializeField] private TextMeshProUGUI aeText;
+    // [SerializeField] private TextMeshProUGUI deText;
+
+    [Header("HP Follow")]
+    [SerializeField] private Vector2 _hpScreenOffset = new Vector2(0f, -50f);
+    private RectTransform _hpUiRoot;
+    private RectTransform _canvasRect;
+    private Camera _mainCamera;
 
     [Header("Reference")]
     public PlayerHp pHp;
-    public AbsortionAbility_Sejin absorb;
-    public RushAbility_Sejin rush;
+    // public AbsortionAbility_Sejin absorb;
+    // public RushAbility_Sejin rush;
 
-    float tempTimer = 0;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    
+    private float tempTimer = 0f;
+
     void Awake()
     {
+        _hpUiRoot = hpSlider.transform.parent.GetComponent<RectTransform>();
+        _canvasRect = _hpUiRoot
+            .GetComponentInParent<Canvas>()
+            .rootCanvas
+            .GetComponent<RectTransform>();
+        _mainCamera = Camera.main;
+
         UpdateHud();
     }
 
-    
-    void UpdateHud()
+    // 플레이어 HP를 읽어 HP 텍스트와 슬라이더에 반영한다.
+    // pHp의 현재 HP와 최대 HP를 사용하며 UI 표시 값을 변경한다.
+    private void UpdateHud()
     {
         hpText.text = string.Format("HP : {0:F0} / {1}", pHp.playerHP, pHp.maxPlayerHP);
-        aeText.text = string.Format("AE : {0:F0} / 30", absorb.stamina);
-        deText.text = string.Format("DE : {0:F0} / 30", rush.energy);
         hpSlider.value = (float)pHp.playerHP / pHp.maxPlayerHP;
-        aeSlider.value = absorb.stamina / absorb.maxStamina;
-        deSlider.value = rush.energy / rush.maxEnergy;
+
+        // aeText.text = string.Format("AE : {0:F0} / 30", absorb.stamina);
+        // deText.text = string.Format("DE : {0:F0} / 30", rush.energy);
+        // aeSlider.value = absorb.stamina / absorb.maxStamina;
+        // deSlider.value = rush.energy / rush.maxEnergy;
     }
 
     void Start()
     {
-        
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateHud();
+
         tempTimer += Time.deltaTime;
-        if(tempTimer > 2)
+        if (tempTimer > 2f)
         {
-            tempTimer = 0;
+            tempTimer = 0f;
             // Debug.Log(pHp.playerHP + " / " + pHp.maxPlayerHP);
         }
+    }
+
+    void LateUpdate()
+    {
+        Vector3 screenPosition = _mainCamera.WorldToScreenPoint(pHp.transform.position);
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvasRect,
+            (Vector2)screenPosition,
+            null,
+            out Vector2 localPosition);
+
+        _hpUiRoot.anchoredPosition = localPosition + _hpScreenOffset;
     }
 }

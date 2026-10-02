@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: glass_cannon
   _displayName: "\uC720\uB9AC \uB300\uD3EC"
-  _description: "\uB3CC\uC9C4 \uC18D\uB3C4 +50%, \uB3CC\uC9C4 \uC18C\uBAA8 -100%,
-    \uCD5C\uB300 \uCCB4\uB825 -100% (\uCCB4\uB825 \uAD00\uB828 \uC99D\uAC15\uACFC
+  _description: "\uB3CC\uC9C4 \uC18D\uB3C4 +50%, \uB3CC\uC9C4 \uB300\uAE30 \uC2DC\uAC04
+    -50%, \uCD5C\uB300 \uCCB4\uB825 -100% (\uCCB4\uB825 \uAD00\uB828 \uC99D\uAC15\uACFC
     \uCDA9\uB3CC)"
   _tier: 2
   _conflictTags:
@@ -24,8 +24,8 @@ MonoBehaviour:
   - _stat: 8
     _percent: 50
     _flat: 0
-  - _stat: 5
-    _percent: -100
+  - _stat: 6
+    _percent: -50
     _flat: 0
   - _stat: 1
     _percent: -100

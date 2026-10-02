@@ -15,9 +15,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
     [SerializeField] private float area_radus_max = 8f, area_radus_min = 4f;
     private float area_radus;
-    // 증강 스탯 재계산에 사용할 반지름 기준값들
+    // 증강 스탯 재계산에 사용할 기준값들
     private float _baseAreaRadiusMin;
     private float _baseAreaRadiusMax;
+    private float _baseSpeed;
     private Vector3 originScale;
     [SerializeField]
     private float speed;
@@ -39,11 +40,12 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
         _baseAreaRadiusMin = area_radus_min;
         _baseAreaRadiusMax = area_radus_max;
+        _baseSpeed = speed;
     }
 
     /// <summary>
-    /// PlayerStats의 AbsorbRadius 증강을 기준값에 적용해 area_radus_min, area_radus_max를 재계산한다.
-    /// 두 값 모두 같은 스탯의 배율로 적용한다. PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// PlayerStats의 AbsorbRadius, AbsorbGrowSpeed 증강을 기준값에 적용해 area_radus_min, area_radus_max, speed를 재계산한다.
+    /// 반지름 두 값은 같은 스탯의 배율로 적용한다. PlayerStats.Instance가 없으면 아무것도 하지 않는다.
     /// </summary>
     private void ApplyAugmentStats()
     {
@@ -54,6 +56,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
 
         area_radus_min = PlayerStats.Instance.Apply(StatType.AbsorbRadius, _baseAreaRadiusMin);
         area_radus_max = PlayerStats.Instance.Apply(StatType.AbsorbRadius, _baseAreaRadiusMax);
+        speed = PlayerStats.Instance.Apply(StatType.AbsorbGrowSpeed, _baseSpeed);
     }
 
 

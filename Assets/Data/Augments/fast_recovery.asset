@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: fast_recovery
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: fast_recovery
-  _displayName: "\uBE60\uB978 \uD68C\uBCF5"
-  _description: "\uC2A4\uD0DC\uBBF8\uB098 \uD68C\uBCF5 \uC18D\uB3C4 +50%"
+  _displayName: "\uAE34 \uB3CC\uC9C4"
+  _description: "\uB3CC\uC9C4 \uC9C0\uC18D\uC2DC\uAC04 +30%"
   _tier: 1
   _conflictTags: []
   _modifiers:
   - _stat: 3
-    _percent: 50
+    _percent: 30
     _flat: 0
   _effect: {fileID: 0}

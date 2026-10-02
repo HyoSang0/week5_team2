@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: long_breath
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: long_breath
-  _displayName: "\uAE34 \uD638\uD761"
-  _description: "\uCD5C\uB300 \uC2A4\uD0DC\uBBF8\uB098 +20%"
+  _displayName: "\uBE60\uB978 \uD655\uC7A5"
+  _description: "\uD761\uC218 \uC601\uC5ED \uD655\uC7A5 \uC18D\uB3C4 +25%"
   _tier: 0
   _conflictTags: []
   _modifiers:
   - _stat: 2
-    _percent: 20
+    _percent: 25
     _flat: 0
   _effect: {fileID: 0}

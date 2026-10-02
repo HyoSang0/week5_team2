@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: feast
   _displayName: "\uD3EC\uC2DD"
-  _description: "\uC801 \uD761\uC218 \uC2DC \uB3CC\uC9C4 \uC5D0\uB108\uC9C0 +3."
+  _description: "\uD761\uC218\uD560 \uB54C\uB9C8\uB2E4 \uB3CC\uC9C4 \uCFE8\uD0C0\uC784
+    0.3\uCD08 \uAC10\uC18C"
   _tier: 1
   _conflictTags: []
   _modifiers: []

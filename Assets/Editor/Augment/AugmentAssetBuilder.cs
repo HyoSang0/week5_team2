@@ -151,9 +151,9 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "long_breath", DisplayName = "긴 호흡", Description = "최대 스태미나 +20%",
+                Id = "long_breath", DisplayName = "빠른 확장", Description = "흡수 영역 확장 속도 +25%",
                 Tier = AugmentTier.Silver,
-                Modifiers = new[] { new StatModifier(StatType.MaxStamina, 20f, 0f) },
+                Modifiers = new[] { new StatModifier(StatType.AbsorbGrowSpeed, 25f, 0f) },
             },
             new AugmentDefinition
             {
@@ -175,15 +175,15 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "fast_recovery", DisplayName = "빠른 회복", Description = "스태미나 회복 속도 +50%",
+                Id = "fast_recovery", DisplayName = "긴 돌진", Description = "돌진 지속시간 +30%",
                 Tier = AugmentTier.Gold,
-                Modifiers = new[] { new StatModifier(StatType.StaminaRegen, 50f, 0f) },
+                Modifiers = new[] { new StatModifier(StatType.RushDuration, 30f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "efficiency", DisplayName = "연비", Description = "돌진 스태미나 소모 -30%",
+                Id = "efficiency", DisplayName = "재정비", Description = "돌진 대기 시간 -30%",
                 Tier = AugmentTier.Gold,
-                Modifiers = new[] { new StatModifier(StatType.RushCost, -30f, 0f) },
+                Modifiers = new[] { new StatModifier(StatType.RushCooldown, -30f, 0f) },
             },
             new AugmentDefinition
             {
@@ -205,7 +205,7 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "feast", DisplayName = "포식", Description = "적 흡수 시 돌진 에너지 +3.",
+                Id = "feast", DisplayName = "포식", Description = "흡수할 때마다 돌진 쿨타임 0.3초 감소",
                 Tier = AugmentTier.Gold,
             },
             new AugmentDefinition
@@ -225,18 +225,18 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "glass_cannon", DisplayName = "유리 대포", Description = "돌진 속도 +50%, 돌진 소모 -100%, 최대 체력 -100% (체력 관련 증강과 충돌)",
+                Id = "glass_cannon", DisplayName = "유리 대포", Description = "돌진 속도 +50%, 돌진 대기 시간 -50%, 최대 체력 -100% (체력 관련 증강과 충돌)",
                 Tier = AugmentTier.Prismatic, ConflictTags = new[] { "MaxHp" },
                 Modifiers = new[]
                 {
                     new StatModifier(StatType.RushSpeed, 50f, 0f),
-                    new StatModifier(StatType.RushCost, -100f, 0f),
+                    new StatModifier(StatType.RushCooldown, -50f, 0f),
                     new StatModifier(StatType.MaxHp, -100f, 0f),
                 },
             },
             new AugmentDefinition
             {
-                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "적 처치 시 스태미나 +5.",
+                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "처치할 때마다 돌진 쿨타임 0.2초 감소",
                 Tier = AugmentTier.Prismatic,
             },
             new AugmentDefinition
@@ -378,11 +378,11 @@ public static class AugmentAssetBuilder
         EnsureFolder(DATA_FOLDER, "Effects");
 
         LinkEffect("feast", EnsureEffect<FeastEffect>("FeastEffect", effectFolder),
-            "적 흡수 시 돌진 에너지 +3.");
+            "흡수할 때마다 돌진 쿨타임 0.3초 감소");
         LinkEffect("chain_heal", EnsureEffect<ChainHealEffect>("ChainHealEffect", effectFolder),
             "돌진 중 처치한 적이 5번째가 되면 HP 1회복.");
         LinkEffect("energy_cycle", EnsureEffect<EnergyCycleEffect>("EnergyCycleEffect", effectFolder),
-            "적 처치 시 스태미나 +5.");
+            "처치할 때마다 돌진 쿨타임 0.2초 감소");
         LinkEffect("chain_explosion", EnsureEffect<ChainExplosionEffect>("ChainExplosionEffect", effectFolder),
             "적 처치 시 반지름 2m 내 다른 적도 처치.");
         LinkEffect("bomb_collector", EnsureEffect<BombCollectorEffect>("BombCollectorEffect", effectFolder),

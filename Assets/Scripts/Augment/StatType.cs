@@ -2,10 +2,10 @@ public enum StatType
 {
     MoveSpeed,
     MaxHp,
-    MaxStamina,
-    StaminaRegen,
+    AbsorbGrowSpeed,
+    RushDuration,
     AbsorbRadius,
-    RushCost,
+    AbsorbCooldown,
     RushCooldown,
     RushInvincible,
     RushSpeed,
