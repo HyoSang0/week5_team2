@@ -361,14 +361,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UiManager
   hpSlider: {fileID: 1499864070}
-  aeSlider: {fileID: 1901769464}
-  deSlider: {fileID: 166403952}
   hpText: {fileID: 1497688160}
-  aeText: {fileID: 389869341}
-  deText: {fileID: 300886363}
+  _hpScreenOffset: {x: 0, y: -50}
   pHp: {fileID: 1030247235}
-  absorb: {fileID: 1030247239}
-  rush: {fileID: 1030247238}
 --- !u!4 &37214259
 Transform:
   m_ObjectHideFlags: 0
@@ -417,7 +412,7 @@ RectTransform:
   m_Father: {fileID: 1353694459}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.6, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -679,7 +674,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &166403951
 RectTransform:
   m_ObjectHideFlags: 0
@@ -697,10 +692,10 @@ RectTransform:
   - {fileID: 300886361}
   m_Father: {fileID: 587388437}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 100, y: -51.25}
+  m_SizeDelta: {x: 200, y: 27.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &166403952
 MonoBehaviour:
@@ -2059,10 +2054,10 @@ RectTransform:
   - {fileID: 166403951}
   m_Father: {fileID: 612590441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 65}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 20}
+  m_SizeDelta: {x: 50, y: 15}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &587388438
 MonoBehaviour:
@@ -3694,11 +3689,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a8d7f181db3c34abbffc43c7493113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RushAbility_Sejin
-  dashEnergyText: {fileID: 199724001}
-  energy: 0
-  earnEnergy: 5
-  consumeEnergy: 10
-  maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
   noDamageTime: 0.7
@@ -3786,13 +3776,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  absortEnergyText: {fileID: 668412447}
   AbsortionArea: {fileID: 1180328029}
-  stamina: 30
-  remainingStamina: 10
-  regenStamina: 10
-  maxStamina: 30
-  activateStamina: 0
+  _cooldownSeconds: 0
   isStartAbsortion: 0
 --- !u!114 &1030247240
 MonoBehaviour:
@@ -4176,7 +4161,7 @@ RectTransform:
   m_Father: {fileID: 2069752334}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.3, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4585,8 +4570,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 7
+  m_fontSizeBase: 7
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5424,7 +5409,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1901769463
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5442,10 +5427,10 @@ RectTransform:
   - {fileID: 389869339}
   m_Father: {fileID: 587388437}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 100, y: -32.5}
+  m_SizeDelta: {x: 200, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1901769464
 MonoBehaviour:
