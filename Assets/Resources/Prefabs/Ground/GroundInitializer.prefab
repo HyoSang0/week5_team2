@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d98ab08ff15dfe42a30630a79214f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GroundInitializer
-  cube: {fileID: 767684835233209064, guid: 8da4dfda776f8724a939f1e6c5f72fcf, type: 3}
+  _surfaceHeight: -0.9
+  _tileParent: {fileID: 0}
+  cube: {fileID: 3759012054756073129, guid: 6dcc09338f5dee64898005887c757031, type: 3}
   NavObstacle: {fileID: 790835460853843508, guid: 564b54bee03ec1e40a3582f4d87082e3, type: 3}
   radius: 15
   cubeSize: 0.2

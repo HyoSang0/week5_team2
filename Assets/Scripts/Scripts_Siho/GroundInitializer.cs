@@ -1,10 +1,16 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using System.Collections;
+
+using UnityEngine;
 
 public class GroundInitializer : MonoBehaviour
 {
+    [Header("Inspector Settings")]
+    // 타일 면이 놓일 월드 높이
+    [SerializeField] private float _surfaceHeight = -0.9f;
+
+    // 타일들을 정리할 부모, 비어 있으면 Start에서 자동 생성
+    [SerializeField] private Transform _tileParent;
+
     public GameObject cube;
     public GameObject NavObstacle;
 
@@ -19,11 +25,36 @@ public class GroundInitializer : MonoBehaviour
 
     // 격자 좌표별 Cube 저장
     private Dictionary<Vector2Int, GameObject> cubes = new Dictionary<Vector2Int, GameObject>();
+
     void Start()
     {
+        ResolveTileParent();
         CreateCircle();
     }
-    void CreateCircle()
+
+    /// <summary>
+    /// 타일 부모가 할당되어 있지 않으면 GroundInitializer의 자식으로
+    /// "GroundTiles" GameObject를 만들어 _tileParent에 저장하고 반환한다.
+    /// </summary>
+    private Transform ResolveTileParent()
+    {
+        if (_tileParent != null)
+        {
+            return _tileParent;
+        }
+
+        GameObject tileRoot = new GameObject("GroundTiles");
+        tileRoot.transform.SetParent(transform, false);
+        _tileParent = tileRoot.transform;
+
+        return _tileParent;
+    }
+
+    /// <summary>
+    /// radius와 cubeSize 격자로 원 영역 안의 타일을 _surfaceHeight 높이에
+    /// _tileParent 자식으로 생성하고 cubes 딕셔너리에 격자 좌표로 저장한다.
+    /// </summary>
+    private void CreateCircle()
     {
         int gridRadius = Mathf.CeilToInt(radius / cubeSize);
 
@@ -38,15 +69,20 @@ public class GroundInitializer : MonoBehaviour
 
                 if (distanceSquared <= radius * radius)
                 {
-                    Vector3 position = new Vector3(worldX, -1f, worldZ);
+                    Vector3 position = new Vector3(worldX, _surfaceHeight, worldZ);
 
-                    GameObject obj = Instantiate(cube, position, Quaternion.identity);
+                    GameObject obj = Instantiate(cube, position, cube.transform.rotation, _tileParent);
 
                     cubes.Add(new Vector2Int(x, z), obj);
                 }
             }
         }
     }
+
+    /// <summary>
+    /// centerX, centerZ 중심으로 effectRadius 범위의 타일에 10초 붕괴를 요구하고
+    /// 자리에 NavObstacle를 생성해 10초 후 제거한다.
+    /// </summary>
     public void DisableWave1(
         float centerX,
         float centerZ,
