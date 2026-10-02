@@ -1,16 +1,17 @@
 using System.Collections;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class RushAbility_Sejin : MonoBehaviour
 {
-    public TextMeshProUGUI dashEnergyText;
-    public float energy = 0.0f;
-    public float earnEnergy = 5.0f;
-    public float consumeEnergy = 10.0f;
-    public float maxEnergy = 30.0f;
+    // public TextMeshProUGUI dashEnergyText;
+    // public float energy = 0.0f;
+    // public float earnEnergy = 5.0f;
+    // public float consumeEnergy = 10.0f;
+    // public float maxEnergy = 30.0f;
+
     public float rushSpeed = 50.0f;
     public float duringTime = 0.2f;
     public float noDamageTime = 0.7f;
@@ -35,7 +36,7 @@ public class RushAbility_Sejin : MonoBehaviour
 
     void Awake()
     {
-        energy = 0.0f;
+        // energy = 0.0f;
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
@@ -58,65 +59,73 @@ public class RushAbility_Sejin : MonoBehaviour
         inputActions.Player.Attack.started += StartRush;
     }
 
+    // 공격 입력을 받으면 사용 가능 여부를 확인하고 드롭킥을 시작한다.
+    // ctx는 입력 이벤트이며 드롭킥 상태와 플레이어 무적시간을 변경한다.
     private void StartRush(InputAction.CallbackContext ctx)
     {
         if (CanDash())
         {
             onStartRush.Invoke();
             isRushing = true;
+
             if (dashRoutine != null)
             {
                 StopCoroutine(dashRoutine);
             }
-            dashRoutine = StartCoroutine(Dash_Move());
 
+            dashRoutine = StartCoroutine(Dash_Move());
             playerHp.UpdateUnBeatTime(noDamageTime);
         }
     }
 
+    // 플레이어를 전진시킨 뒤 공격 지속시간과 쿨타임을 순서대로 처리한다.
+    // duringTime과 coolTime을 사용하며 이동 및 isDashing 상태를 변경한다.
     private IEnumerator Dash_Move()
     {
         isDashing = true;
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
         Debug.Log("No Damage Start");
+
         yield return new WaitForSeconds(duringTime);
+
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = true;
         onEndRush.Invoke();
         isRushing = false;
+
         yield return new WaitForSeconds(coolTime);
+
         isDashing = false;
     }
 
-    // Rush 기능을 사용 가능한 Energy 관리 체계
-
-    // Energy 소모 함수 & 대쉬 가능 여부 반환 
+    // 진행 중인 드롭킥과 쿨타임 상태를 확인한다.
+    // isDashing을 사용하며 새로운 드롭킥의 사용 가능 여부를 반환한다.
     public bool CanDash()
     {
-        if (energy < consumeEnergy || isDashing) return false;
+        // if (energy < consumeEnergy || isDashing) return false;
+        // energy -= consumeEnergy;
+        // RefreshUI();
 
-        energy -= consumeEnergy;
-        RefreshUI();
-
-        return true;
+        return !isDashing;
     }
 
-    // Energy 충전 이벤트 수신
+    // 씬에 남아 있는 흡수 도착 이벤트를 수신한다.
+    // 입력과 반환값은 없으며 자원 상태를 변경하지 않는다.
     public void RegenEnergy()
     {
-        energy += earnEnergy;
-        if (energy > maxEnergy)
-        {
-            energy = maxEnergy;
-        }
-        RefreshUI();
+        // energy += earnEnergy;
+        // if (energy > maxEnergy)
+        // {
+        //     energy = maxEnergy;
+        // }
+        // RefreshUI();
     }
 
-    private void RefreshUI()
-    {
-        dashEnergyText.text = $"Energy : {energy}";
-    }
+    // private void RefreshUI()
+    // {
+    //     dashEnergyText.text = $"Energy : {energy}";
+    // }
 
     private void OnCollisionEnter(Collision collision)
     {
