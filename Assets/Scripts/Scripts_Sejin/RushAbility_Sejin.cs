@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class RushAbility_Sejin : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class RushAbility_Sejin : MonoBehaviour
     private InputSystem_Actions inputActions;
     private PlayerController playerController;
     private PlayerHp playerHp;
+    private GameObject dashReadyEffect;
+    [SerializeField] private Image coolDownImage;
 
     public UnityEvent onStartRush;
     public UnityEvent onEndRush;
@@ -40,6 +43,8 @@ public class RushAbility_Sejin : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
+        dashReadyEffect = FindFirstObjectByType<DashReadyEffect>().gameObject;
+        coolDownImage = GameObject.Find("Fill").GetComponent<Image>();
     }
 
     void OnEnable()
@@ -77,6 +82,7 @@ public class RushAbility_Sejin : MonoBehaviour
     private IEnumerator Dash_Move()
     {
         isDashing = true;
+        dashReadyEffect.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
         Debug.Log("No Damage Start");
@@ -85,7 +91,16 @@ public class RushAbility_Sejin : MonoBehaviour
         rb.useGravity = true;
         onEndRush.Invoke();
         isRushing = false;
-        yield return new WaitForSeconds(coolTime);
+        float timeElapsed = 0f;
+        while (timeElapsed < coolTime)
+        {
+            coolDownImage.fillAmount = timeElapsed / coolTime;
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        coolDownImage.fillAmount = 1;
+        dashReadyEffect.transform.position = transform.position;
+        dashReadyEffect.SetActive(true);
         isDashing = false;
     }
 
@@ -94,10 +109,10 @@ public class RushAbility_Sejin : MonoBehaviour
     // Energy 소모 함수 & 대쉬 가능 여부 반환 
     public bool CanDash()
     {
-        if (energy < consumeEnergy || isDashing) return false;
-
-        energy -= consumeEnergy;
-        RefreshUI();
+        if (isDashing) return false;
+        // if (energy < consumeEnergy || isDashing) return false;
+        // energy -= consumeEnergy;
+        // RefreshUI();
 
         return true;
     }
