@@ -8,7 +8,6 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerHp : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI hpText;
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     [SerializeField] private Volume volume;
@@ -21,12 +20,12 @@ public class PlayerHp : MonoBehaviour
     [Header("플레이어 무적 상태 표시 관련")]
     public bool isUnBeatHit = false;
     public bool isUnBeatDash = false;
-    public float endUnBeatTimeHit = 0;
-    private float currentTimeHit = 0;
     [Tooltip("피격용 무적 코루틴")]
     public Coroutine unbeatRoutineHit;
     [Tooltip("대쉬용 무적 코루틴")]
     public Coroutine unbeatRoutineDash;
+    private float _extraDashUnbeatTime = 0.0f;          //중강에서 사용할 돌진 종료 후 추가 무적 시간
+    private float _dashUnbeatCoyoteTime = 0.2f;         //조작감 향상을 위한 돌진 무적 이펙트 종료 후 추가 무적 시간
     [SerializeField] MeshRenderer playerMeshRenderer;
     [Tooltip("플레이어가 무적 상태일 때 적용할 머티리얼 (0: 기본, 1: 피격 무적)")]
     public List<Material> playerMaterials = new List<Material>();
@@ -46,8 +45,6 @@ public class PlayerHp : MonoBehaviour
     {
         dashShield.SetActive(false);
         rb = GetComponent<Rigidbody>();
-        hpText.text = playerHP + " / " + maxPlayerHP;
-
         // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
         if (PlayerStats.Instance != null)
         {
@@ -107,8 +104,6 @@ public class PlayerHp : MonoBehaviour
         }
         maxPlayerHP = newMax;
         playerHP = Mathf.Min(playerHP, maxPlayerHP);
-
-        hpText.text = playerHP + " / " + maxPlayerHP;
         UpdateHpInfoToOthers();
     }
 
@@ -161,6 +156,7 @@ public class PlayerHp : MonoBehaviour
 
     /// <summary>
     /// 대쉬 무적 활성화 함수 (외부)
+    /// 기본적으로 대쉬 종료 후 이펙트 꺼진 상태로 0.2초 추가 무적 적용
     /// </summary>
     /// <param name="time">지속 시간(초)</param>
     public void ApplyDashInvincibility(float time)
@@ -179,13 +175,11 @@ public class PlayerHp : MonoBehaviour
     {
         //무적 상태 이펙트 보여주기(블링크)
         playerMeshRenderer.material = playerMaterials[1];
-        currentTimeHit = 0f;
-        while (currentTimeHit < sec)
-        {
-            currentTimeHit += Time.deltaTime;
-            yield return null;
-        }
-        //피격 Vignette 끄기 
+
+        //무적 상태 유지
+        yield return new WaitForSeconds(sec);
+
+        //피격 피드벡 모두 끄기
         SetVignetteIntensity(0.0f);
         playerMeshRenderer.material = playerMaterials[0];
 
@@ -202,13 +196,15 @@ public class PlayerHp : MonoBehaviour
     {
         //무적 상태 이펙트 보여주기 (쉴드)
         dashShield.SetActive(true);
+        //돌진 동안 무적
         yield return new WaitForSeconds(sec);
-        dashShield.SetActive(false);
 
-        //playerMeshRenderer.material = playerMaterials[1];   //확인용
-        //추가 무적 시간 주기 (코요테 타임)
-        yield return new WaitForSeconds(0.2f);
-        //playerMeshRenderer.material = playerMaterials[0];   //확인용
+        //돌진 종료 후 추가 무적
+        dashShield.SetActive(false);
+        yield return new WaitForSeconds(_extraDashUnbeatTime);
+
+        //추가 무적 (코요테 타임)
+        yield return new WaitForSeconds(_dashUnbeatCoyoteTime);
 
         //무적 해제
         isUnBeatDash = false;
