@@ -5423,6 +5423,7 @@ Transform:
   - {fileID: 9140904133960877488}
   - {fileID: 421563013162709474}
   - {fileID: 8739764470895523138}
+  - {fileID: 594814599571875712}
   - {fileID: 6364358992436344053}
   - {fileID: 3455553343078403263}
   - {fileID: 4041396969903322892}
@@ -5505,13 +5506,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  absortEnergyText: {fileID: 0}
   AbsortionArea: {fileID: 596759505409058145}
-  stamina: 30
-  remainingStamina: 10
-  regenStamina: 10
-  maxStamina: 30
-  activateStamina: 0
+  _cooldownSeconds: 0
   isStartAbsortion: 0
 --- !u!114 &7124579886636666819
 MonoBehaviour:
@@ -5525,11 +5521,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a8d7f181db3c34abbffc43c7493113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RushAbility_Sejin
-  dashEnergyText: {fileID: 0}
-  energy: 0
-  earnEnergy: 5
-  consumeEnergy: 10
-  maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
   noDamageTime: 0.7
@@ -5645,15 +5636,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dffec0b3c63741b45a7e7d4ace62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHp
-  hpText: {fileID: 0}
   gameManager: {fileID: 0}
   volume: {fileID: 0}
   darkVignette: {fileID: 0}
   attackedVignetteIntensity: 0.45
-  isUnBeat: 0
   playerHP: 5
   maxPlayerHP: 5
-  endUnBeatTime: 0
+  isUnBeatHit: 0
+  isUnBeatDash: 0
+  endUnBeatTimeHit: 0
   playerMeshRenderer: {fileID: 4175106658480865747}
   playerMaterials:
   - {fileID: 2100000, guid: f2c7c0f534198bd40a588ff6c31c6a0d, type: 2}
@@ -6052,6 +6043,109 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &6195427092504531666
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 594814599571875712}
+  - component: {fileID: 1398793984385832394}
+  - component: {fileID: 4044305843807153311}
+  - component: {fileID: 6954179009873368617}
+  m_Layer: 0
+  m_Name: PlayerDirectionIndicator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &594814599571875712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6195427092504531666}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8941100268318639797}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
+--- !u!33 &1398793984385832394
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6195427092504531666}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &4044305843807153311
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6195427092504531666}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: b18d47b8e76398245a8060e308f58603, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6954179009873368617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6195427092504531666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1dc237eca8ed4e45a96f9f109d0c853, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DrawTriangle
 --- !u!1 &6795692395077801279
 GameObject:
   m_ObjectHideFlags: 0
@@ -6181,6 +6275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
   lightBallPrefab: {fileID: 9196570881659283892, guid: 25f40ae7d936a4f4d93055f547b6eb2d, type: 3}
+  _uiWorldMarker: {fileID: 0}
   onGatherEnergy:
     m_PersistentCalls:
       m_Calls:
@@ -6200,10 +6295,8 @@ MonoBehaviour:
   absorbTime: 0.5
   area_radus_max: 8
   area_radus_min: 1
-  _uiWorldMarker: {fileID: 0}
-  speed: 3
+  speed: 6
   outline: {fileID: 3607054251552163685}
-  warningTime: 3
   segments: 64
   outlineWidth: 0.08
 --- !u!120 &3607054251552163685
@@ -7394,7 +7487,7 @@ PrefabInstance:
     - target: {fileID: 2190803599902843497, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bf03facb4e01ce8459c5c078e9d32a9a, type: 2}
+      objectReference: {fileID: 2100000, guid: 5f682c5c11795cf48a836e984f0f28fc, type: 2}
     - target: {fileID: 3029703676473542527, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7435,6 +7528,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5924071916977891318, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7793309768310112218, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -7442,6 +7539,10 @@ PrefabInstance:
     - target: {fileID: 8701613611918519738, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
       propertyPath: m_Name
       value: DashReadyEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 8701613611918519738, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8716008850283544519, guid: 14b6c6ea86d96064c9c49386c8a356af, type: 3}

@@ -1482,25 +1482,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2262224846624959413, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2586242548174326396, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: speed
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 5011029444806417265, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: m_Name
       value: Player (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995643237357465130, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 5f682c5c11795cf48a836e984f0f28fc, type: 2}
-    - target: {fileID: 7029047964927073717, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: hpText
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7029047964927073717, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: volume
@@ -1555,7 +1539,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3860102734752145913, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}

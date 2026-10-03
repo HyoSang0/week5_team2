@@ -26,7 +26,9 @@ public class RushAbility_Sejin : MonoBehaviour
     private InputSystem_Actions inputActions;
     private PlayerController playerController;
     private PlayerHp playerHp;
-    private GameObject dashReadyEffect;
+
+    private GameObject dashReadyEffectPrefab;
+    private GameObject dashReadyEffectObject;
     private Image coolDownImage;
 
     public UnityEvent onStartRush;
@@ -60,6 +62,9 @@ public class RushAbility_Sejin : MonoBehaviour
         _baseNoDamageTime = noDamageTime;
         _baseRushSpeed = rushSpeed;
         coolDownImage = GameObject.Find("Fill").GetComponent<Image>();
+
+        dashReadyEffectPrefab = Resources.Load<GameObject>("Prefabs/DashReadyEffect");
+        dashReadyEffectObject = Instantiate(dashReadyEffectPrefab, transform.position, Quaternion.identity);
     }
 
     void OnEnable()
@@ -145,7 +150,7 @@ public class RushAbility_Sejin : MonoBehaviour
         isDashing = true;
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
-        // dashReadyEffect.SetActive(false);
+        dashReadyEffectObject.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
         Debug.Log("No Damage Start");
@@ -169,7 +174,7 @@ public class RushAbility_Sejin : MonoBehaviour
         _pendingCooldownReduction = 0f;
         coolDownImage.fillAmount = 1;
         // dashReadyEffect.transform.position = transform.position;
-        // dashReadyEffect.SetActive(true);
+        dashReadyEffectObject.SetActive(true);
         isDashing = false;
     }
 
