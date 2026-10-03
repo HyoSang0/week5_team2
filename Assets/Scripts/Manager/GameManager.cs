@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     [Header("Text")]
     [SerializeField] TextMeshProUGUI timeText;
-    [SerializeField] TextMeshProUGUI hpText;
     [SerializeField] TextMeshProUGUI gameOverText;
     [SerializeField] TextMeshProUGUI scoreText;
 
@@ -38,7 +37,6 @@ public class GameManager : MonoBehaviour
     {
         // gameOverText.gameObject.SetActive(false);
         gameOverGroup.SetActive(false);
-        hpText.text = "5 / 5";
         timeLimit = 60;
         StartCoroutine(StartTimer(timeLimit));
     }
@@ -70,12 +68,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    // UI는 한 곳에서 관리하는 것이 좋음
-    public void PlayerAttackedUI(int hp)
-    {
-        hpText.text = hp + " / 5";
-    }
-
     // 게임 시간
     IEnumerator StartTimer(float time)
     {
@@ -98,8 +90,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    /// <summary>
+    /// newScore에 PlayerStats의 ScoreMultiplier 증강을 적용한 값을 score에 더한다.
+    /// PlayerStats.Instance가 없으면 newScore를 그대로 더한다. 변경된 score를 반환하지는 않고 score에 저장한다.
+    /// </summary>
     public void AddScore(int newScore)
     {
-        score += newScore;
+        if (PlayerStats.Instance != null)
+        {
+            score += PlayerStats.Instance.ApplyInt(StatType.ScoreMultiplier, newScore);
+        }
+        else
+        {
+            score += newScore;
+        }
     }
 }
