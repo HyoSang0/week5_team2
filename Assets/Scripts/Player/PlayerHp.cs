@@ -24,6 +24,7 @@ public class PlayerHp : MonoBehaviour
     public Coroutine unbeatRoutineHit;
     [Tooltip("대쉬용 무적 코루틴")]
     public Coroutine unbeatRoutineDash;
+    private float _hitInvincibilityUntil;
     private float _extraDashUnbeatTime = 0.0f;          //중강에서 사용할 돌진 종료 후 추가 무적 시간
     private const float _dashUnbeatCoyoteTime = 0.15f;         //조작감 향상을 위한 돌진 무적 이펙트 종료 후 추가 무적 시간
     [SerializeField] MeshRenderer playerMeshRenderer;
@@ -141,14 +142,42 @@ public class PlayerHp : MonoBehaviour
 
     #region 무적 처리 관련
     /// <summary>
-    /// 피격 무적 활성화 함수 (내부)
+    /// time초의 피격 무적을 부여한다.
+    /// 이미 피격 무적이면 현재 종료 시각과 새 종료 시각 중 더 늦은 시각을 유지한다.
     /// </summary>
-    /// <param name="time">지속 시간(초)</param>
     public void ApplyHitInvincibility(float time)
     {
+        if (time <= 0f)
+            return;
+
+        float requestedUntil = Time.time + time;
+
+        if (isUnBeatHit)
+        {
+            _hitInvincibilityUntil = Mathf.Max(_hitInvincibilityUntil, requestedUntil);
+            return;
+        }
+
+        _hitInvincibilityUntil = requestedUntil;
         isUnBeatHit = true;
-        if (unbeatRoutineHit != null) StopCoroutine(unbeatRoutineHit);
-        unbeatRoutineHit = StartCoroutine(UnBeatTimeForHit(time));
+        unbeatRoutineHit = StartCoroutine(UnBeatTimeForHit());
+    }
+
+    /// <summary>
+    /// 저장된 종료 시각까지 피격 무적과 표시 효과를 유지한다.
+    /// _hitInvincibilityUntil을 읽고, 종료 시 무적 상태와 표시 효과를 해제한다.
+    /// </summary>
+    private IEnumerator UnBeatTimeForHit()
+    {
+        playerMeshRenderer.material = playerMaterials[1];
+
+        while (Time.time < _hitInvincibilityUntil)
+            yield return null;
+
+        SetVignetteIntensity(0f);
+        playerMeshRenderer.material = playerMaterials[0];
+        isUnBeatHit = false;
+        unbeatRoutineHit = null;
     }
 
     /// <summary>
@@ -208,6 +237,19 @@ public class PlayerHp : MonoBehaviour
         isUnBeatDash = false;
     }
     /// <summary>
+    /// damage만큼 피해를 시도한다.
+    /// 체력이 없거나 피격·돌진 무적 중이면 false를 반환하고, 피해를 적용하면 true를 반환한다.
+    /// </summary>
+    public bool TryTakeDamage(int damage)
+    {
+        if (playerHP <= 0 || isUnBeatHit || isUnBeatDash)
+            return false;
+
+        PlayerAttacked(damage);
+        return true;
+    }
+
+    /// <summary>
     /// 기본 무적 여부와 관계없이 damage만큼 낙하 피해를 적용한다. 
     /// 생존하면 invicibilitySeconds동안 피격 무적을 부여하고 true를 반환하며,
     /// 이미 사망했거나 피해로 사망하면 false를 반환한다. 
@@ -241,8 +283,8 @@ public class PlayerHp : MonoBehaviour
             //Debug.Log("Player Attacked");
             if (!isUnBeatHit && !isUnBeatDash)
             {
-                PlayerAttacked(1);
-                ApplyHitInvincibility(2f);
+                if (TryTakeDamage(1))
+                    ApplyHitInvincibility(2f);
             }
         }
     }

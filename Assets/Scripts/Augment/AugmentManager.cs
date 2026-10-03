@@ -32,6 +32,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     [SerializeField] private AugmentDatabase _database;
     [SerializeField] private AugmentSelectionView _selectionView;
     [SerializeField] private AugmentHudView _hudView;
+    [SerializeField] private PlayerHp _playerHp;
 
     [Header("Pick Schedule")]
     [SerializeField] private float[] _pickTimes = { 10f, 25f, 40f };
@@ -222,6 +223,8 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         _selectionView.Hide();
         _hudView.AddOwned(data);
         CloseSelection();
+        _playerHp.ApplyHitInvincibility(1f);
+
 
         for (int i = 0; i < CARD_COUNT; i++)
         {

@@ -68,7 +68,7 @@ public class Enemy_NoRush : Enemy
     IEnumerator UnBeatTime()
     {
         isUnBeatNr = true;
-        playerHp.PlayerAttacked(1);
+        playerHp.TryTakeDamage(1);
         yield return new WaitForSeconds(1);
         isUnBeatNr = false;
     }

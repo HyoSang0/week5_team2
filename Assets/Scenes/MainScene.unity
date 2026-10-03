@@ -271,6 +271,7 @@ MonoBehaviour:
   _database: {fileID: 11400000, guid: 9a378e60db9836343944c09fa80a96f6, type: 2}
   _selectionView: {fileID: 2061722554762560301}
   _hudView: {fileID: 3186234514657724730}
+  _playerHp: {fileID: 782649360}
   _pickTimes:
   - 10
   - 25
