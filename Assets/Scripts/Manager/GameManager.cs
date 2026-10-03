@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     [Header("Text")]
     [SerializeField] TextMeshProUGUI timeText;
-    [SerializeField] TextMeshProUGUI hpText;
     [SerializeField] TextMeshProUGUI gameOverText;
     [SerializeField] TextMeshProUGUI scoreText;
 
@@ -38,7 +37,6 @@ public class GameManager : MonoBehaviour
     {
         // gameOverText.gameObject.SetActive(false);
         gameOverGroup.SetActive(false);
-        hpText.text = playerHp.maxPlayerHP + " / " + playerHp.maxPlayerHP;
         timeLimit = 60;
         StartCoroutine(StartTimer(timeLimit));
     }
@@ -68,12 +66,6 @@ public class GameManager : MonoBehaviour
         gameOverText.text = "YOU DIE";
         gameOverText.color = Color.red;
         Time.timeScale = 0;
-    }
-
-    // UI는 한 곳에서 관리하는 것이 좋음
-    public void PlayerAttackedUI(int hp)
-    {
-        hpText.text = hp + " / " + playerHp.maxPlayerHP;
     }
 
     // 게임 시간

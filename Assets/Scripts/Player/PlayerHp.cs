@@ -8,7 +8,6 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerHp : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI hpText;
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     [SerializeField] private Volume volume;
@@ -44,15 +43,6 @@ public class PlayerHp : MonoBehaviour
     {
         dashShield.SetActive(false);
         rb = GetComponent<Rigidbody>();
-        hpText.text = playerHP + " / " + maxPlayerHP;
-
-        // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.Instance.OnStatsChanged += ApplyAugmentStats;
-        }
-
-        ApplyAugmentStats();
 
         volume = FindFirstObjectByType<Volume>();
 
@@ -92,9 +82,6 @@ public class PlayerHp : MonoBehaviour
         }
         maxPlayerHP = newMax;
         playerHP = Mathf.Min(playerHP, maxPlayerHP);
-
-        hpText.text = playerHP + " / " + maxPlayerHP;
-        gameManager.PlayerAttackedUI(playerHP);
     }
 
     /// <summary>
@@ -104,7 +91,6 @@ public class PlayerHp : MonoBehaviour
     public void Heal(int amount)
     {
         playerHP = Mathf.Min(playerHP + amount, maxPlayerHP);
-        gameManager.PlayerAttackedUI(playerHP);
     }
 
     public IEnumerator UnBeatTimeForHit(float sec)
@@ -138,8 +124,6 @@ public class PlayerHp : MonoBehaviour
         darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
         //피격 vignette 처리
         SetVignetteIntensity(attackedVignetteIntensity);
-        // UI 처리
-        gameManager.PlayerAttackedUI(playerHP);
 
         // 사망 처리
         if (playerHP <= 0)
@@ -187,7 +171,6 @@ public class PlayerHp : MonoBehaviour
         if (other.CompareTag("HealPack") && playerHP < maxPlayerHP)
         {
             playerHP += 1;
-            gameManager.PlayerAttackedUI(playerHP);
             Destroy(other.gameObject);
         }
     }
