@@ -38,6 +38,8 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private EnemyPool enemyPool;
 
+    private PlayerFallRecovery fallRecovery;
+
     [Header("증강 스탯 재계산에 사용할 기준값들")]
     /// <summary>
     /// 대쉬 지속 시간
@@ -66,7 +68,7 @@ public class RushAbility_Sejin : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
-
+        fallRecovery = GetComponent<PlayerFallRecovery>();
         _baseDuringTime = duringTime;
         _baseCoolTime = coolTime;
         _baseNoDamageTime = noDamageTime;
@@ -161,17 +163,39 @@ public class RushAbility_Sejin : MonoBehaviour
         isDashing = true;
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
+
         dashReadyEffectObject.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
+
         //Debug.Log("No Damage Start");
         yield return new WaitForSeconds(duringTime);
 
-        //돌진 종료 및 쿨타임 계산
+        FinishRushMovement();
+
+        yield return DashCooldown();
+    }
+
+    /// <summary>
+    /// 현재 돌진 이동을 종료하고 이동 종료 이벤트를 호출한다. 
+    /// Rigidbody의 속도를 초기화하고 중력과 플레이어의 일반 이동 상태를 복구한다. 
+    /// </summary>
+    private void FinishRushMovement()
+    {
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = true;
-        onEndRush.Invoke();
+
         isRushing = false;
+        playerController.EndRush();
+        onEndRush.Invoke();
+    }
+
+    /// <summary>
+    /// coolTime 동안 돌진 쿨타임을 진행하고 준비 표시를 갱신한다. 
+    /// 누적된 감소량을 경과 시간에 반영하며, 완료 시 돌진을 다시 사용할 수 있게 한다. 
+    /// </summary>
+    private IEnumerator DashCooldown()
+    {
         float timeElapsed = 0f;
         _inCooldown = true;
         while (timeElapsed < coolTime)
@@ -187,12 +211,32 @@ public class RushAbility_Sejin : MonoBehaviour
         // dashReadyEffect.transform.position = transform.position;
         dashReadyEffectObject.SetActive(true);
         isDashing = false;
+        dashRoutine = null;
+    }
+
+    /// <summary>
+    /// 낙하 복귀를 위해 진행 중인 돌진 이동을 중단하고 쿨타임을 시작한다. 
+    /// isRushing이 false이면 기존 상태를 유지하며, PlayerHp의 무적 상태는 변경하지 않는다. 
+    /// </summary>
+    public void InterruptRushForFall()
+    {
+        if (!isRushing)
+        {
+            return;
+        }
+        StopCoroutine(dashRoutine);
+        FinishRushMovement();
+        dashRoutine = StartCoroutine(DashCooldown());
     }
 
     // 진행 중인 드롭킥과 쿨타임 상태를 확인한다.
     // isDashing을 사용하며 새로운 드롭킥의 사용 가능 여부를 반환한다.
     public bool CanDash()
     {
+        if (fallRecovery.IsRecovering)
+        {
+            return false;
+        }
         if (isDashing) return false;
         // if (energy < consumeEnergy || isDashing) return false;
         // energy -= consumeEnergy;

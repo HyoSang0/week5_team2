@@ -26,11 +26,13 @@ public class PlayerController : MonoBehaviour
     // 증강 스탯 재계산에 사용할 moveSpeed의 기준값
     private float _baseMoveSpeed;
 
+    private PlayerFallRecovery fallRecovery;
+
     void Awake()
     {
         inputActions = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
-
+        fallRecovery = GetComponent<PlayerFallRecovery>();
         _baseMoveSpeed = moveSpeed;
     }
     void Start()
@@ -83,6 +85,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (fallRecovery.IsRecovering)
+        {
+            return;
+        }
         // Translate 기반 이동
         Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y);
         float speed = 0f;

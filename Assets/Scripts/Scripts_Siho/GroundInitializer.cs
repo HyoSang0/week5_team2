@@ -112,4 +112,69 @@ public class GroundInitializer : MonoBehaviour
         obstacle.GetComponent<DestroyObstacle>().SetRadius(effectRadius);
         Destroy(obstacle, 10f);
     }
+
+    /// <summary>
+    /// origin과 XZ 거리가 가장 가까운 안전한 타일의 윗면 위치를 찾는다. 
+    /// supportRadius로 주변 지지 영역을 검사하며, 성공하면 surfacePosition과 true를 반환한다. 
+    /// 후보가 없으면 surfacePosition은 기본값이고 false를 반환한다. 
+    /// </summary>
+    public bool TryFindRecoverySurface(Vector3 origin, float supportRadius, out Vector3 surfacePosition)
+    {
+        surfacePosition = default;
+
+        float nearestDistanceSquared = float.PositiveInfinity;
+        int supportCells = Mathf.CeilToInt(supportRadius / cubeSize);
+        bool found = false;
+
+        foreach (KeyValuePair<Vector2Int, GameObject> entry in cubes)
+        {
+            Vector3 tilePosition = entry.Value.transform.position;
+            float deltaX = tilePosition.x - origin.x;
+            float deltaZ = tilePosition.z - origin.z;
+            float distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+
+            if (distanceSquared >= nearestDistanceSquared)
+            {
+                continue;
+            }
+
+            if (!HasGroundSupport(entry.Key, supportCells))
+            {
+                continue;
+            }
+            Collider tileCollider = entry.Value.GetComponent<Collider>();
+
+            surfacePosition = new Vector3(tilePosition.x, tileCollider.bounds.max.y, tilePosition.z);
+            nearestDistanceSquared = distanceSquared;
+            found = true;
+        }
+        return found;
+    }
+
+    ///<summary>
+    /// center 주변의 정사각형 지지 영역에 밟을 수 있는 타일이 있는 지 검사한다. 
+    /// supportCells만큼 각 방향을 확인하며, 모든 타일의 Collider가 활성 상태이면 true를 반환한다. 
+    /// </summary>
+    private bool HasGroundSupport(Vector2Int center, int supportCells)
+    {
+        for (int x = -supportCells; x <= supportCells; x++)
+        {
+            for (int z = -supportCells; z <= supportCells; z++)
+            {
+                Vector2Int key = center + new Vector2Int(x, z);
+                if (!cubes.TryGetValue(key, out GameObject tile))
+                {
+                    return false;
+                }
+
+                Collider tileCollider = tile.GetComponent<Collider>();
+                if (!tile.activeInHierarchy || !tileCollider.enabled)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

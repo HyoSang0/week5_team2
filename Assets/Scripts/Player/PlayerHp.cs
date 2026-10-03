@@ -152,7 +152,7 @@ public class PlayerHp : MonoBehaviour
     /// 피격 무적 활성화 함수 (내부)
     /// </summary>
     /// <param name="time">지속 시간(초)</param>
-    void ApplyHitInvincibility(float time)
+    public void ApplyHitInvincibility(float time)
     {
         isUnBeatHit = true;
         if (unbeatRoutineHit != null) StopCoroutine(unbeatRoutineHit);
@@ -190,6 +190,7 @@ public class PlayerHp : MonoBehaviour
 
         //무적 해제
         isUnBeatHit = false;
+        unbeatRoutineHit = null;
     }
 
     /// <summary>
@@ -214,7 +215,28 @@ public class PlayerHp : MonoBehaviour
         //무적 해제
         isUnBeatDash = false;
     }
+    /// <summary>
+    /// 기본 무적 여부와 관계없이 damage만큼 낙하 피해를 적용한다. 
+    /// 생존하면 invicibilitySeconds동안 피격 무적을 부여하고 true를 반환하며,
+    /// 이미 사망했거나 피해로 사망하면 false를 반환한다. 
+    /// </summary>
+    public bool ApplyFallDamage(int damage, float invincibilitySeconds)
+    {
+        if (playerHP <= 0)
+        {
+            return false;
+        }
 
+        PlayerAttacked(damage);
+
+        if (playerHP <= 0)
+        {
+            return false;
+        }
+
+        ApplyHitInvincibility(invincibilitySeconds);
+        return true;
+    }
 
     #endregion
 
