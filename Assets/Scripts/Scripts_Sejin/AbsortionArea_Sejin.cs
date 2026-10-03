@@ -13,7 +13,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
     public float absorbTime;
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 
-    [SerializeField] private float area_radus_max = 8f, area_radus_min = 4f;
+    [SerializeField] private float area_radus_max, area_radus_min;
     private float area_radus;
     // 증강 스탯 재계산에 사용할 기준값들
     private float _baseAreaRadiusMin;
@@ -99,8 +99,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
             return;
 
         Enemy enemy = other.GetComponent<Enemy>();
-        enemy.OnAbsorbTarget(true);
-        enemySet.Add(enemy);
+        if (enemy != null && enemySet.Add(enemy))
+            enemy.OnAbsorbTarget(true);
     }
 
     private void OnTriggerExit(Collider other)
@@ -119,8 +119,18 @@ public class AbsortionArea_Sejin : MonoBehaviour
     /// <param name="enemy"></param>
     private void Absorb(Enemy enemy)
     {
-        if (enemy == null)
+        if (enemy == null || !enemy.gameObject.activeInHierarchy)
             return;
+
+
+        //간헐적으로 새로 스폰된 적 흡수되는 문제 방지
+        float currentWorldRadius = area_radus * originScale.x;
+        float distance = Vector3.Distance(transform.position, enemy.transform.position) + 0.1f;  // 보정값 추가
+        if (distance > currentWorldRadius)
+        {
+            enemy.OnAbsorbTarget(false);
+            return;
+        }
 
         if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy, _uiWorldMarker))
             enemy.OnAbsorbTarget(false);

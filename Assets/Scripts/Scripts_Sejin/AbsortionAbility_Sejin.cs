@@ -17,7 +17,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     // public float activateStamina;
 
     [Header("Cooldown")]
-    [SerializeField, Min(0f)] private float _cooldownSeconds = 0f;
+    [SerializeField, Min(0f)] private float _cooldownSeconds;
     private float _nextAvailableTime;
 
     public bool isStartAbsortion = false;

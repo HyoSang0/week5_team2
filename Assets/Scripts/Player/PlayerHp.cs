@@ -31,7 +31,7 @@ public class PlayerHp : MonoBehaviour
     [Tooltip("대쉬용 무적 코루틴")]
     public Coroutine unbeatRoutineDash;
     private float _extraDashUnbeatTime = 0.0f;          //중강에서 사용할 돌진 종료 후 추가 무적 시간
-    private float _dashUnbeatCoyoteTime = 0.2f;         //조작감 향상을 위한 돌진 무적 이펙트 종료 후 추가 무적 시간
+    private const float _dashUnbeatCoyoteTime = 0.15f;         //조작감 향상을 위한 돌진 무적 이펙트 종료 후 추가 무적 시간
     [SerializeField] MeshRenderer playerMeshRenderer;
     [Tooltip("플레이어가 무적 상태일 때 적용할 머티리얼 (0: 기본, 1: 피격 무적)")]
     public List<Material> playerMaterials = new List<Material>();
