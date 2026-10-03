@@ -5398,6 +5398,7 @@ GameObject:
   - component: {fileID: 8724646819377778419}
   - component: {fileID: 377643710661271175}
   - component: {fileID: 7029047964927073717}
+  - component: {fileID: 2506672283094943893}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -5644,12 +5645,23 @@ MonoBehaviour:
   maxPlayerHP: 5
   isUnBeatHit: 0
   isUnBeatDash: 0
-  endUnBeatTimeHit: 0
   playerMeshRenderer: {fileID: 4175106658480865747}
   playerMaterials:
   - {fileID: 2100000, guid: f2c7c0f534198bd40a588ff6c31c6a0d, type: 2}
   - {fileID: 2100000, guid: dc2ebd94de9126d49baf9bf730a10f74, type: 2}
   dashShield: {fileID: 7646410254502702850}
+--- !u!114 &2506672283094943893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5011029444806417265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c24d50a3d89dce64d861a96527c046d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFallRecovery
 --- !u!1 &5298137482805532922
 GameObject:
   m_ObjectHideFlags: 0
