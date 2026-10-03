@@ -115,6 +115,10 @@ public class PlayerHp : MonoBehaviour
 
     public void PlayerAttacked(int damage)
     {
+        //까시(레고) 피격 방지용
+        if (isUnBeatHit)
+            return;
+
         //플레이어 체력 감소 처리
         playerHP -= damage;
         //피격 vignette 처리
