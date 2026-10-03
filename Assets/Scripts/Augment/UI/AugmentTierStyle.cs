@@ -6,9 +6,8 @@ using UnityEngine;
 /// </summary>
 public static class AugmentTierStyle
 {
-    // 등급별 텍스트 색상(실버 회색 / 골드 노랑 / 프리즘 보라)이다.
+    // 등급별 텍스트 색상(실버 회색 / 프리즘 보라)이다. 골드는 UIPalette.Accent를 사용한다.
     private static readonly Color _silverColor = new Color(0.75f, 0.78f, 0.80f, 1f);
-    private static readonly Color _goldColor = new Color(1f, 0.84f, 0.2f, 1f);
     private static readonly Color _prismaticColor = new Color(0.66f, 0.4f, 1f, 1f);
 
     /// <summary>
@@ -32,7 +31,7 @@ public static class AugmentTierStyle
         switch (tier)
         {
             case AugmentTier.Silver: return _silverColor;
-            case AugmentTier.Gold: return _goldColor;
+            case AugmentTier.Gold: return UIPalette.Accent;
             default: return _prismaticColor;
         }
     }
