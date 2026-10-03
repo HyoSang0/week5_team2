@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -7,7 +6,7 @@ using UnityEngine;
 /// 지정한 시점에 증강 선택 UI를 열고 선택된 증강을 PlayerStats에 적용하는 런타임 관리자.
 /// AugmentSystem 프리팹의 루트에 PlayerStats와 함께 배치한다.
 /// </summary>
-public class AugmentManager : MonoBehaviour
+public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 {
     private const int CARD_COUNT = 3;
 
@@ -31,7 +30,8 @@ public class AugmentManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private AugmentDatabase _database;
-    [SerializeField] private AugmentSelectUI _selectUI;
+    [SerializeField] private AugmentSelectionView _selectionView;
+    [SerializeField] private AugmentHudView _hudView;
 
     [Header("Pick Schedule")]
     [SerializeField] private float[] _pickTimes = { 10f, 25f, 40f };
@@ -48,6 +48,11 @@ public class AugmentManager : MonoBehaviour
     private int _nextPickIndex;
     private int _rerollsLeft;
     private float _savedTimeScale = 1f;
+
+    void Awake()
+    {
+        _selectionView.Bind(this);
+    }
 
     void Start()
     {
@@ -161,7 +166,7 @@ public class AugmentManager : MonoBehaviour
         _savedTimeScale = Time.timeScale;
         Time.timeScale = 0f;
 
-        _selectUI.Show(_currentCards, _rerollsLeft, OnCardPicked, OnCardRerolled);
+        _selectionView.ShowCards(_currentCards, _rerollsLeft);
     }
 
     /// <summary>
@@ -187,10 +192,10 @@ public class AugmentManager : MonoBehaviour
     }
 
     /// <summary>
-    /// index의 카드가 선택됐다는 UI 콜백이다.
+    /// index의 카드가 선택됐다는 UI 입력을 처리한다.
     /// 증강을 owned에 추가하고 PlayerStats에 수정자를 적용한 뒤 UI를 닫고 시간을 복원한다.
     /// </summary>
-    private void OnCardPicked(int index)
+    public void HandlePickClicked(int index)
     {
         if (index < 0 || index >= CARD_COUNT || _currentCards[index] == null)
         {
@@ -214,8 +219,8 @@ public class AugmentManager : MonoBehaviour
             _subscribedEffects.Add(effect);
         }
 
-        _selectUI.Hide();
-        _selectUI.AddOwned(data);
+        _selectionView.Hide();
+        _hudView.AddOwned(data);
         CloseSelection();
 
         for (int i = 0; i < CARD_COUNT; i++)
@@ -228,10 +233,10 @@ public class AugmentManager : MonoBehaviour
     }
 
     /// <summary>
-    /// index의 카드를 리롤한다는 UI 콜백이다.
+    /// index의 카드를 리롤한다는 UI 입력을 처리한다.
     /// 남은 리롤이 있고 해당 카드가 아직 리롤되지 않았으며 대체 후보가 있을 때만 같은 등급에서 1장을 교체하고 횟수를 차감한다.
     /// </summary>
-    private void OnCardRerolled(int index)
+    public void HandleRerollClicked(int index)
     {
         if (index < 0 || index >= CARD_COUNT || _rerollsLeft <= 0 || _cardRerolled[index])
         {
@@ -251,7 +256,7 @@ public class AugmentManager : MonoBehaviour
         _cardRerolled[index] = true;
         _rerollsLeft--;
 
-        _selectUI.ReplaceCard(index, replacement, _rerollsLeft);
+        _selectionView.ReplaceCard(index, replacement, _rerollsLeft);
     }
 
     /// <summary>

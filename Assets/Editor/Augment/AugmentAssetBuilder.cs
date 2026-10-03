@@ -20,6 +20,7 @@ public static class AugmentAssetBuilder
     private const string PREFAB_FOLDER = "Assets/Prefabs/Augment";
     private const string DATABASE_PATH = DATA_FOLDER + "/AugmentDatabase.asset";
     private const string PREFAB_PATH = PREFAB_FOLDER + "/AugmentSystem.prefab";
+    private const string CARD_PREFAB_PATH = PREFAB_FOLDER + "/AugmentCard.prefab";
     private const string FONT_ASSET_PATH = "Assets/Fonts/DOSGothic SDF.asset";
 
     private const float PANEL_DIM_ALPHA = 0.72f;
@@ -62,7 +63,7 @@ public static class AugmentAssetBuilder
     /// <summary>
     /// AugmentSystem 프리팹(루트: AugmentManager+PlayerStats, 자식: 선택 UI Canvas)을
     /// preview 씬에서 조립해 Assets/Prefabs/Augment/AugmentSystem.prefab으로 저장한다.
-    /// 열려 있는 씬은 변경하지 않는다.
+    /// 선택 카드용 AugmentCard 프리팹이 없으면 먼저 생성한다. 열려 있는 씬은 변경하지 않는다.
     /// </summary>
     [MenuItem("Tools/Augment/Build System Prefab")]
     public static void BuildPrefab()
@@ -92,11 +93,13 @@ public static class AugmentAssetBuilder
 
         canvasRect.gameObject.AddComponent<GraphicRaycaster>();
 
-        AugmentSelectUI ui = BuildSelectUI(canvas);
+        AugmentSelectionView selectionView = BuildSelectionView(canvas, EnsureCardPrefab());
+        AugmentHudView hudView = BuildHudView(canvas.transform);
 
         SerializedObject managerSO = new SerializedObject(manager);
         managerSO.FindProperty("_database").objectReferenceValue = database;
-        managerSO.FindProperty("_selectUI").objectReferenceValue = ui;
+        managerSO.FindProperty("_selectionView").objectReferenceValue = selectionView;
+        managerSO.FindProperty("_hudView").objectReferenceValue = hudView;
         managerSO.ApplyModifiedPropertiesWithoutUndo();
 
         PrefabUtility.SaveAsPrefabAsset(root, PREFAB_PATH);
@@ -253,119 +256,168 @@ public static class AugmentAssetBuilder
     }
 
     /// <summary>
-    /// Canvas 아래에 선택 패널(카드 3장, 리롤 라벨)과 HUD 목록을 만들고
-    /// AugmentSelectUI 컴포넌트에 직렬화 참조를 연결해 반환한다.
+    /// Canvas 아래에 선택 패널(리롤 라벨, 카드 컨테이너)을 만들고
+    /// AugmentSelectionView 컴포넌트에 직렬화 참조를 연결해 반환한다.
+    /// 카드는 cardPrefab 프리팹로 생성된다.
     /// </summary>
-    private static AugmentSelectUI BuildSelectUI(Canvas canvas)
+    private static AugmentSelectionView BuildSelectionView(Canvas canvas, AugmentCardView cardPrefab)
     {
-        AugmentSelectUI ui = canvas.gameObject.AddComponent<AugmentSelectUI>();
-
         RectTransform panel = CreateRect("SelectPanel", canvas.transform);
         Stretch(panel);
         Image panelBackground = panel.gameObject.AddComponent<Image>();
         panelBackground.color = new Color(0f, 0f, 0f, PANEL_DIM_ALPHA);
         panel.gameObject.layer = LayerMask.NameToLayer("UI");
 
+        AugmentSelectionView view = panel.gameObject.AddComponent<AugmentSelectionView>();
+
         TextMeshProUGUI rerollsLabel = CreateText("RerollsLabel", panel,
-            "남은 리롤: 3", 34f, Vector2.zero, new Vector2(600f, 50f), TextAlignmentOptions.Center);
+            "남은 리롤: 3", 30f, Vector2.zero, new Vector2(600f, 50f), TextAlignmentOptions.Center);
+
+        // 씬에서 조정된 값: 화면 하단 중앙 기준 y 100 위치에 고정한다.
+        RectTransform rerollsRect = (RectTransform)rerollsLabel.transform;
+        rerollsRect.anchorMin = new Vector2(0.5f, 0f);
+        rerollsRect.anchorMax = new Vector2(0.5f, 0f);
+        rerollsRect.anchoredPosition = new Vector2(0f, 100f);
 
         RectTransform cardsRow = CreateRect("CardsRow", panel);
         Center(cardsRow, Vector2.zero, Vector2.zero);
+        cardsRow.localScale = new Vector3(0.75f, 0.75f, 1f);
 
-        SerializedObject uiSO = new SerializedObject(ui);
-        SerializedProperty cardsProperty = uiSO.FindProperty("_cards");
-        cardsProperty.arraySize = 3;
+        HorizontalLayoutGroup cardLayout = cardsRow.gameObject.AddComponent<HorizontalLayoutGroup>();
+        cardLayout.childAlignment = TextAnchor.MiddleCenter;
+        cardLayout.childControlWidth = false;
+        cardLayout.childControlHeight = false;
+        cardLayout.childForceExpandWidth = false;
+        cardLayout.childForceExpandHeight = false;
+        cardLayout.spacing = 40f;
 
-        for (int i = 0; i < 3; i++)
-        {
-            SerializedProperty cardProperty = cardsProperty.GetArrayElementAtIndex(i);
-            BuildCard(cardProperty, cardsRow, i);
-        }
-
+        SerializedObject uiSO = new SerializedObject(view);
         uiSO.FindProperty("_selectPanel").objectReferenceValue = panel.gameObject;
+        uiSO.FindProperty("_cardPrefab").objectReferenceValue = cardPrefab;
+        uiSO.FindProperty("_cardContainer").objectReferenceValue = cardsRow;
         uiSO.FindProperty("_rerollsLabel").objectReferenceValue = rerollsLabel;
-
-        RectTransform hud = BuildHud(canvas.transform);
-        uiSO.FindProperty("_hudRoot").objectReferenceValue = hud;
-        uiSO.FindProperty("_hudEntryTemplate").objectReferenceValue = hud.GetChild(hud.childCount - 1).gameObject;
 
         uiSO.ApplyModifiedPropertiesWithoutUndo();
 
         panel.gameObject.SetActive(false);
-        return ui;
+        return view;
     }
 
     /// <summary>
-    /// cardsRow 아래에 index번째 카드(선택 버튼 통째 버튼 + 리롤 버튼 + 3개 텍스트)를 만들고
-    /// cardProperty의 CardView 직렬화 필드들에 참조를 연결한다.
+    /// CARD_PREFAB_PATH의 카드 프리팹 에셋을 읽어 반환한다. 없으면 BuildCardPrefab()으로 먼저 생성한다.
     /// </summary>
-    private static void BuildCard(SerializedProperty cardProperty, RectTransform cardsRow, int index)
+    private static AugmentCardView EnsureCardPrefab()
     {
-        RectTransform card = CreateRect($"Card{index}", cardsRow);
-        Center(card, new Vector2((index - 1) * 460f, 0f), new Vector2(420f, 560f));
+        AugmentCardView cardPrefab = AssetDatabase.LoadAssetAtPath<AugmentCardView>(CARD_PREFAB_PATH);
+        if (cardPrefab == null)
+        {
+            BuildCardPrefab();
+            cardPrefab = AssetDatabase.LoadAssetAtPath<AugmentCardView>(CARD_PREFAB_PATH);
+        }
 
-        Image cardImage = card.gameObject.AddComponent<Image>();
+        return cardPrefab;
+    }
+
+    /// <summary>
+    /// 증강 선택 카드 한 장(AugmentCardView + 선택/리롤 버튼 + 등급·이름·설명 텍스트)을
+    /// preview 씬에서 조립해 Assets/Prefabs/Augment/AugmentCard.prefab으로 저장한다.
+    /// </summary>
+    public static void BuildCardPrefab()
+    {
+        EnsureFolder("Assets", "Prefabs");
+        EnsureFolder(PREFAB_FOLDER, null);
+
+        Scene previewScene = EditorSceneManager.NewPreviewScene();
+
+        GameObject card = new GameObject("AugmentCard", typeof(RectTransform));
+        card.layer = LayerMask.NameToLayer("UI");
+        SceneManager.MoveGameObjectToScene(card, previewScene);
+        RectTransform cardRect = (RectTransform)card.transform;
+        cardRect.sizeDelta = new Vector2(420f, 560f);
+
+        Image cardImage = card.AddComponent<Image>();
         cardImage.color = new Color(0.13f, 0.14f, 0.18f, 1f);
 
-        Button selectButton = card.gameObject.AddComponent<Button>();
+        Button selectButton = card.AddComponent<Button>();
         selectButton.targetGraphic = cardImage;
 
-        TextMeshProUGUI tierText = CreateText("TierText", card, "등급", 40f,
+        TextMeshProUGUI tierText = CreateText("TierText", cardRect, "등급", 40f,
             new Vector2(0f, 230f), new Vector2(420f, 60f), TextAlignmentOptions.Center);
-        TextMeshProUGUI nameText = CreateText("NameText", card, "이름", 36f,
+        TextMeshProUGUI nameText = CreateText("NameText", cardRect, "이름", 36f,
             new Vector2(0f, 150f), new Vector2(380f, 56f), TextAlignmentOptions.Center);
-        TextMeshProUGUI descText = CreateText("DescText", card, "설명", 26f,
+        TextMeshProUGUI descText = CreateText("DescText", cardRect, "설명", 26f,
             new Vector2(0f, -40f), new Vector2(380f, 320f), TextAlignmentOptions.TopLeft);
         descText.margin = new Vector4(10f, 30f, 10f, 10f);
 
-        RectTransform rerollRect = CreateRect("RerollButton", card);
+        RectTransform rerollRect = CreateRect("RerollButton", cardRect);
         Center(rerollRect, new Vector2(0f, -240f), new Vector2(180f, 64f));
         Image rerollImage = rerollRect.gameObject.AddComponent<Image>();
         rerollImage.color = new Color(0.25f, 0.35f, 0.6f, 1f);
         Button rerollButton = rerollRect.gameObject.AddComponent<Button>();
         CreateText("Label", rerollRect, "리롤", 28f, Vector2.zero, new Vector2(180f, 64f), TextAlignmentOptions.Center);
 
-        cardProperty.FindPropertyRelative("_root").objectReferenceValue = card.gameObject;
-        cardProperty.FindPropertyRelative("_selectButton").objectReferenceValue = selectButton;
-        cardProperty.FindPropertyRelative("_rerollButton").objectReferenceValue = rerollButton;
-        cardProperty.FindPropertyRelative("_tierText").objectReferenceValue = tierText;
-        cardProperty.FindPropertyRelative("_nameText").objectReferenceValue = nameText;
-        cardProperty.FindPropertyRelative("_descriptionText").objectReferenceValue = descText;
+        AugmentCardView view = card.AddComponent<AugmentCardView>();
+        SerializedObject viewSO = new SerializedObject(view);
+        viewSO.FindProperty("_selectButton").objectReferenceValue = selectButton;
+        viewSO.FindProperty("_rerollButton").objectReferenceValue = rerollButton;
+        viewSO.FindProperty("_tierText").objectReferenceValue = tierText;
+        viewSO.FindProperty("_nameText").objectReferenceValue = nameText;
+        viewSO.FindProperty("_descriptionText").objectReferenceValue = descText;
+        viewSO.ApplyModifiedPropertiesWithoutUndo();
+
+        PrefabUtility.SaveAsPrefabAsset(card, CARD_PREFAB_PATH);
+        EditorSceneManager.ClosePreviewScene(previewScene);
+
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[AugmentAssetBuilder] 카드 프리팹을 저장했습니다: {CARD_PREFAB_PATH}");
     }
 
     /// <summary>
-    /// 화면 좌상단 HUD 목록(보유 증강 이름 세로 목록)과 비활성화된 항목 템플릿을 만들어 반환한다.
+    /// 화면 좌상단 HUD 목록(보유 증강 이름 세로 목록)과 비활성화된 항목 템플릿을 만들고
+    /// AugmentHudView 컴포넌트에 직렬화 참조를 연결해 반환한다.
     /// </summary>
-    private static RectTransform BuildHud(Transform canvasTransform)
+    private static AugmentHudView BuildHudView(Transform canvasTransform)
     {
         RectTransform hud = CreateRect("HUD", canvasTransform);
         hud.anchorMin = new Vector2(0f, 1f);
         hud.anchorMax = new Vector2(0f, 1f);
         hud.pivot = new Vector2(0f, 1f);
-        hud.anchoredPosition = new Vector2(24f, -24f);
-        hud.sizeDelta = new Vector2(280f, 600f);
+        hud.anchoredPosition = new Vector2(20f, -90f);
+        hud.sizeDelta = new Vector2(200f, 600f);
+
+        // 씬에서 조정된 값: 반투명 배경 Image와 좌측 여백 20의 세로 목록 레이아웃을 사용한다.
+        Image hudBackground = hud.gameObject.AddComponent<Image>();
+        hudBackground.color = new Color(0.1f, 0.1f, 0.1f, 50f / 255f);
 
         VerticalLayoutGroup layout = hud.gameObject.AddComponent<VerticalLayoutGroup>();
         layout.childAlignment = TextAnchor.UpperLeft;
-        layout.childControlWidth = false;
+        layout.childControlWidth = true;
         layout.childControlHeight = false;
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
         layout.spacing = 4f;
+        layout.padding = new RectOffset(20, 0, 0, 0);
 
         RectTransform template = CreateRect("OwnedEntryTemplate", hud);
         template.anchorMin = new Vector2(0f, 1f);
         template.anchorMax = new Vector2(0f, 1f);
         template.pivot = new Vector2(0f, 1f);
-        template.sizeDelta = new Vector2(280f, 34f);
+        template.anchoredPosition = new Vector2(20f, 0f);
+        template.sizeDelta = new Vector2(0f, 25f);
         TextMeshProUGUI text = template.gameObject.AddComponent<TextMeshProUGUI>();
         text.font = GetKoreanFontAsset();
-        text.fontSize = 26f;
-        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.fontSize = 24f;
+        text.alignment = TextAlignmentOptions.Left;
         text.color = Color.white;
         template.gameObject.SetActive(false);
 
-        return hud;
+        AugmentHudView view = hud.gameObject.AddComponent<AugmentHudView>();
+        SerializedObject viewSO = new SerializedObject(view);
+        viewSO.FindProperty("_hudRoot").objectReferenceValue = hud;
+        viewSO.FindProperty("_hudEntryTemplate").objectReferenceValue = template.gameObject;
+        viewSO.ApplyModifiedPropertiesWithoutUndo();
+
+        return view;
     }
 
     /// <summary>
