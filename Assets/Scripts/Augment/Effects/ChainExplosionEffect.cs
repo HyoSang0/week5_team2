@@ -1,0 +1,59 @@
+using System.Collections.Generic;
+
+using UnityEngine;
+
+/// <summary>
+/// 연쇄 폭발 증강 효과. 적을 처치하면 반경 안의 다른 적들을 함께 처치한다.
+/// </summary>
+[CreateAssetMenu(menuName = "Augment/Effects/ChainExplosionEffect")]
+public class ChainExplosionEffect : AugmentEffect
+{
+    [SerializeField] private float _radius = 2f;
+
+    // 폭발로 생긴 처치가 다시 폭발에 재진입하지 않도록 막는 가드. 루프 동안 true다.
+    private static bool _inChain;
+
+    private static readonly List<Enemy> _buffer = new List<Enemy>();
+
+    /// <summary>
+    /// 적이 처치되면 enemy 위치 반경 radius 안의 다른 살아있는 적들에게 Kill()을 호출한다.
+    /// 가드가 켜져 있는 동안의 처치는 다시 이 효과를 호출하지 않는다.
+    /// </summary>
+    public override void OnEnemyKilled(Enemy enemy)
+    {
+        if (_inChain)
+        {
+            return;
+        }
+
+        _inChain = true;
+        KillAround(enemy.transform.position);
+        _inChain = false;
+    }
+
+    /// <summary>
+    /// center 반경 radius 안의 살아있는 다른 적들을 수집해 Kill()을 호출한다.
+    /// 수집 목록은 정적 버퍼를 재사용한다.
+    /// </summary>
+    private void KillAround(Vector3 center)
+    {
+        _buffer.Clear();
+        Collider[] hits = Physics.OverlapSphere(center, _radius);
+
+        foreach (Collider hit in hits)
+        {
+            Enemy other = hit.GetComponentInParent<Enemy>();
+            if (other != null && !other.isDead && other.gameObject.activeInHierarchy && !_buffer.Contains(other))
+            {
+                _buffer.Add(other);
+            }
+        }
+
+        foreach (Enemy other in _buffer)
+        {
+            other.Kill();
+        }
+
+        _buffer.Clear();
+    }
+}

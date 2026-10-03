@@ -37,6 +37,16 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private EnemyPool enemyPool;
 
+    // 증강 스탯 재계산에 사용할 기준값들
+    private float _baseDuringTime;
+    private float _baseCoolTime;
+    private float _baseNoDamageTime;
+    private float _baseRushSpeed;
+
+    // 쿨타임 진행 중에 누적된 쿨타임 감소량과 쿨타임 진행 여부
+    private float _pendingCooldownReduction;
+    private bool _inCooldown;
+
     void Awake()
     {
         // energy = 0.0f;
@@ -44,6 +54,11 @@ public class RushAbility_Sejin : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
+
+        _baseDuringTime = duringTime;
+        _baseCoolTime = coolTime;
+        _baseNoDamageTime = noDamageTime;
+        _baseRushSpeed = rushSpeed;
         coolDownImage = GameObject.Find("Fill").GetComponent<Image>();
     }
 
@@ -55,18 +70,60 @@ public class RushAbility_Sejin : MonoBehaviour
     void OnDisable()
     {
         inputActions.Disable();
+
+        // 컴포넌트 비활성화로 쿨타임 코루틴이 정지하면 감소량 대기 상태를 정리한다.
+        _inCooldown = false;
+        _pendingCooldownReduction = 0f;
     }
 
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         inputActions.Player.Attack.started += StartRush;
+
+        // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged += ApplyAugmentStats;
+        }
+
+        ApplyAugmentStats();
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= ApplyAugmentStats;
+        }
+    }
+
+    /// <summary>
+    /// PlayerStats의 Rush 관련 증강을 기준값에 적용해 duringTime, coolTime, noDamageTime, rushSpeed를 재계산한다.
+    /// PlayerStats.Instance가 없으면 아무것도 하지 않는다.
+    /// </summary>
+    private void ApplyAugmentStats()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return;
+        }
+
+        duringTime = PlayerStats.Instance.Apply(StatType.RushDuration, _baseDuringTime);
+        coolTime = PlayerStats.Instance.Apply(StatType.RushCooldown, _baseCoolTime);
+        noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
+        rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
     }
 
     // 공격 입력을 받으면 사용 가능 여부를 확인하고 드롭킥을 시작한다.
     // ctx는 입력 이벤트이며 드롭킥 상태와 플레이어 무적시간을 변경한다.
     private void StartRush(InputAction.CallbackContext ctx)
     {
+        if (AugmentSelection.IsOpen)
+        {
+            return;
+        }
+
         if (CanDash())
         {
             onStartRush.Invoke();
@@ -86,6 +143,8 @@ public class RushAbility_Sejin : MonoBehaviour
     private IEnumerator Dash_Move()
     {
         isDashing = true;
+        _inCooldown = false;
+        _pendingCooldownReduction = 0f;
         // dashReadyEffect.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
@@ -98,12 +157,16 @@ public class RushAbility_Sejin : MonoBehaviour
         onEndRush.Invoke();
         isRushing = false;
         float timeElapsed = 0f;
+        _inCooldown = true;
         while (timeElapsed < coolTime)
         {
             coolDownImage.fillAmount = timeElapsed / coolTime;
-            timeElapsed += Time.deltaTime;
+            timeElapsed += Time.deltaTime + _pendingCooldownReduction;
+            _pendingCooldownReduction = 0f;
             yield return null;
         }
+        _inCooldown = false;
+        _pendingCooldownReduction = 0f;
         coolDownImage.fillAmount = 1;
         // dashReadyEffect.transform.position = transform.position;
         // dashReadyEffect.SetActive(true);
@@ -132,6 +195,20 @@ public class RushAbility_Sejin : MonoBehaviour
         //     energy = maxEnergy;
         // }
         // RefreshUI();
+    }
+
+    /// <summary>
+    /// 진행 중인 드롭킥 쿨타임에서만 남은 쿨타임을 seconds만큼 줄이기 위해 _pendingCooldownReduction에 누적한다.
+    /// 누적된 값은 Dash_Move의 쿨타임 루프에서 timeElapsed에 반영되고 0으로 초기화되며, 쿨타임 중이 아니면 무시된다.
+    /// </summary>
+    public void ReduceCooldown(float seconds)
+    {
+        if (!_inCooldown)
+        {
+            return;
+        }
+
+        _pendingCooldownReduction += seconds;
     }
 
     // private void RefreshUI()

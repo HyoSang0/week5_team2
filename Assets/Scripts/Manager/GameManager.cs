@@ -90,8 +90,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    /// <summary>
+    /// newScore에 PlayerStats의 ScoreMultiplier 증강을 적용한 값을 score에 더한다.
+    /// PlayerStats.Instance가 없으면 newScore를 그대로 더한다. 변경된 score를 반환하지는 않고 score에 저장한다.
+    /// </summary>
     public void AddScore(int newScore)
     {
-        score += newScore;
+        if (PlayerStats.Instance != null)
+        {
+            score += PlayerStats.Instance.ApplyInt(StatType.ScoreMultiplier, newScore);
+        }
+        else
+        {
+            score += newScore;
+        }
     }
 }

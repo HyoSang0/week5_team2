@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: invincible_rush
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: invincible_rush
+  _displayName: "\uBB34\uC801 \uB3CC\uC9C4"
+  _description: "\uB3CC\uC9C4 \uC911 0.5\uCD08 \uBB34\uC801"
+  _tier: 1
+  _conflictTags: []
+  _modifiers:
+  - _stat: 7
+    _percent: 0
+    _flat: 0.5
+  _effect: {fileID: 0}

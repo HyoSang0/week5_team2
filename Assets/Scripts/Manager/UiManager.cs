@@ -1,7 +1,6 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-using TMPro;
 
 public class UiManager : MonoBehaviour
 {
@@ -44,7 +43,7 @@ public class UiManager : MonoBehaviour
     // pHp의 현재 HP와 최대 HP를 사용하며 UI 표시 값을 변경한다.
     private void UpdateHud()
     {
-        hpText.text = string.Format("HP : {0:F0} / 5", pHp.playerHP);
+        hpText.text = string.Format("HP:{0:F0}/{1}", pHp.playerHP, pHp.maxPlayerHP);
         hpSlider.value = (float)pHp.playerHP / pHp.maxPlayerHP;
 
         // aeText.text = string.Format("AE : {0:F0} / 30", absorb.stamina);

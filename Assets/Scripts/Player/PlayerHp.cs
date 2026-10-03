@@ -30,6 +30,14 @@ public class PlayerHp : MonoBehaviour
     public List<Material> playerMaterials = new List<Material>();
     public GameObject dashShield;
 
+    // 증강 스탯 재계산에 사용할 maxPlayerHP의 기준값
+    private int _baseMaxPlayerHP;
+
+    void Awake()
+    {
+        _baseMaxPlayerHP = maxPlayerHP;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,6 +52,45 @@ public class PlayerHp : MonoBehaviour
         }
         attackedVignetteIntensity = 0.35f;
         SetVignetteIntensity(0.0f);
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= ApplyAugmentStats;
+        }
+    }
+
+    /// <summary>
+    /// PlayerStats의 MaxHp 증강을 기준값에 적용해 maxPlayerHP를 재계산한다.
+    /// 최대치가 늘면 늘어난 만큼 playerHP를 올리고, 줄면 playerHP를 최대치로 clamp한다.
+    /// 변경된 값은 hpText와 gameManager UI에 반영한다.
+    /// </summary>
+    private void ApplyAugmentStats()
+    {
+        if (PlayerStats.Instance == null)
+        {
+            return;
+        }
+
+        int newMax = Mathf.Max(1, PlayerStats.Instance.ApplyInt(StatType.MaxHp, _baseMaxPlayerHP));
+
+        if (newMax > maxPlayerHP)
+        {
+            playerHP += newMax - maxPlayerHP;
+        }
+        maxPlayerHP = newMax;
+        playerHP = Mathf.Min(playerHP, maxPlayerHP);
+    }
+
+    /// <summary>
+    /// amount만큼 플레이어 HP를 회복한다. playerHP는 maxPlayerHP를 초과하지 않는다.
+    /// 변경된 playerHP를 gameManager.PlayerAttackedUI로 UI에 반영한다.
+    /// </summary>
+    public void Heal(int amount)
+    {
+        playerHP = Mathf.Min(playerHP + amount, maxPlayerHP);
     }
 
     public IEnumerator UnBeatTimeForHit(float sec)
@@ -121,7 +168,7 @@ public class PlayerHp : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("HealPack") && playerHP < 5)
+        if (other.CompareTag("HealPack") && playerHP < maxPlayerHP)
         {
             playerHP += 1;
             Destroy(other.gameObject);
