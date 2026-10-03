@@ -5508,7 +5508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
   AbsortionArea: {fileID: 596759505409058145}
-  _cooldownSeconds: 0
+  _cooldownSeconds: 0.11
   isStartAbsortion: 0
 --- !u!114 &7124579886636666819
 MonoBehaviour:
@@ -6306,8 +6306,8 @@ MonoBehaviour:
   slowMultiplier: 0.1
   absorbTime: 0.5
   area_radus_max: 8
-  area_radus_min: 1
-  speed: 6
+  area_radus_min: 2.7
+  speed: 4
   outline: {fileID: 3607054251552163685}
   segments: 64
   outlineWidth: 0.08
