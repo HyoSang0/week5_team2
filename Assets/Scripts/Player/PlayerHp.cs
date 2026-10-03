@@ -8,7 +8,6 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerHp : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI hpText;
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     [SerializeField] private Volume volume;
@@ -36,7 +35,6 @@ public class PlayerHp : MonoBehaviour
     {
         dashShield.SetActive(false);
         rb = GetComponent<Rigidbody>();
-        hpText.text = playerHP + " / 5";
 
         volume = FindFirstObjectByType<Volume>();
 
@@ -79,8 +77,6 @@ public class PlayerHp : MonoBehaviour
         darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
         //피격 vignette 처리
         SetVignetteIntensity(attackedVignetteIntensity);
-        // UI 처리
-        gameManager.PlayerAttackedUI(playerHP);
 
         // 사망 처리
         if (playerHP <= 0)
@@ -128,7 +124,6 @@ public class PlayerHp : MonoBehaviour
         if (other.CompareTag("HealPack") && playerHP < 5)
         {
             playerHP += 1;
-            gameManager.PlayerAttackedUI(playerHP);
             Destroy(other.gameObject);
         }
     }
