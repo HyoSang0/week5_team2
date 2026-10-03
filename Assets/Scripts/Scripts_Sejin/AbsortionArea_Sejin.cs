@@ -95,12 +95,12 @@ public class AbsortionArea_Sejin : MonoBehaviour
         float absorableCount = maxAbsorbCount < enemies.Count ? maxAbsorbCount : enemies.Count;
         Debug.Log($"흡수 가능 개수 : {absorableCount}");
 
-        //가장 가까운 적 {maxAbsorbCount} 마리 죽이기
+        //{maxAbsorbCount}번  가장 가까운 적(0번번째)  죽이기
         for (int curAbsorbIndex = 0; curAbsorbIndex < absorableCount; curAbsorbIndex++)
         {
-            Enemy absorbTarget = enemies[curAbsorbIndex];
+            Enemy absorbTarget = enemies[0];
             //Debug.Log($"nearest Speed : {absorbTarget.speed}");
-            enemies.Remove(absorbTarget);
+            enemies.RemoveAt(0);
             StartCoroutine(absorbTarget.Die(false));
         }
         onGatherEnergy?.Invoke();
