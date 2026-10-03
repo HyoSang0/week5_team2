@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: warm_up
   _displayName: "\uC608\uC5F4"
-  _description: "\uB3CC\uC9C4 \uB300\uAE30 \uC2DC\uAC04 -20%"
+  _description: "\uB3CC\uC9C4 \uCFE8\uB2E4\uC6B4\uC774 20% \uAC10\uC18C\uD569\uB2C8\uB2E4."
   _tier: 0
   _conflictTags: []
   _modifiers:

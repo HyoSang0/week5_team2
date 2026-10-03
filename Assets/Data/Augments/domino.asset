@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: domino
   _displayName: "\uB3C4\uBBF8\uB178"
-  _description: "\uD761\uC218 \uC2DC \uC5F0\uC1C4 \uD53C\uD574 +100%"
+  _description: "\uD761\uC218 \uC2DC \uC5F0\uC1C4 \uD53C\uD574\uAC00 100% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 1
   _conflictTags: []
   _modifiers:

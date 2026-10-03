@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: fast_recovery
   _displayName: "\uAE34 \uB3CC\uC9C4"
-  _description: "\uB3CC\uC9C4 \uC9C0\uC18D\uC2DC\uAC04 +30%"
+  _description: "\uB3CC\uC9C4 \uC9C0\uC18D \uC2DC\uAC04\uC774 30% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 1
   _conflictTags: []
   _modifiers:

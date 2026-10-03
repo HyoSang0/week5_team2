@@ -68,6 +68,12 @@ public class AugmentData : ScriptableObject
             return false;
         }
 
+        // Id가 비어 있어도 같은 ScriptableObject 참조라면 충돌로 판정해 보유 목록에 다시 후보로 오르지 않게 한다.
+        if (other == this)
+        {
+            return true;
+        }
+
         if (!string.IsNullOrEmpty(_id) && _id == other._id)
         {
             return true;

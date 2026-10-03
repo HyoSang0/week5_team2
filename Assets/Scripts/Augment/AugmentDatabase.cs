@@ -36,6 +36,12 @@ public class AugmentDatabase : ScriptableObject
                 continue;
             }
 
+            // 목록에 같은 참조가 중복 등록돼도 후보는 1회만 노출한다.
+            if (candidates.Contains(augment))
+            {
+                continue;
+            }
+
             bool conflicts = false;
             if (owned != null)
             {

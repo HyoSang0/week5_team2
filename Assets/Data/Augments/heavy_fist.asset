@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: heavy_fist
   _displayName: "\uBB34\uAC70\uC6B4 \uC8FC\uBA39"
-  _description: "\uB109\uD0B9\uB825 +20%"
+  _description: "\uC801\uC5D0\uAC8C \uAC00\uD558\uB294 \uB109\uBC31 \uD798\uC774
+    20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 0
   _conflictTags: []
   _modifiers:

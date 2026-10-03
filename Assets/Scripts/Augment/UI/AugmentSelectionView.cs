@@ -119,11 +119,11 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
 
     /// <summary>
     /// index번 카드의 선택 입력을 바인딩된 handler의 HandlePickClicked로 위임한다.
-    /// _defaultSelection의 입력 잠금 중이면 무시한다.
+    /// _defaultSelection이 있고 입력 잠금 중이면 무시한다.
     /// </summary>
     public void HandleCardSelected(int index)
     {
-        if (_defaultSelection.IsInputLocked)
+        if (_defaultSelection != null && _defaultSelection.IsInputLocked)
         {
             return;
         }
@@ -133,11 +133,11 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
 
     /// <summary>
     /// index번 카드의 리롤 입력을 바인딩된 handler의 HandleRerollClicked로 위임한다.
-    /// _defaultSelection의 입력 잠금 중이면 무시한다.
+    /// _defaultSelection이 있고 입력 잠금 중이면 무시한다.
     /// </summary>
     public void HandleCardRerolled(int index)
     {
-        if (_defaultSelection.IsInputLocked)
+        if (_defaultSelection != null && _defaultSelection.IsInputLocked)
         {
             return;
         }

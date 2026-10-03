@@ -27,7 +27,23 @@ public class ChainExplosionEffect : AugmentEffect
         }
 
         _inChain = true;
-        KillAround(enemy.transform.position);
+
+        // Kill() 중 예외가 발생해도 가드가 남아 이후 연쇄가 영구 차단되지 않게 복구한다.
+        try
+        {
+            KillAround(enemy.transform.position);
+        }
+        finally
+        {
+            _inChain = false;
+        }
+    }
+
+    /// <summary>
+    /// 새 판 시작 시 정적 연쇄 가드를 해제해 이전 판의 예외로 남은 상태를 복구한다.
+    /// </summary>
+    public override void OnRunReset()
+    {
         _inChain = false;
     }
 

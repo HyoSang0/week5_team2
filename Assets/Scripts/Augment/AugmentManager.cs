@@ -56,13 +56,16 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
     void Start()
     {
+        // 재시작(씬 재로드) 전에 이전 런에서 남은 이벤트 구독을 먼저 해제한다.
+        // 효과는 ScriptableObject 에셋이라 씬 종료 후에도 정적 이벤트에 구독이 남을 수 있다.
         if (_database != null)
         {
             foreach (AugmentData data in _database.Augments)
             {
-                if (data != null)
+                if (data != null && data.Effect != null)
                 {
-                    data.Effect?.OnRunReset();
+                    UnsubscribeEffect(data.Effect);
+                    data.Effect.OnRunReset();
                 }
             }
         }
@@ -74,6 +77,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
         _owned.Clear();
         _subscribedEffects.Clear();
+        _hudView.ClearOwned();
         _elapsed = 0f;
         _nextPickIndex = 0;
         _rerollsLeft = _totalRerolls;
@@ -93,21 +97,42 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     }
 
     /// <summary>
-    /// OnDestroy에서 이벤트 구독을 해제하고 전역 선택 상태를 닫힌 상태로 되돌린다.
+    /// OnDestroy에서 이벤트 구독을 해제하고 선택 UI가 열린 상태에서 파괴됐으면 AugmentSelection 원인의 일시정지를 해제한다.
     /// </summary>
     private void OnDestroy()
+    {
+        UnsubscribeSubscribedEffects();
+
+        if (AugmentSelection.IsOpen)
+        {
+            GamePause.Resume(PauseReason.AugmentSelection);
+            AugmentSelection.IsOpen = false;
+        }
+    }
+
+    /// <summary>
+    /// _subscribedEffects에 기록된 효과들의 OnEnemyKilled/OnEnemyAbsorbed 구독을 해제하고 목록을 비운다.
+    /// </summary>
+    private void UnsubscribeSubscribedEffects()
     {
         foreach (AugmentEffect effect in _subscribedEffects)
         {
             if (effect != null)
             {
-                AugmentEvents.OnEnemyKilled -= effect.OnEnemyKilled;
-                AugmentEvents.OnEnemyAbsorbed -= effect.OnEnemyAbsorbed;
+                UnsubscribeEffect(effect);
             }
         }
 
         _subscribedEffects.Clear();
-        AugmentSelection.IsOpen = false;
+    }
+
+    /// <summary>
+    /// effect의 OnEnemyKilled/OnEnemyAbsorbed 구독을 해제한다. 구독되어 있지 않으면 -= 연산자는 아무 동작을 하지 않는다.
+    /// </summary>
+    private static void UnsubscribeEffect(AugmentEffect effect)
+    {
+        AugmentEvents.OnEnemyKilled -= effect.OnEnemyKilled;
+        AugmentEvents.OnEnemyAbsorbed -= effect.OnEnemyAbsorbed;
     }
 
     /// <summary>
@@ -215,9 +240,14 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         if (effect != null)
         {
             effect.OnApply();
-            AugmentEvents.OnEnemyKilled += effect.OnEnemyKilled;
-            AugmentEvents.OnEnemyAbsorbed += effect.OnEnemyAbsorbed;
-            _subscribedEffects.Add(effect);
+
+            // 같은 효과를 owning한 증강을 다시 선택해도 이벤트 구독은 한 번만 등록한다.
+            if (!_subscribedEffects.Contains(effect))
+            {
+                AugmentEvents.OnEnemyKilled += effect.OnEnemyKilled;
+                AugmentEvents.OnEnemyAbsorbed += effect.OnEnemyAbsorbed;
+                _subscribedEffects.Add(effect);
+            }
         }
 
         _selectionView.Hide();

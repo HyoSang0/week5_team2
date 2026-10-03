@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: bomb_collector
   _displayName: "\uD3ED\uD0C4 \uC218\uC9D1\uAC00"
-  _description: "\uD3ED\uD0C4\uD615 \uC801 \uD761\uC218 \uC2DC \uB545 \uBD95\uAD34
-    \uB300\uC2E0 \uBC18\uC9C0\uB984 3m \uB0B4 \uC8FC\uBCC0 \uC801 \uCC98\uCE58."
+  _description: "\uD3ED\uD0C4\uD615 \uC801\uC744 \uD761\uC218\uD558\uBA74 \uB545
+    \uBD95\uAD34 \uB300\uC2E0 \uBC18\uC9C0\uB984 3m \uC548\uC758 \uC8FC\uBCC0 \uC801\uC744
+    \uCC98\uCE58\uD558\uBA70, \uC5F0\uC1C4 \uCC98\uCE58\uB294 \uC911\uCCA9 \uBC1C\uB3D9\uD558\uC9C0
+    \uC54A\uC2B5\uB2C8\uB2E4."
   _tier: 2
   _conflictTags: []
   _modifiers: []

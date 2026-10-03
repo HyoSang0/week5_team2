@@ -127,6 +127,9 @@ public static class AugmentAssetBuilder
         SetStringArray(so.FindProperty("_conflictTags"), definition.ConflictTags);
         SetModifiers(so.FindProperty("_modifiers"), definition.Modifiers);
 
+        // 스탯형으로 바뀌는 에셋에 이전 효과형 참조가 남지 않도록 효과 참조를 먼저 비운다.
+        so.FindProperty("_effect").objectReferenceValue = null;
+
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(data);
         return data;
@@ -142,83 +145,83 @@ public static class AugmentAssetBuilder
         {
             new AugmentDefinition
             {
-                Id = "light_feet", DisplayName = "가벼운 발", Description = "이동 속도 +15%",
+                Id = "light_feet", DisplayName = "가벼운 발", Description = "이동 속도가 15% 증가합니다.",
                 Tier = AugmentTier.Silver,
                 Modifiers = new[] { new StatModifier(StatType.MoveSpeed, 15f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "sturdy_body", DisplayName = "튼튼한 몸", Description = "최대 체력 +1 (체력 관련 증강과 충돌)",
+                Id = "sturdy_body", DisplayName = "튼튼한 몸", Description = "최대 체력이 1 증가합니다. 체력 관련 증강과 충돌합니다.",
                 Tier = AugmentTier.Silver, ConflictTags = new[] { "MaxHp" },
                 Modifiers = new[] { new StatModifier(StatType.MaxHp, 0f, 1f) },
             },
             new AugmentDefinition
             {
-                Id = "long_breath", DisplayName = "빠른 확장", Description = "흡수 영역 확장 속도 +25%",
+                Id = "long_breath", DisplayName = "빠른 확장", Description = "흡수 영역 확장 속도가 25% 증가합니다.",
                 Tier = AugmentTier.Silver,
                 Modifiers = new[] { new StatModifier(StatType.AbsorbGrowSpeed, 25f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "wide_hands", DisplayName = "넓은 손", Description = "흡수 반경 +15%",
+                Id = "wide_hands", DisplayName = "넓은 손", Description = "흡수 반경이 15% 증가합니다.",
                 Tier = AugmentTier.Silver,
                 Modifiers = new[] { new StatModifier(StatType.AbsorbRadius, 15f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "warm_up", DisplayName = "예열", Description = "돌진 대기 시간 -20%",
+                Id = "warm_up", DisplayName = "예열", Description = "돌진 쿨다운이 20% 감소합니다.",
                 Tier = AugmentTier.Silver,
                 Modifiers = new[] { new StatModifier(StatType.RushCooldown, -20f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "heavy_fist", DisplayName = "무거운 주먹", Description = "넉킹력 +20%",
+                Id = "heavy_fist", DisplayName = "무거운 주먹", Description = "적에게 가하는 넉백 힘이 20% 증가합니다.",
                 Tier = AugmentTier.Silver,
                 Modifiers = new[] { new StatModifier(StatType.KnockbackForce, 20f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "fast_recovery", DisplayName = "긴 돌진", Description = "돌진 지속시간 +30%",
+                Id = "fast_recovery", DisplayName = "긴 돌진", Description = "돌진 지속 시간이 30% 증가합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.RushDuration, 30f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "efficiency", DisplayName = "재정비", Description = "돌진 대기 시간 -30%",
+                Id = "efficiency", DisplayName = "재정비", Description = "돌진 쿨다운이 30% 감소합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.RushCooldown, -30f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "invincible_rush", DisplayName = "무적 돌진", Description = "돌진 중 0.5초 무적",
+                Id = "invincible_rush", DisplayName = "무적 돌진", Description = "돌진 중 0.5초 동안 무적이 됩니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.RushInvincible, 0f, 0.5f) },
             },
             new AugmentDefinition
             {
-                Id = "domino", DisplayName = "도미노", Description = "흡수 시 연쇄 피해 +100%",
+                Id = "domino", DisplayName = "도미노", Description = "흡수 시 연쇄 피해가 100% 증가합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.ChainDamage, 100f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "score_hunter", DisplayName = "점수 사냥꾼", Description = " 획득 점수 +50%",
+                Id = "score_hunter", DisplayName = "점수 사냥꾼", Description = "획득 점수가 50% 증가합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.ScoreMultiplier, 50f, 0f) },
             },
             new AugmentDefinition
             {
-                Id = "feast", DisplayName = "포식", Description = "흡수할 때마다 돌진 쿨타임 0.3초 감소",
+                Id = "feast", DisplayName = "포식", Description = "적을 흡수할 때마다 돌진 쿨다운이 0.3초 감소합니다.",
                 Tier = AugmentTier.Gold,
             },
             new AugmentDefinition
             {
-                Id = "chain_heal", DisplayName = "연쇄 회복", Description = "돌진 중 처치한 적이 5번째가 되면 HP 1회복.",
+                Id = "chain_heal", DisplayName = "연쇄 회복", Description = "한 번의 돌진 중 5번째 처치 시 HP를 1 회복합니다.",
                 Tier = AugmentTier.Gold,
             },
             new AugmentDefinition
             {
-                Id = "black_hole", DisplayName = "블랙홀", Description = "흡수 반경 +100%, 이동 속도 -20%",
+                Id = "black_hole", DisplayName = "블랙홀", Description = "흡수 반경이 100% 증가하지만 이동 속도가 20% 감소합니다.",
                 Tier = AugmentTier.Prismatic,
                 Modifiers = new[]
                 {
@@ -228,7 +231,7 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "glass_cannon", DisplayName = "유리 대포", Description = "돌진 속도 +50%, 돌진 대기 시간 -50%, 최대 체력 -100% (체력 관련 증강과 충돌)",
+                Id = "glass_cannon", DisplayName = "유리 대포", Description = "돌진 속도가 50% 증가하고 돌진 쿨다운이 50% 감소하지만 최대 체력이 100% 감소합니다. 체력 관련 증강과 충돌합니다.",
                 Tier = AugmentTier.Prismatic, ConflictTags = new[] { "MaxHp" },
                 Modifiers = new[]
                 {
@@ -239,17 +242,17 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "처치할 때마다 돌진 쿨타임 0.2초 감소",
+                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "적을 처치할 때마다 돌진 쿨다운이 0.2초 감소하며, 돌진 중 처치도 다음 쿨다운에 반영됩니다.",
                 Tier = AugmentTier.Prismatic,
             },
             new AugmentDefinition
             {
-                Id = "chain_explosion", DisplayName = "연쇄 폭발", Description = "적 처치 시 반지름 2m 내 다른 적도 처치.",
+                Id = "chain_explosion", DisplayName = "연쇄 폭발", Description = "적을 처치하면 반지름 2m 안의 다른 적도 함께 처치하며, 연쇄 처치는 재귀 폭발을 일으키지 않습니다.",
                 Tier = AugmentTier.Prismatic,
             },
             new AugmentDefinition
             {
-                Id = "bomb_collector", DisplayName = "폭탄 수집가", Description = "폭탄형 적 흡수 시 땅 붕괴 대신 반지름 3m 내 주변 적 처치.",
+                Id = "bomb_collector", DisplayName = "폭탄 수집가", Description = "폭탄형 적을 흡수하면 땅 붕괴 대신 반지름 3m 안의 주변 적을 처치하며, 연쇄 처치는 중첩 발동하지 않습니다.",
                 Tier = AugmentTier.Prismatic,
             },
         };
@@ -291,11 +294,14 @@ public static class AugmentAssetBuilder
         cardLayout.childForceExpandHeight = false;
         cardLayout.spacing = 40f;
 
+        UIDefaultSelection defaultSelection = panel.gameObject.AddComponent<UIDefaultSelection>();
+
         SerializedObject uiSO = new SerializedObject(view);
         uiSO.FindProperty("_selectPanel").objectReferenceValue = panel.gameObject;
         uiSO.FindProperty("_cardPrefab").objectReferenceValue = cardPrefab;
         uiSO.FindProperty("_cardContainer").objectReferenceValue = cardsRow;
         uiSO.FindProperty("_rerollsLabel").objectReferenceValue = rerollsLabel;
+        uiSO.FindProperty("_defaultSelection").objectReferenceValue = defaultSelection;
 
         uiSO.ApplyModifiedPropertiesWithoutUndo();
 
@@ -429,16 +435,21 @@ public static class AugmentAssetBuilder
         string effectFolder = DATA_FOLDER + "/Effects";
         EnsureFolder(DATA_FOLDER, "Effects");
 
-        LinkEffect("feast", EnsureEffect<FeastEffect>("FeastEffect", effectFolder),
-            "흡수할 때마다 돌진 쿨타임 0.3초 감소");
+        FeastEffect feast = EnsureEffect<FeastEffect>("FeastEffect", effectFolder);
+        SetEffectFloat(feast, "_cooldownReductionPerAbsorb", 0.3f);
+        LinkEffect("feast", feast, "적을 흡수할 때마다 돌진 쿨다운이 0.3초 감소합니다.");
+
         LinkEffect("chain_heal", EnsureEffect<ChainHealEffect>("ChainHealEffect", effectFolder),
-            "돌진 중 처치한 적이 5번째가 되면 HP 1회복.");
-        LinkEffect("energy_cycle", EnsureEffect<EnergyCycleEffect>("EnergyCycleEffect", effectFolder),
-            "처치할 때마다 돌진 쿨타임 0.2초 감소");
+            "한 번의 돌진 중 5번째 처치 시 HP를 1 회복합니다.");
+
+        EnergyCycleEffect energyCycle = EnsureEffect<EnergyCycleEffect>("EnergyCycleEffect", effectFolder);
+        SetEffectFloat(energyCycle, "_cooldownReductionPerKill", 0.2f);
+        LinkEffect("energy_cycle", energyCycle, "적을 처치할 때마다 돌진 쿨다운이 0.2초 감소하며, 돌진 중 처치도 다음 쿨다운에 반영됩니다.");
+
         LinkEffect("chain_explosion", EnsureEffect<ChainExplosionEffect>("ChainExplosionEffect", effectFolder),
-            "적 처치 시 반지름 2m 내 다른 적도 처치.");
+            "적을 처치하면 반지름 2m 안의 다른 적도 함께 처치하며, 연쇄 처치는 재귀 폭발을 일으키지 않습니다.");
         LinkEffect("bomb_collector", EnsureEffect<BombCollectorEffect>("BombCollectorEffect", effectFolder),
-            "폭탄형 적 흡수 시 땅 붕괴 대신 반지름 3m 내 주변 적 처치.");
+            "폭탄형 적을 흡수하면 땅 붕괴 대신 반지름 3m 안의 주변 적을 처치하며, 연쇄 처치는 중첩 발동하지 않습니다.");
     }
 
     /// <summary>
@@ -455,6 +466,25 @@ public static class AugmentAssetBuilder
         }
 
         return effect;
+    }
+
+    /// <summary>
+    /// effect의 SerializedObject에서 propName float 필드에 value를 써서 현재 필드명을 확정하고,
+    /// 클래스에 없는 stale 필드가 직렬화에서 제거되도록 반영한다.
+    /// </summary>
+    private static void SetEffectFloat(AugmentEffect effect, string propName, float value)
+    {
+        SerializedObject so = new SerializedObject(effect);
+        SerializedProperty prop = so.FindProperty(propName);
+        if (prop == null)
+        {
+            Debug.LogError($"[AugmentAssetBuilder] {effect.name}에 {propName} 필드가 없습니다.");
+            return;
+        }
+
+        prop.floatValue = value;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(effect);
     }
 
     /// <summary>

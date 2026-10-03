@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3497fd110aeb1af40ab9afb93e533a89, type: 3}
   m_Name: EnergyCycleEffect
   m_EditorClassIdentifier: Assembly-CSharp::EnergyCycleEffect
-  _staminaPerKill: 5
+  _cooldownReductionPerKill: 0.2

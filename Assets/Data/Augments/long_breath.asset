@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: long_breath
   _displayName: "\uBE60\uB978 \uD655\uC7A5"
-  _description: "\uD761\uC218 \uC601\uC5ED \uD655\uC7A5 \uC18D\uB3C4 +25%"
+  _description: "\uD761\uC218 \uC601\uC5ED \uD655\uC7A5 \uC18D\uB3C4\uAC00 25% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 0
   _conflictTags: []
   _modifiers:

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a8ec24c3d96fa046bce0e87a4f6b7d4, type: 3}
   m_Name: FeastEffect
   m_EditorClassIdentifier: Assembly-CSharp::FeastEffect
-  _energyPerAbsorb: 3
+  _cooldownReductionPerAbsorb: 0.3

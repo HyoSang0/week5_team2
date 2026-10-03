@@ -258,12 +258,13 @@ public class RushAbility_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// 진행 중인 드롭킥 쿨타임에서만 남은 쿨타임을 seconds만큼 줄이기 위해 _pendingCooldownReduction에 누적한다.
-    /// 누적된 값은 Dash_Move의 쿨타임 루프에서 timeElapsed에 반영되고 0으로 초기화되며, 쿨타임 중이 아니면 무시된다.
+    /// 쿨타임 진행 중이거나 돌진 이동 중일 때 남은 쿨타임을 seconds만큼 줄이기 위해 _pendingCooldownReduction에 누적한다.
+    /// 돌진 중 누적된 값은 직후 시작하는 DashCooldown의 timeElapsed에 반영되고 0으로 초기화되며, 둘 다 아니면 무시된다.
     /// </summary>
     public void ReduceCooldown(float seconds)
     {
-        if (!_inCooldown)
+        // 돌진 중 처치로 줄어든 양이 사라지지 않도록 쿨타임 진입 전에도 누적한다.
+        if (!_inCooldown && !isRushing)
         {
             return;
         }

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: black_hole
   _displayName: "\uBE14\uB799\uD640"
-  _description: "\uD761\uC218 \uBC18\uACBD +100%, \uC774\uB3D9 \uC18D\uB3C4 -20%"
+  _description: "\uD761\uC218 \uBC18\uACBD\uC774 100% \uC99D\uAC00\uD558\uC9C0\uB9CC
+    \uC774\uB3D9 \uC18D\uB3C4\uAC00 20% \uAC10\uC18C\uD569\uB2C8\uB2E4."
   _tier: 2
   _conflictTags: []
   _modifiers:

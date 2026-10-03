@@ -21,7 +21,8 @@ public class EnemyExplode : Enemy
         enemyRb.constraints = RigidbodyConstraints.FreezePositionY;
 
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+        // 풀 재사용 시 누적되지 않도록 필드 대신 사용 시점에 증강을 적용해 계산한다.
+        enemyRb.AddForce(knockbackDirection * GetAugmentedKnockbackForce(), ForceMode.Impulse);
 
         yield return new WaitForSeconds(0.5f);
         trail.enabled = false;

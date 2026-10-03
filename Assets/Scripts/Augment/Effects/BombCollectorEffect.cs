@@ -55,24 +55,30 @@ public class BombCollectorEffect : AugmentEffect
 
         _inChain = true;
 
-        _buffer.Clear();
-        Collider[] hits = Physics.OverlapSphere(center, _killRadius);
-
-        foreach (Collider hit in hits)
+        // Kill() 중 예외가 발생해도 가드가 남아 이후 연쇄 처치가 영구 차단되지 않게 복구한다.
+        try
         {
-            Enemy other = hit.GetComponentInParent<Enemy>();
-            if (other != null && !other.isDead && other.gameObject.activeInHierarchy && !_buffer.Contains(other))
+            _buffer.Clear();
+            Collider[] hits = Physics.OverlapSphere(center, _killRadius);
+
+            foreach (Collider hit in hits)
             {
-                _buffer.Add(other);
+                Enemy other = hit.GetComponentInParent<Enemy>();
+                if (other != null && !other.isDead && other.gameObject.activeInHierarchy && !_buffer.Contains(other))
+                {
+                    _buffer.Add(other);
+                }
+            }
+
+            foreach (Enemy other in _buffer)
+            {
+                other.Kill();
             }
         }
-
-        foreach (Enemy other in _buffer)
+        finally
         {
-            other.Kill();
+            _buffer.Clear();
+            _inChain = false;
         }
-
-        _buffer.Clear();
-        _inChain = false;
     }
 }

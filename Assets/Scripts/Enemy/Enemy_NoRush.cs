@@ -122,9 +122,11 @@ public class Enemy_NoRush : Enemy
     }
     protected void CheckHealthNr()
     {
-        if (healthNr <= 0 && !isDeadNr)
+        // 부모 isDead까지 함께 봐서 Kill() 경유와 무관하게 연쇄 처치/중복 이벤트를 막는다.
+        if (healthNr <= 0 && !isDeadNr && !isDead)
         {
             isDeadNr = true;
+            isDead = true;
             AugmentEvents.RaiseEnemyKilled(this);
             StartCoroutine(DieNr());
         }

@@ -38,10 +38,16 @@ public class ChainHealEffect : AugmentEffect
     }
 
     /// <summary>
-    /// 적이 처치되면 카운트를 1 늘리고 한 돌진에서 처음 5번째가 되는 순간만 HP를 healAmount 회복한다.
+    /// 적이 처치되면 실제 돌진 중 발생한 처치만 카운트해 한 돌진에서 처음 5번째가 되는 순간만 HP를 healAmount 회복한다.
     /// </summary>
     public override void OnEnemyKilled(Enemy enemy)
     {
+        // 돌진 이동 중이 아닌 처치(연쇄/충돌 등)는 연쇄 카운트에 포함하지 않는다.
+        if (_rush == null || !_rush.isRushing)
+        {
+            return;
+        }
+
         _killCount++;
 
         if (_killCount == HEAL_TRIGGER_COUNT && _playerHp != null)

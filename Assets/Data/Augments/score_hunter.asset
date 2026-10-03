@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: score_hunter
   _displayName: "\uC810\uC218 \uC0AC\uB0E5\uAFBC"
-  _description: " \uD68D\uB4DD \uC810\uC218 +50%"
+  _description: "\uD68D\uB4DD \uC810\uC218\uAC00 50% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 1
   _conflictTags: []
   _modifiers:
