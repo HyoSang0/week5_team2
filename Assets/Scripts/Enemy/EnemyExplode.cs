@@ -10,17 +10,28 @@ public class EnemyExplode : Enemy
     void Start()
     {
         ground = GameObject.Find("GroundInitializer").GetComponent<GroundInitializer>();
-        
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-   public override IEnumerator Die(bool isKnockback)
+    public override IEnumerator Die(bool isKnockback)
     {
-        Explode();
-        // 통나무처럼 굴러감
-        // Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
-        // Vector3 pushPoint = transform.position + Vector3.up * 0.5f;
-        // enemyRb.AddForceAtPosition(knockbackDirection * knockbackForce, pushPoint, ForceMode.Force);
+        trail.enabled = true;
+        // navMeshAgent.enabled = false;
+        coll.isTrigger = true;
+        enemyRb.constraints = RigidbodyConstraints.FreezePositionY;
+
+        Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
+        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+
+        yield return new WaitForSeconds(0.5f);
+        trail.enabled = false;
+        // navMeshAgent.enabled = true;
+        coll.isTrigger = false;
+        // X·Z 회전을 한 번에 고정 (개별로 대입하면 뒤의 값으로 덮어써짐)
+        enemyRb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         yield return new WaitForSeconds(0.1f);
+
+        Explode();
         enemyPool.DieEnemy(gameObject, poolType);    // 파괴 대신 풀로 반환
     }
 
