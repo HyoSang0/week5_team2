@@ -125,7 +125,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3619340856543788439}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 50
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyExplode
   health: 5
   speed: 5
-  knockbackForce: 10
+  knockbackForce: 1000
   isDead: 0
   poolType: 1
   coll: {fileID: 0}
@@ -296,6 +296,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8572922627127228912}
     m_Modifications:
+    - target: {fileID: 6991781800901730581, guid: a635cd7cc06c1004888706cff998576c, type: 3}
+      propertyPath: m_Time
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7630729203474514886, guid: a635cd7cc06c1004888706cff998576c, type: 3}
       propertyPath: m_Name
       value: Trail
