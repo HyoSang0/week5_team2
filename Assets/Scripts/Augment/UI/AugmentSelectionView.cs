@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 using TMPro;
 
@@ -19,7 +20,11 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
     [SerializeField] private Transform _cardContainer;
     [SerializeField] private TextMeshProUGUI _rerollsLabel;
 
+    [Header("Gamepad Navigation")]
+    [SerializeField] private UIDefaultSelection _defaultSelection;
+
     private readonly List<AugmentCardView> _cards = new List<AugmentCardView>();
+    private readonly bool[] _rerolled = new bool[CARD_COUNT];
     private IAugmentSelectionHandler _handler;
 
     void Awake()
@@ -30,6 +35,8 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
             card.Bind(i, this);
             _cards.Add(card);
         }
+
+        SetupNavigation();
     }
 
     /// <summary>
@@ -43,11 +50,16 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
 
     /// <summary>
     /// cards(최대 3장, null 포함 가능)와 남은 리롤 수 rerollsLeft로 선택 패널을 표시한다.
-    /// 카드 클릭 시 handler의 HandlePickClicked, 리롤 시 HandleRerollClicked이 호출된다.
+    /// 리롤 여부를 모두 초기화하고 첫 보이는 카드를 기본 선택 대상으로만 지정한다(즉시 선택하지 않는다).
     /// </summary>
     public void ShowCards(IReadOnlyList<AugmentData> cards, int rerollsLeft)
     {
         _selectPanel.SetActive(true);
+
+        for (int i = 0; i < _rerolled.Length; i++)
+        {
+            _rerolled[i] = false;
+        }
 
         for (int i = 0; i < _cards.Count; i++)
         {
@@ -59,15 +71,18 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
             }
 
             _cards[i].SetData(data);
-            _cards[i].SetRerollInteractable(rerollsLeft > 0);
+            _cards[i].SetRerollInteractable(rerollsLeft > 0 && !_rerolled[i]);
         }
 
+        SetupNavigation();
         UpdateRerollsLabel(rerollsLeft);
+        SelectFirstVisibleCard();
     }
 
     /// <summary>
-    /// index의 카드를 data로 교체해 표시하고, 그 카드의 리롤 버튼을 비활성화한다.
-    /// 나머지 카드의 리롤 버튼과 라벨은 남은 횟수 rerollsLeft에 맞춘다.
+    /// index의 카드를 data로 교체해 표시하고 _rerolled[index]를 true로 기록해 그 카드의 리롤 버튼을 비활성화한다.
+    /// 나머지 카드의 리롤 버튼은 남은 횟수 rerollsLeft와 각 카드의 리롤 여부로 갱신하고,
+    /// 패드로 조작 중일 때만 교체된 카드를 기본 선택으로 되돌린다.
     /// </summary>
     public void ReplaceCard(int index, AugmentData data, int rerollsLeft)
     {
@@ -78,17 +93,20 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
 
         _cards[index].SetVisible(true);
         _cards[index].SetData(data);
-        _cards[index].SetRerollInteractable(false);
+        _rerolled[index] = true;
 
         for (int i = 0; i < _cards.Count; i++)
         {
-            if (i != index)
-            {
-                _cards[i].SetRerollInteractable(rerollsLeft > 0);
-            }
+            _cards[i].SetRerollInteractable(rerollsLeft > 0 && !_rerolled[i]);
         }
 
         UpdateRerollsLabel(rerollsLeft);
+
+        if (_defaultSelection != null)
+        {
+            _defaultSelection.SetDefault(_cards[index].SelectButton);
+            _defaultSelection.SelectDefaultIfNavigating();
+        }
     }
 
     /// <summary>
@@ -101,18 +119,91 @@ public class AugmentSelectionView : MonoBehaviour, IAugmentCardHandler
 
     /// <summary>
     /// index번 카드의 선택 입력을 바인딩된 handler의 HandlePickClicked로 위임한다.
+    /// _defaultSelection의 입력 잠금 중이면 무시한다.
     /// </summary>
     public void HandleCardSelected(int index)
     {
+        if (_defaultSelection.IsInputLocked)
+        {
+            return;
+        }
+
         _handler?.HandlePickClicked(index);
     }
 
     /// <summary>
     /// index번 카드의 리롤 입력을 바인딩된 handler의 HandleRerollClicked로 위임한다.
+    /// _defaultSelection의 입력 잠금 중이면 무시한다.
     /// </summary>
     public void HandleCardRerolled(int index)
     {
+        if (_defaultSelection.IsInputLocked)
+        {
+            return;
+        }
+
         _handler?.HandleRerollClicked(index);
+    }
+
+    /// <summary>
+    /// 보이는 카드만 대상으로 선택/리롤 버튼의 Navigation을 Explicit으로 연결한다.
+    /// 선택 버튼은 좌/우가 이웃 카드의 선택 버튼(양 끝은 없음), 아래가 같은 카드의 리롤 버튼,
+    /// 리롤 버튼은 위가 같은 카드의 선택 버튼, 좌/우가 이웃 카드의 리롤 버튼이다.
+    /// </summary>
+    private void SetupNavigation()
+    {
+        List<AugmentCardView> visible = new List<AugmentCardView>();
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            if (_cards[i].gameObject.activeSelf)
+            {
+                visible.Add(_cards[i]);
+            }
+        }
+
+        for (int k = 0; k < visible.Count; k++)
+        {
+            Button neighborSelectLeft = k > 0 ? visible[k - 1].SelectButton : null;
+            Button neighborSelectRight = k < visible.Count - 1 ? visible[k + 1].SelectButton : null;
+
+            Navigation selectNav = visible[k].SelectButton.navigation;
+            selectNav.mode = Navigation.Mode.Explicit;
+            selectNav.selectOnLeft = neighborSelectLeft;
+            selectNav.selectOnRight = neighborSelectRight;
+            selectNav.selectOnUp = null;
+            selectNav.selectOnDown = visible[k].RerollButton;
+            visible[k].SelectButton.navigation = selectNav;
+
+            Navigation rerollNav = visible[k].RerollButton.navigation;
+            rerollNav.mode = Navigation.Mode.Explicit;
+            rerollNav.selectOnUp = visible[k].SelectButton;
+            rerollNav.selectOnLeft = k > 0 ? visible[k - 1].RerollButton : null;
+            rerollNav.selectOnRight = k < visible.Count - 1 ? visible[k + 1].RerollButton : null;
+            rerollNav.selectOnDown = null;
+            visible[k].RerollButton.navigation = rerollNav;
+        }
+    }
+
+    /// <summary>
+    /// 첫 번째로 보이는 카드의 선택 버튼을 기본 선택 대상으로만 지정하고 실제 선택은 하지 않는다.
+    /// 실제 선택은 패드 입력이 감지됐을 때 UIDefaultSelection이 수행한다.
+    /// _defaultSelection이 없거나 보이는 카드가 없으면 아무것도 하지 않는다.
+    /// </summary>
+    private void SelectFirstVisibleCard()
+    {
+        if (_defaultSelection == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            if (_cards[i].gameObject.activeSelf)
+            {
+                _defaultSelection.SetDefault(_cards[i].SelectButton);
+                return;
+            }
+        }
     }
 
     /// <summary>

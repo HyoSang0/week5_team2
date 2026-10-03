@@ -18,6 +18,9 @@ public class AugmentCardView : MonoBehaviour
 
     private IAugmentCardHandler _handler;
 
+    public Button SelectButton => _selectButton;
+    public Button RerollButton => _rerollButton;
+
     /// <summary>
     /// 카드 번호 index와 입력 처리자 handler를 바인딩하고 버튼 리스너를 한 번만 등록한다.
     /// 반환값은 없고 이후 클릭은 handler의 HandleCardSelected/HandleCardRerolled로 위임된다.

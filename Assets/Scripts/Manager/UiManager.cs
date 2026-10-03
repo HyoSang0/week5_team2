@@ -1,18 +1,15 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
 {
     [Header("HUD")]
     [SerializeField] private Slider hpSlider;
-    // [SerializeField] private Slider aeSlider;
-    // [SerializeField] private Slider deSlider;
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI hpText;
-    // [SerializeField] private TextMeshProUGUI aeText;
-    // [SerializeField] private TextMeshProUGUI deText;
 
     [Header("HP Follow")]
     [SerializeField] private Vector2 _hpScreenOffset = new Vector2(0f, -50f);
@@ -21,11 +18,8 @@ public class UiManager : MonoBehaviour
     private Camera _mainCamera;
 
     [Header("Reference")]
-    public PlayerHp pHp;
-    // public AbsortionAbility_Sejin absorb;
-    // public RushAbility_Sejin rush;
-
-    private float tempTimer = 0f;
+    [FormerlySerializedAs("pHp")]
+    [SerializeField] private PlayerHp _playerHp;
 
     void Awake()
     {
@@ -35,42 +29,32 @@ public class UiManager : MonoBehaviour
             .rootCanvas
             .GetComponent<RectTransform>();
         _mainCamera = Camera.main;
-
-        UpdateHud();
-    }
-
-    // 플레이어 HP를 읽어 HP 텍스트와 슬라이더에 반영한다.
-    // pHp의 현재 HP와 최대 HP를 사용하며 UI 표시 값을 변경한다.
-    private void UpdateHud()
-    {
-        hpText.text = string.Format("HP:{0:F0}/{1}", pHp.playerHP, pHp.maxPlayerHP);
-        hpSlider.value = (float)pHp.playerHP / pHp.maxPlayerHP;
-
-        // aeText.text = string.Format("AE : {0:F0} / 30", absorb.stamina);
-        // deText.text = string.Format("DE : {0:F0} / 30", rush.energy);
-        // aeSlider.value = absorb.stamina / absorb.maxStamina;
-        // deSlider.value = rush.energy / rush.maxEnergy;
     }
 
     void Start()
     {
+        _playerHp.OnHpChanged += UpdateHud;
+        UpdateHud();
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        UpdateHud();
+        _playerHp.OnHpChanged -= UpdateHud;
+    }
 
-        tempTimer += Time.deltaTime;
-        if (tempTimer > 2f)
-        {
-            tempTimer = 0f;
-            // Debug.Log(pHp.playerHP + " / " + pHp.maxPlayerHP);
-        }
+    /// <summary>
+    /// PlayerHp의 현재 HP와 최대 HP를 "체력: {0}/{1}" 텍스트와 슬라이더 값에 반영한다.
+    /// PlayerHp.OnHpChanged 이벤트와 Start에서 호출된다.
+    /// </summary>
+    private void UpdateHud()
+    {
+        hpText.text = string.Format("체력: {0}/{1}", _playerHp.playerHP, _playerHp.maxPlayerHP);
+        hpSlider.value = (float)_playerHp.playerHP / _playerHp.maxPlayerHP;
     }
 
     void LateUpdate()
     {
-        Vector3 screenPosition = _mainCamera.WorldToScreenPoint(pHp.transform.position);
+        Vector3 screenPosition = _mainCamera.WorldToScreenPoint(_playerHp.transform.position);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _canvasRect,

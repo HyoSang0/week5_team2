@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,6 +17,11 @@ public class PlayerHp : MonoBehaviour
     private Vignette vignette;
     public int playerHP = 5;
     public int maxPlayerHP = 5;
+
+    /// <summary>
+    /// playerHP/maxPlayerHP 값이 변경되었음을 UI 구독자에게 알리는 이벤트.
+    /// </summary>
+    public event Action OnHpChanged;
 
     [Header("플레이어 무적 상태 표시 관련")]
     public bool isUnBeatHit = false;
@@ -78,6 +84,8 @@ public class PlayerHp : MonoBehaviour
     {
         //체력에 따라 시야 vignette 어둡기 처리
         darkVignette.UpdateVignetteDarkness(playerHP, maxPlayerHP);
+
+        OnHpChanged?.Invoke();
     }
 
     #region 피격 처리 및 회복
@@ -85,7 +93,7 @@ public class PlayerHp : MonoBehaviour
     /// <summary>
     /// PlayerStats의 MaxHp 증강을 기준값에 적용해 maxPlayerHP를 재계산한다.
     /// 최대치가 늘면 늘어난 만큼 playerHP를 올리고, 줄면 playerHP를 최대치로 clamp한다.
-    /// 변경된 값은 hpText와 gameManager UI, Dark Vignette에 반영한다.
+    /// 변경된 값은 OnHpChanged 구독자와 Dark Vignette에 알린다.
     /// </summary>
     private void ApplyAugmentStats()
     {
@@ -128,7 +136,7 @@ public class PlayerHp : MonoBehaviour
 
     /// <summary>
     /// amount만큼 플레이어 HP를 회복한다. playerHP는 maxPlayerHP를 초과하지 않는다.
-    /// 변경된 playerHP를 gameManager.PlayerAttackedUI로 UI에 반영한다.
+    /// 변경된 playerHP를 OnHpChanged 구독자에게 알려 UI에 반영한다.
     /// </summary>
     public void Heal(int amount)
     {

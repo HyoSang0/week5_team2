@@ -83,7 +83,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     // context는 입력 이벤트이며 활성 상태가 변경될 수 있다.
     private void ActiveAbility(InputAction.CallbackContext context)
     {
-        if (AugmentSelection.IsOpen)
+        if (GamePause.IsPaused)
         {
             return;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 지정한 시점에 증강 선택 UI를 열고 선택된 증강을 PlayerStats에 적용하는 런타임 관리자.
-/// AugmentSystem 프리팹의 루트에 PlayerStats와 함께 배치한다.
+/// MainScene의 UiManager 오브젝트에 PlayerStats와 함께 배치한다.
 /// </summary>
 public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 {
@@ -42,12 +42,12 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     private readonly List<AugmentEffect> _subscribedEffects = new List<AugmentEffect>();
     private readonly AugmentData[] _currentCards = new AugmentData[CARD_COUNT];
     private readonly bool[] _cardRerolled = new bool[CARD_COUNT];
+    private readonly HashSet<AugmentData> _seenThisSelection = new HashSet<AugmentData>();
     private AugmentTier[] _runPattern;
     private AugmentTier _currentTier;
     private float _elapsed;
     private int _nextPickIndex;
     private int _rerollsLeft;
-    private float _savedTimeScale = 1f;
 
     void Awake()
     {
@@ -138,11 +138,12 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
     /// <summary>
     /// 이번 회차 등급으로 카드를 추첨하고 UI를 연다.
-    /// Time.timeScale을 저장한 뒤 0으로 바꾸고 AugmentSelection.IsOpen을 true로 설정한다.
+    /// GamePause로 AugmentSelection 원인의 일시정지를 걸고 AugmentSelection.IsOpen을 true로 설정한다.
     /// </summary>
     private void OpenSelection()
     {
         _currentTier = _runPattern[Mathf.Min(_nextPickIndex, _runPattern.Length - 1)];
+        _seenThisSelection.Clear();
         FillCards(_currentTier);
 
         if (CountCards() < CARD_COUNT)
@@ -163,20 +164,19 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         }
 
         AugmentSelection.IsOpen = true;
-        _savedTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
+        GamePause.Pause(PauseReason.AugmentSelection);
 
         _selectionView.ShowCards(_currentCards, _rerollsLeft);
     }
 
     /// <summary>
-    /// 빈 슬롯에 tier의 후보(보유/충돌 제외, 현재 표시 카드 제외)를 무작위로 채운다.
-    /// 변경된 카드는 _currentCards에 저장한다.
+    /// 빈 슬롯에 tier의 후보(보유/충돌 제외, 현재 표시 카드와 이번 선택 창에서 이미 보여준 카드 제외)를 무작위로 채운다.
+    /// 채운 카드는 _currentCards에 저장하고 _seenThisSelection에 추가한다.
     /// </summary>
     private void FillCards(AugmentTier tier)
     {
         List<AugmentData> candidates = _database.GetCandidates(tier, _owned);
-        candidates.RemoveAll(card => card == null || IsDisplayed(card));
+        candidates.RemoveAll(card => card == null || IsDisplayed(card) || _seenThisSelection.Contains(card));
 
         for (int i = 0; i < CARD_COUNT && candidates.Count > 0; i++)
         {
@@ -187,13 +187,14 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
             int pick = UnityEngine.Random.Range(0, candidates.Count);
             _currentCards[i] = candidates[pick];
+            _seenThisSelection.Add(candidates[pick]);
             candidates.RemoveAt(pick);
         }
     }
 
     /// <summary>
     /// index의 카드가 선택됐다는 UI 입력을 처리한다.
-    /// 증강을 owned에 추가하고 PlayerStats에 수정자를 적용한 뒤 UI를 닫고 시간을 복원한다.
+    /// 증강을 owned에 추가하고 PlayerStats에 수정자를 적용한 뒤 UI를 닫고 일시정지를 해제한다.
     /// </summary>
     public void HandlePickClicked(int index)
     {
@@ -234,7 +235,8 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
     /// <summary>
     /// index의 카드를 리롤한다는 UI 입력을 처리한다.
-    /// 남은 리롤이 있고 해당 카드가 아직 리롤되지 않았으며 대체 후보가 있을 때만 같은 등급에서 1장을 교체하고 횟수를 차감한다.
+    /// 남은 리롤이 있고 해당 카드가 아직 리롤되지 않았으며 이번 선택 창에서 아직 보여주지 않은 대체 후보가 있을 때만 1장을 교체하고 횟수를 차감한다.
+    /// 대체 후보가 없으면 아무것도 하지 않는다.
     /// </summary>
     public void HandleRerollClicked(int index)
     {
@@ -243,16 +245,14 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
             return;
         }
 
-        List<AugmentData> candidates = _database.GetCandidates(_currentTier, _owned);
-        candidates.RemoveAll(card => card == null || IsDisplayed(card));
-
-        if (candidates.Count == 0)
+        AugmentData replacement = FindRerollReplacement();
+        if (replacement == null)
         {
             return;
         }
 
-        AugmentData replacement = candidates[UnityEngine.Random.Range(0, candidates.Count)];
         _currentCards[index] = replacement;
+        _seenThisSelection.Add(replacement);
         _cardRerolled[index] = true;
         _rerollsLeft--;
 
@@ -260,11 +260,58 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     }
 
     /// <summary>
-    /// 선택 UI를 숨기고 Time.timeScale을 저장값으로 복원한 뒤 AugmentSelection.IsOpen을 false로 되돌린다.
+    /// 리롤 대체 카드를 현재 등급에서 찾고, 후보가 없으면 _allTiers 순서로 다른 등급에서 찾는다.
+    /// 보유 중이거나 이번 선택 창에서 이미 보여준 증강은 제외한다.
+    /// 후보가 없으면 null을 반환한다.
+    /// </summary>
+    private AugmentData FindRerollReplacement()
+    {
+        AugmentData replacement = PickRerollCandidate(_currentTier);
+        if (replacement != null)
+        {
+            return replacement;
+        }
+
+        foreach (AugmentTier tier in _allTiers)
+        {
+            if (tier == _currentTier)
+            {
+                continue;
+            }
+
+            replacement = PickRerollCandidate(tier);
+            if (replacement != null)
+            {
+                return replacement;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// tier의 후보 중 보유·현재 표시·이미 보여준 증강을 제외한 1장을 무작위로 반환한다.
+    /// 후보가 없으면 null을 반환한다.
+    /// </summary>
+    private AugmentData PickRerollCandidate(AugmentTier tier)
+    {
+        List<AugmentData> candidates = _database.GetCandidates(tier, _owned);
+        candidates.RemoveAll(card => card == null || IsDisplayed(card) || _seenThisSelection.Contains(card));
+
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+    }
+
+    /// <summary>
+    /// 선택 UI를 숨기고 GamePause로 AugmentSelection 원인의 일시정지를 해제한 뒤 AugmentSelection.IsOpen을 false로 되돌린다.
     /// </summary>
     private void CloseSelection()
     {
-        Time.timeScale = _savedTimeScale;
+        GamePause.Resume(PauseReason.AugmentSelection);
         AugmentSelection.IsOpen = false;
     }
 

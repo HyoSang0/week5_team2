@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1898016410921397566}
   - component: {fileID: 7999409731459955536}
   - component: {fileID: 167281254831942915}
+  - component: {fileID: 7617790551627893088}
   m_Layer: 5
   m_Name: UIAugmentSelectionView
   m_TagString: Untagged
@@ -94,6 +95,21 @@ MonoBehaviour:
   _cardPrefab: {fileID: 5889814401838288933, guid: 6541a14d7708e3c45aca8d26b45565d7, type: 3}
   _cardContainer: {fileID: 8287208280754890317}
   _rerollsLabel: {fileID: 3023620302105976450}
+  _defaultSelection: {fileID: 7617790551627893088}
+--- !u!114 &7617790551627893088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916208185385235032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 488f5c26f8ce8eb49a6acf3f72708384, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIDefaultSelection
+  _defaultSelectable: {fileID: 0}
+  _inputLockSeconds: 0.3
 --- !u!1 &4566466470589094880
 GameObject:
   m_ObjectHideFlags: 0

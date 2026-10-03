@@ -28,7 +28,7 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private GameObject dashReadyEffectPrefab;
     private GameObject dashReadyEffectObject;
-    private Image coolDownImage;
+    [SerializeField] private Image _coolDownImage;
 
     public UnityEvent onStartRush;
     public UnityEvent onEndRush;
@@ -71,7 +71,6 @@ public class RushAbility_Sejin : MonoBehaviour
         _baseCoolTime = coolTime;
         _baseNoDamageTime = noDamageTime;
         _baseRushSpeed = rushSpeed;
-        coolDownImage = GameObject.Find("Fill").GetComponent<Image>();
 
         dashReadyEffectPrefab = Resources.Load<GameObject>("Prefabs/DashReadyEffect");
         dashReadyEffectObject = Instantiate(dashReadyEffectPrefab, transform.position, Quaternion.identity);
@@ -134,7 +133,7 @@ public class RushAbility_Sejin : MonoBehaviour
     // ctx는 입력 이벤트이며 드롭킥 상태와 플레이어 무적시간을 변경한다.
     private void StartRush(InputAction.CallbackContext ctx)
     {
-        if (AugmentSelection.IsOpen)
+        if (GamePause.IsPaused)
         {
             return;
         }
@@ -177,14 +176,14 @@ public class RushAbility_Sejin : MonoBehaviour
         _inCooldown = true;
         while (timeElapsed < coolTime)
         {
-            coolDownImage.fillAmount = timeElapsed / coolTime;
+            _coolDownImage.fillAmount = timeElapsed / coolTime;
             timeElapsed += Time.deltaTime + _pendingCooldownReduction;
             _pendingCooldownReduction = 0f;
             yield return null;
         }
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
-        coolDownImage.fillAmount = 1;
+        _coolDownImage.fillAmount = 1;
         // dashReadyEffect.transform.position = transform.position;
         dashReadyEffectObject.SetActive(true);
         isDashing = false;
