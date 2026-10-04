@@ -15,7 +15,7 @@ public sealed class StatisticsManager
 
     private static StatisticsManager _instance;
 
-    private readonly Dictionary<GameStatisticType, int> _counts = new Dictionary<GameStatisticType, int>();
+    private readonly Dictionary<GameStatisticType, Dictionary<EnemyPool.PoolType, int>> _counts = new Dictionary<GameStatisticType, Dictionary<EnemyPool.PoolType, int>>();
 
     /// <summary>
     /// StatisticsManager의 전역 인스턴스를 반환한다. _instance를 사용하며, 처음 접근 시 새 인스턴스를 생성해 저장한다.
@@ -41,23 +41,49 @@ public sealed class StatisticsManager
     }
 
     /// <summary>
-    /// 지정한 통계 유형의 누적 수를 1 증가시킨다. type으로 _counts를 갱신하며, 첫 기록인 유형은 0에서 시작한다.
+    /// 지정한 통계 유형의 누적 수를 적 풀 타입별로 1 증가시킨다. type과 enemyType으로 _counts의 내부 사전을 갱신하며, 첫 기록인 조합은 0에서 시작한다.
     /// </summary>
-    public void Record(GameStatisticType type)
+    public void Record(GameStatisticType type, EnemyPool.PoolType enemyType)
     {
-        _counts[type] = GetCount(type) + 1;
+        if (!_counts.TryGetValue(type, out Dictionary<EnemyPool.PoolType, int> enemyTypeCounts))
+        {
+            enemyTypeCounts = new Dictionary<EnemyPool.PoolType, int>();
+            _counts[type] = enemyTypeCounts;
+        }
+
+        enemyTypeCounts[enemyType] = GetCount(type, enemyType) + 1;
     }
 
     /// <summary>
-    /// 지정한 통계 유형의 누적 수를 반환한다. type으로 _counts를 조회하며, 아직 기록되지 않은 유형은 0을 반환한다.
+    /// 지정한 통계 유형의 전체 누적 수를 반환한다. 같은 유형의 모든 적 풀 타입별 누적 수를 합산해 조회하며, 아직 기록되지 않은 유형은 0을 반환한다.
     /// </summary>
     public int GetCount(GameStatisticType type)
     {
-        return _counts.TryGetValue(type, out int count) ? count : 0;
+        if (!_counts.TryGetValue(type, out Dictionary<EnemyPool.PoolType, int> enemyTypeCounts))
+        {
+            return 0;
+        }
+
+        int total = 0;
+        foreach (int count in enemyTypeCounts.Values)
+        {
+            total += count;
+        }
+
+        return total;
     }
 
     /// <summary>
-    /// 모든 통계 누적 수를 지워 새 런을 시작한다. _counts를 비우며, GameManager의 실제 인스턴스가 런 시작 시 호출한다.
+    /// 지정한 통계 유형에서 특정 적 풀 타입의 누적 수를 반환한다. type과 enemyType으로 _counts를 조회하며, 아직 기록되지 않은 조합은 0을 반환한다.
+    /// </summary>
+    public int GetCount(GameStatisticType type, EnemyPool.PoolType enemyType)
+    {
+        return _counts.TryGetValue(type, out Dictionary<EnemyPool.PoolType, int> enemyTypeCounts)
+            && enemyTypeCounts.TryGetValue(enemyType, out int count) ? count : 0;
+    }
+
+    /// <summary>
+    /// 모든 통계 누적 수를 지워 새 런을 시작한다. 풀 타입별 누적을 함께 담는 _counts를 비우며, GameManager의 실제 인스턴스가 런 시작 시 호출한다.
     /// </summary>
     public void ResetRun()
     {
