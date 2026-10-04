@@ -15,6 +15,11 @@ public class DeathZone : MonoBehaviour
         Enemy fallEnemy = other.GetComponentInParent<Enemy>();
         if (fallEnemy != null)
         {
+            // 살아 있는 적의 첫 진입만 집계한다. DoDie가 isDead를 즉시 세우므로 중복 트리거·이미 사망한 적은 세지 않는다.
+            if (!fallEnemy.isDead)
+            {
+                GameManager.Instance.RecordEnemyFall(fallEnemy);
+            }
             fallEnemy.DoDie(false);
         }
     }

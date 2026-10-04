@@ -140,14 +140,15 @@ public class Enemy : MonoBehaviour
         StartCoroutine(Die(isKnockback));
     }
     /// <summary>
-    /// 적을 즉시 사망 처리하고 점수를 등록한다. isDead가 true면 중복 실행하지 않는다.
-    /// GameManager.Instance.AddScore(enemyScore)를 호출한 뒤 넉백 사망(Die(true))을 시작한다.
+    /// 체력 검사에서 처치가 확정된 적의 처치 이벤트와 점수를 한 번 등록하고 사망 처리를 시작한다.
+    /// isDead가 이미 true면 아무 상태도 바꾸지 않으며, 처치 집계 후 Die(true) 코루틴을 실행한다.
     /// </summary>
     public void Kill()
     {
         if (isDead) return;
         isDead = true;
         AugmentEvents.RaiseEnemyKilled(this);
+        GameManager.Instance.RecordEnemyKill(this);
         GameManager.Instance.AddScore(enemyScore);
         StartCoroutine(Die(true));
     }
@@ -168,6 +169,10 @@ public class Enemy : MonoBehaviour
             absorbAura.SetActive(isTarget);
     }
 
+    /// <summary>
+    /// 적 흡수를 시도한다. 사망·비활성·흡수 불가(NoAbsort)·참조 누락 가드를 통과해야 성공하며, 성공 시 isDead를 true로 바꾸고 흡수 이펙트와 풀 반환을 처리한다.
+    /// 성공 시 true, 가드에서 실패하면 false를 반환한다.
+    /// </summary>
     public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival, Transform uiWorldMarker)
     {
         if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
@@ -179,6 +184,8 @@ public class Enemy : MonoBehaviour
         }
 
         isDead = true;
+        // 가드를 모두 통과한 성공 경로에서만 집계한다. isDead가 먼저 세워지므로 재호출 시 중복 집계되지 않는다.
+        GameManager.Instance.RecordEnemyAbsorb(this);
         Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
 
         // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트 (원본이 비활성일 수 있어 Get에서 명시 활성화)
