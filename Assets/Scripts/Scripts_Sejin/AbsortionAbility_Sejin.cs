@@ -7,6 +7,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     // public TextMeshProUGUI absortEnergyText;
 
     private InputSystem_Actions inputActions;
+    private PlayerController _playerController;
     public GameObject AbsortionArea;
 
     // public float stamina = 30f;
@@ -43,6 +44,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     void Start()
     {
+        _playerController = GetComponent<PlayerController>();
         inputActions.Player.Ability_Sejin.started += ActiveAbility;
         inputActions.Player.Ability_Sejin.canceled += DeActiveAbility;
 
@@ -98,8 +100,10 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StopAbility();
     }
 
-    // 현재 시각과 쿨타임 종료 시각을 비교해 흡수 영역을 켠다.
-    // 활성 상태를 isStartAbsortion에 저장한다.
+    /// <summary>
+    /// 쿨다운이 아니고 아직 흡수 중이 아닐 때 흡수를 시작한다.
+    /// Time.time과 _nextAvailableTime을 비교해 성공 시 흡수 영역을 켜고 PlayerController에 Charge 이동 상태를 알린다.
+    /// </summary>
     private void StartAbility()
     {
         // if (stamina < activateStamina)
@@ -111,10 +115,13 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         AbsortionArea.SetActive(true);
         isStartAbsortion = true;
+        _playerController.SetAbsorbState(true);
     }
 
-    // 활성화된 흡수 영역을 끄고 다음 사용 가능 시각을 설정한다.
-    // _cooldownSeconds를 사용하며 영역 상태와 _nextAvailableTime을 변경한다.
+    /// <summary>
+    /// 활성화된 흡수 영역을 끄고 PlayerController의 흡수 이동 상태를 해제한 뒤 다음 사용 가능 시각을 설정한다.
+    /// _cooldownSeconds를 사용하며 영역 상태, isStartAbsortion, _nextAvailableTime을 변경한다.
+    /// </summary>
     private void StopAbility()
     {
         if (!isStartAbsortion)
@@ -122,6 +129,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         AbsortionArea.SetActive(false);
         isStartAbsortion = false;
+        _playerController.SetAbsorbState(false);
         _nextAvailableTime = Time.time + _cooldownSeconds;
     }
 

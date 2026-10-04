@@ -60,9 +60,45 @@ public class AbsortionArea_Sejin : MonoBehaviour
     }
 
 
+    private void Start()
+    {
+        // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged += HandleStatsChanged;
+        }
+
+        ApplyAugmentStats();
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= HandleStatsChanged;
+        }
+    }
+
+    /// <summary>
+    /// 스탯 변경 시 호출되어 AbsorbRadius, AbsorbGrowSpeed 증강을 다시 적용하고, 흡수 영역이 활성이면 현재 반경을 새 최소/최대 범위로 클램프해 스케일을 동기화한다.
+    /// 비활성 상태에서는 값만 갱신하고 transform은 건드리지 않으며, 실제 반영은 활성화 시 OnEnable에서 수행한다.
+    /// </summary>
+    private void HandleStatsChanged()
+    {
+        ApplyAugmentStats();
+
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
+        area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
+        transform.localScale = originScale * area_radus;
+    }
+
     private void OnEnable()
     {
-        // Start 실행 시점이 첫 활성화로 밀려 구독 대신 활성화 시점에 현재 스탯을 읽는다.
+        // 활성화 시점에 현재 스탯을 읽어 영역의 초기 반경과 확장 속도에 반영한다.
         ApplyAugmentStats();
 
         enemySet.Clear();

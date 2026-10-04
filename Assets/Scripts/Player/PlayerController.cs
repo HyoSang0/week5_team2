@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour
 
     private State state;
 
+    // 흡수 ability가 활성 상태일 때 true로 유지하며, 돌진 종료 후 복귀할 상태를 결정하는 데 쓴다.
+    private bool _isAbsorbing;
+
     private Vector2 moveInput;
 
     // 맵 밖으로 못나가도록
@@ -25,6 +28,8 @@ public class PlayerController : MonoBehaviour
 
     // 증강 스탯 재계산에 사용할 moveSpeed의 기준값
     private float _baseMoveSpeed;
+    // 증강 스탯 재계산에 사용할 chargeSpeed의 기준값
+    private float _baseChargeSpeed;
 
     private PlayerFallRecovery fallRecovery;
 
@@ -34,13 +39,12 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         fallRecovery = GetComponent<PlayerFallRecovery>();
         _baseMoveSpeed = moveSpeed;
+        _baseChargeSpeed = chargeSpeed;
     }
     void Start()
     {
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         inputActions.Player.Move.canceled += _ => moveInput = Vector2.zero;
-        inputActions.Player.Ability_Sejin.started += _ => { SetState(State.Charge); };
-        inputActions.Player.Ability_Sejin.canceled += _ => { SetState(State.None); };
 
         // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
         if (PlayerStats.Instance != null)
@@ -70,7 +74,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// PlayerStats의 MoveSpeed 증강을 기준값에 적용해 moveSpeed를 재계산한다.
+    /// PlayerStats의 MoveSpeed 증강을 기준값에 적용해 일반 이동(moveSpeed)과 흡수 이동(chargeSpeed) 속도를 모두 재계산한다.
     /// PlayerStats.Instance가 없으면 아무것도 하지 않는다.
     /// </summary>
     private void ApplyAugmentStats()
@@ -81,6 +85,7 @@ public class PlayerController : MonoBehaviour
         }
 
         moveSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseMoveSpeed);
+        chargeSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseChargeSpeed);
     }
 
     void Update()
@@ -118,16 +123,45 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 돌진 시작 이벤트로 이동 상태를 Rush로 변경한다. 흡수 활성 여부(_isAbsorbing)는 변경하지 않는다.
+    /// 입력값과 반환값은 없고 state만 변경한다.
+    /// </summary>
     public void StartRush()
     {
         state = State.Rush;
     }
 
+    /// <summary>
+    /// 돌진 종료 이벤트로 Rush 상태를 해제한다. 흡수가 여전히 활성이면 Charge로, 아니면 None으로 복귀한다.
+    /// _isAbsorbing을 사용하며 state를 변경한다.
+    /// </summary>
     public void EndRush()
     {
-        state = State.None;
+        state = _isAbsorbing ? State.Charge : State.None;
     }
 
+    /// <summary>
+    /// 흡수 ability의 활성 여부를 통보받아 흡수 이동 상태를 분리 관리한다.
+    /// absorbing이 true면 성공 시작, false면 해제를 의미하고, 돌진 중이 아닐 때만 state를 Charge/None으로 반영한다.
+    /// _isAbsorbing을 변경하며, 돌진 중에는 state를 건드리지 않는다.
+    /// </summary>
+    public void SetAbsorbState(bool absorbing)
+    {
+        _isAbsorbing = absorbing;
+
+        if (state == State.Rush)
+        {
+            return;
+        }
+
+        state = absorbing ? State.Charge : State.None;
+    }
+
+    /// <summary>
+    /// 외부 요청으로 이동 상태를 직접 설정한다.
+    /// state를 받아 상태 머신의 현재 상태를 변경한다.
+    /// </summary>
     public void SetState(State state)
     {
         this.state = state;
