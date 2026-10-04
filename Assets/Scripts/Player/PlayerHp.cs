@@ -6,8 +6,10 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 
-public class PlayerHp : MonoBehaviour
+public class PlayerHp : MonoBehaviour, IDamageable, IHealable
 {
+    private const float HIT_INVINCIBILITY_SECONDS = 2f;
+
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
     [SerializeField] private Volume volume;
@@ -114,22 +116,50 @@ public class PlayerHp : MonoBehaviour
     }
 
     /// <summary>
-    /// 피격 판정
+    /// 모든 전투 피해가 거치는 단일 피해 진입점이다. DamageInfo의 Kind별 무적 정책을 검사한 뒤 ReduceHealth로 체력을 감소시킨다.
+    /// damageInfo는 피해량과 피해 유형을 제공하며, 피해가 적용되었으면 true를 반환한다.
+    /// EnemyContact는 피격 무적·대쉬 무적 중에는 거부되고, 적용되면 2초 피격 무적을 시작한다.
+    /// NoRushReflection은 같은 무적 정책으로 거부되지만, 적용되어도 새로운 피격 무적을 부여하지 않는다.
+    /// 그 외 Kind는 무적 정책 우회를 막기 위해 거부하며, 낙하 피해는 ApplyFallDamage 경로에서 처리한다.
     /// </summary>
-    /// <param name="damage"></param>
-    public void PlayerAttacked(int damage)
+    public bool TakeDamage(DamageInfo damageInfo)
     {
-        //까시(레고) 피격 방지용
-        if (isUnBeatHit)
-            return;
-        ReduceHealth(damage);
+        if (!damageInfo.HasSource || damageInfo.IsLethal || damageInfo.Amount <= 0)
+        {
+            return false;
+        }
+
+        switch (damageInfo.Kind)
+        {
+            case DamageKind.EnemyContact:
+            case DamageKind.NoRushReflection:
+                // 전투 피해는 피격 무적과 대쉬 무적 중에는 적용되지 않는다.
+                if (isUnBeatHit || isUnBeatDash)
+                {
+                    return false;
+                }
+                break;
+            default:
+                // 플레이어가 수신하지 않는 Kind는 무적 정책 우회를 막기 위해 거부한다.
+                return false;
+        }
+
+        ReduceHealth(damageInfo.Amount);
+
+        if (damageInfo.Kind == DamageKind.EnemyContact)
+        {
+            // 접촉 피해는 실제로 적용되었을 때만 2초 피격 무적을 시작한다.
+            ApplyHitInvincibility(HIT_INVINCIBILITY_SECONDS);
+        }
+
+        return true;
     }
 
     /// <summary>
-    /// 체력 감소
+    /// hp만큼 플레이어 체력을 감소시키고 피격 표시, 체력 변경 통지와 사망 판정을 수행한다.
+    /// hp는 감소량이며 playerHP를 갱신하고 0 이하가 되면 게임오버를 요청한다.
     /// </summary>
-    /// <param name="hp"></param>
-    public void ReduceHealth(int hp)
+    private void ReduceHealth(int hp)
     {
         //플레이어 체력 감소 처리
         playerHP -= hp;
@@ -144,6 +174,10 @@ public class PlayerHp : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// URP Vignette의 강도 값을 적용한다.
+    /// intensity는 적용할 강도이며 Vignette override 상태와 값을 변경한다.
+    /// </summary>
     private void SetVignetteIntensity(float intensity)
     {
         vignette.intensity.overrideState = true;
@@ -151,13 +185,24 @@ public class PlayerHp : MonoBehaviour
     }
 
     /// <summary>
-    /// amount만큼 플레이어 HP를 회복한다. playerHP는 maxPlayerHP를 초과하지 않는다.
-    /// 변경된 playerHP를 OnHpChanged 구독자에게 알려 UI에 반영한다.
+    /// healingInfo에 따라 플레이어 HP를 회복하는 IHealable 진입점이다.
+    /// 회복량이 0 이하이거나 비활성 상태이거나 사망했거나 이미 최대 체력이면 상태를 변경하지 않고 false를 반환한다.
+    /// 실제로 playerHP가 증가하면 maxPlayerHP를 초과하지 않도록 clamp하고 OnHpChanged 구독자에게 알린 뒤 true를 반환한다.
     /// </summary>
-    public void Heal(int amount)
+    public bool ReceiveHealing(HealingInfo healingInfo)
     {
-        playerHP = Mathf.Min(playerHP + amount, maxPlayerHP);
+        if (healingInfo.Amount <= 0
+            || !healingInfo.HasSource
+            || !isActiveAndEnabled
+            || playerHP <= 0
+            || playerHP >= maxPlayerHP)
+        {
+            return false;
+        }
+
+        playerHP = Mathf.Min(playerHP + healingInfo.Amount, maxPlayerHP);
         UpdateHpInfoToOthers();
+        return true;
     }
 
     #endregion
@@ -250,6 +295,7 @@ public class PlayerHp : MonoBehaviour
             return false;
         }
 
+        // 낙하 피해는 전투 피해와 별도 경로로 무적과 관계없이 적용한다.
         ReduceHealth(damage);
 
         if (playerHP <= 0)
@@ -259,32 +305,6 @@ public class PlayerHp : MonoBehaviour
 
         ApplyHitInvincibility(invincibilitySeconds);
         return true;
-    }
-
-    #endregion
-
-    #region 콜라이더 처리 관련
-
-    void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy"))
-        {
-            //Debug.Log("Player Attacked");
-            if (!isUnBeatHit && !isUnBeatDash)
-            {
-                PlayerAttacked(1);
-                ApplyHitInvincibility(2f);
-            }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("HealPack") && playerHP < maxPlayerHP)
-        {
-            Heal(1);
-            Destroy(other.gameObject);
-        }
     }
 
     #endregion

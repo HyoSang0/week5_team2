@@ -5,7 +5,7 @@ using UnityEngine.Events;
 /// 연쇄 회복 증강 효과. 한 돌진에서 5번째 처치를 달성하면 HP를 1 회복한다.
 /// </summary>
 [CreateAssetMenu(menuName = "Augment/Effects/ChainHealEffect")]
-public class ChainHealEffect : AugmentEffect
+public class ChainHealEffect : AugmentEffect, IHealingSource
 {
     private const int HEAL_TRIGGER_COUNT = 5;
 
@@ -52,7 +52,9 @@ public class ChainHealEffect : AugmentEffect
 
         if (_killCount == HEAL_TRIGGER_COUNT && _playerHp != null)
         {
-            _playerHp.Heal(_healAmount);
+            // 만체력이라 실제 회복이 일어나지 않았더라도 5번째 처치 트리거는 그대로 소비한다.
+            IHealable healTarget = _playerHp;
+            healTarget.ReceiveHealing(new HealingInfo(_healAmount, HealingKind.ChainHeal, this));
         }
     }
 

@@ -4,9 +4,10 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using static EnemyPool;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 {
     [Header("Enemy Stats")]
+    private int _maxHealth;
     public int health = 5;
     public float speed = 5f;
     public int knockbackForce = 10;
@@ -56,7 +57,10 @@ public class Enemy : MonoBehaviour
         // 사망 처리 중 변경된 제약을 복원하기 위해 프리팹 기본값을 먼저 보관한다.
         _defaultConstraints = enemyRb.constraints;
     }
-    // 적 기본 설정!
+    /// <summary>
+    /// 풀 타입에 따른 적 체력과 이동 속도를 설정하고 풀 재사용 상태를 초기화한다.
+    /// poolType과 pool을 사용하며, 현재 체력 기준선과 물리·흡수 상태를 갱신한다.
+    /// </summary>
     public virtual void Initialize(PoolType poolType, EnemyPool pool)
     {
         // 풀 재사용 시 이전 흡수 오러가 남지 않도록 먼저 해제
@@ -86,6 +90,9 @@ public class Enemy : MonoBehaviour
                 break;
         }
 
+        // 회복이 스폰 체력 기준선을 초과하지 않도록 현재 풀 타입의 최대치를 함께 기록한다.
+        _maxHealth = health;
+
         enemyRb.linearVelocity = Vector3.zero;
         enemyRb.angularVelocity = Vector3.zero;
         // 사망 처리 중 바뀐 리지드바디 제약을 프리팹 기본값으로 복원
@@ -113,14 +120,61 @@ public class Enemy : MonoBehaviour
         enemyRb.MovePosition(transform.position + moveDirection.normalized * speed * Time.deltaTime);
         enemyRb.linearVelocity = moveDirection.normalized * speed;
     }
-    //적이 데미지를 입는 함수.
-    protected void TakeDamage(int damage)
+    /// <summary>
+    /// 피해 정보를 받아 health를 감소시키고 CheckHealth로 사망 여부를 확인하는 IDamageable 진입점이다.
+    /// damageInfo의 Amount를 사용하고 IsLethal이면 체력을 즉사 임계로 보내며, 처리 여부를 bool로 반환한다.
+    /// </summary>
+    public virtual bool TakeDamage(DamageInfo damageInfo)
     {
-        health -= damage;
+        if (isDead || !damageInfo.HasSource)
+        {
+            return false;
+        }
+
+        // 즉사 요청은 피해량과 무관하게 사망 임계로 진입시킨다.
+        if (damageInfo.IsLethal)
+        {
+            health = 0;
+        }
+        else
+        {
+            health -= damageInfo.Amount;
+        }
+
         CheckHealth();
+        return true;
     }
-    //적의 체력을 체크하는 함수. 체력이 0 이하이면 Die 코루틴을 호출함. 
-    //단 Die 코루틴은 넉백 사망 등을 고려해 만들어졌기 때문에 사망형태에 따라 변경할 필요가 있을 수 있음. 
+
+    /// <summary>
+    /// 적 수신자가 처리할 수 있는 회복 정보인지 검사한다.
+    /// healingInfo의 회복량과 HasSource로 회복원 참조 존재를 확인해 유효하면 true를 반환한다.
+    /// </summary>
+    protected bool IsValidHealingInfo(HealingInfo healingInfo)
+    {
+        return healingInfo.Amount > 0
+            && healingInfo.HasSource;
+    }
+
+    /// <summary>
+    /// healingInfo에 따라 health를 회복하는 IHealable 진입점이다.
+    /// 회복량이 0 이하이거나 사망했거나 비활성 상태이면 상태를 변경하지 않고 false를 반환한다.
+    /// 실제로 health가 증가하면 _maxHealth를 초과하지 않도록 clamp해 true를 반환한다.
+    /// </summary>
+    public virtual bool ReceiveHealing(HealingInfo healingInfo)
+    {
+        if (!IsValidHealingInfo(healingInfo) || isDead || !gameObject.activeInHierarchy || health >= _maxHealth)
+        {
+            return false;
+        }
+
+        health = Mathf.Min(health + healingInfo.Amount, _maxHealth);
+        return true;
+    }
+
+    /// <summary>
+    /// 현재 health를 확인해 0 이하이면 내부 처치 경로를 시작한다.
+    /// health를 읽고, 처치 조건을 만족하면 Kill을 호출한다.
+    /// </summary>
     protected void CheckHealth()
     {
         if (health <= 0)
@@ -140,15 +194,15 @@ public class Enemy : MonoBehaviour
         StartCoroutine(Die(isKnockback));
     }
     /// <summary>
-    /// 적을 즉시 사망 처리하고 점수를 등록한다. isDead가 true면 중복 실행하지 않는다.
-    /// GameManager.Instance.AddScore(enemyScore)를 호출한 뒤 넉백 사망(Die(true))을 시작한다.
+    /// 체력 검사에서 처치가 확정된 적의 처치 이벤트와 킬 집계·점수를 한 번 등록하고 사망 처리를 시작한다.
+    /// isDead가 이미 true면 아무 상태도 바꾸지 않으며, RecordEnemyKill 처리 후 Die(true) 코루틴을 실행한다.
     /// </summary>
-    public void Kill()
+    protected void Kill()
     {
         if (isDead) return;
         isDead = true;
         AugmentEvents.RaiseEnemyKilled(this);
-        GameManager.Instance.AddScore(enemyScore);
+        GameManager.Instance.RecordEnemyKill(this);
         StartCoroutine(Die(true));
     }
 
@@ -168,6 +222,10 @@ public class Enemy : MonoBehaviour
             absorbAura.SetActive(isTarget);
     }
 
+    /// <summary>
+    /// 적 흡수를 시도한다. 사망·비활성·흡수 불가(NoAbsort)·참조 누락 가드를 통과해야 성공하며, 성공 시 isDead를 true로 바꾸고 흡수 이펙트와 풀 반환을 처리한다.
+    /// 성공 시 true, 가드에서 실패하면 false를 반환한다.
+    /// </summary>
     public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival, Transform uiWorldMarker)
     {
         if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
@@ -179,6 +237,8 @@ public class Enemy : MonoBehaviour
         }
 
         isDead = true;
+        // 가드를 모두 통과한 성공 경로에서만 집계한다. isDead가 먼저 세워지므로 재호출 시 중복 집계되지 않는다.
+        GameManager.Instance.RecordEnemyAbsorb();
         Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
 
         // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트 (원본이 비활성일 수 있어 Get에서 명시 활성화)
@@ -213,6 +273,10 @@ public class Enemy : MonoBehaviour
     {
     }
 
+    /// <summary>
+    /// 사망 연출과 물리 상태를 적용한 뒤 적을 풀에 반환한다.
+    /// isKnockback이 true면 사망 이펙트와 넉백을 추가하고 반환 전 대기 시간을 사용한다.
+    /// </summary>
     public virtual IEnumerator Die(bool isKnockback)
     {
         ChangeMaterial(false);
@@ -245,7 +309,10 @@ public class Enemy : MonoBehaviour
         enemyPool.DieEnemy(gameObject, poolType);
     }
 
-    //사망 시 나오는 파편 효과를 생성하는 함수
+    /// <summary>
+    /// 사망 위치에 설정된 수만큼 파편 Rigidbody 이펙트를 생성하고 무작위 방향으로 튕긴다.
+    /// effectCount, deathEffectPrefab, deathEffectForce를 사용해 파편 오브젝트를 활성화한다.
+    /// </summary>
     public void PlayDeathEffect()
     {
         for (int i = 0; i < effectCount; i++)
@@ -267,15 +334,50 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("DropkickRange"))
         {
             enemyScore += 1;
-            TakeDamage(ApplyChainDamage(5));
+            // 드롭킥 피해는 피해원인 드롭킥 컴포넌트가 메서드로 전달하도록 위임한다.
+            PlayerAttack_Dropkick kick = other.GetComponentInParent<PlayerAttack_Dropkick>();
+            if (kick != null)
+            {
+                kick.ApplyDropkickDamage(this);
+            }
         }
         else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
         {
             if (gameObject.CompareTag("Enemy"))
             {
-                enemyScore = other.gameObject.GetComponent<Enemy>().enemyScore + 1;
-                TakeDamage(ApplyChainDamage(5));
+                Enemy corpse = other.gameObject.GetComponent<Enemy>();
+                enemyScore = corpse.enemyScore + 1;
+                corpse.DealChainDamageTo(this, 5);
             }
+        }
+    }
+
+    /// <summary>
+    /// 사망한 적이 대상에게 연쇄 피해를 전달한다.
+    /// target은 피해를 받을 객체, baseDamage는 ChainDamage 증강 적용 전 피해량이며 적용 여부를 반환한다.
+    /// </summary>
+    public bool DealChainDamageTo(IDamageable target, int baseDamage)
+    {
+        if (!isDead || target == null)
+        {
+            return false;
+        }
+
+        int damage = ApplyChainDamage(baseDamage);
+        return target.TakeDamage(new DamageInfo(damage, DamageKind.EnemyChain, this));
+    }
+
+    /// <summary>
+    /// 접촉 중인 상대의 콜라이더 상위 체인에서 PlayerHp를 찾아 EnemyContact 피해 1을 시도한다.
+    /// 무적 판정과 접촉 무적 부여는 수신자인 PlayerHp.TakeDamage가 담당한다.
+    /// </summary>
+    protected virtual void OnCollisionStay(Collision collision)
+    {
+        PlayerHp hitPlayer = collision.collider.GetComponentInParent<PlayerHp>();
+        if (hitPlayer != null)
+        {
+            IDamageable damageTarget = hitPlayer;
+            damageTarget.TakeDamage(new DamageInfo(1, DamageKind.EnemyContact, this));
         }
     }
 
@@ -307,6 +409,10 @@ public class Enemy : MonoBehaviour
         return PlayerStats.Instance.ApplyInt(StatType.ChainDamage, baseDamage);
     }
 
+    /// <summary>
+    /// 적의 생존 여부에 맞춰 기본 Renderer 머티리얼을 변경한다.
+    /// isLive가 true면 liveMaterial, false면 deathMaterial을 적용한다.
+    /// </summary>
     public virtual void ChangeMaterial(bool isLive)
     {
         // NoRush는 루트에 Renderer가 없을 수 있어 rend가 null일 수 있다.
