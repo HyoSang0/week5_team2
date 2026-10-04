@@ -195,13 +195,14 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     }
 
     /// <summary>
-    /// 빈 슬롯에 tier의 후보(보유/충돌 제외, 현재 표시 카드와 이번 선택 창에서 이미 보여준 카드 제외)를 무작위로 채운다.
+    /// 빈 슬롯에 tier의 후보(보유/충돌 제외, 현재 표시 카드와 충돌하거나 이번 선택 창에서 이미 보여준 카드 제외)를 무작위로 채운다.
+    /// 카드를 하나 채울 때마다 남은 후보에서 그 카드와 ConflictsWith인 항목을 제거한다.
     /// 채운 카드는 _currentCards에 저장하고 _seenThisSelection에 추가한다.
     /// </summary>
     private void FillCards(AugmentTier tier)
     {
         List<AugmentData> candidates = _database.GetCandidates(tier, _owned);
-        candidates.RemoveAll(card => card == null || IsDisplayed(card) || _seenThisSelection.Contains(card));
+        candidates.RemoveAll(card => card == null || IsDisplayed(card) || ConflictsWithDisplayed(card) || _seenThisSelection.Contains(card));
 
         for (int i = 0; i < CARD_COUNT && candidates.Count > 0; i++)
         {
@@ -211,9 +212,12 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
             }
 
             int pick = UnityEngine.Random.Range(0, candidates.Count);
-            _currentCards[i] = candidates[pick];
-            _seenThisSelection.Add(candidates[pick]);
-            candidates.RemoveAt(pick);
+            AugmentData selected = candidates[pick];
+            _currentCards[i] = selected;
+            _seenThisSelection.Add(selected);
+
+            // 새로 채운 카드와 참조가 같거나 ConflictsWith인 후보는 같은 창에 함께 채우지 않는다.
+            candidates.RemoveAll(card => card.ConflictsWith(selected));
         }
     }
 
@@ -320,13 +324,13 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     }
 
     /// <summary>
-    /// tier의 후보 중 보유·현재 표시·이미 보여준 증강을 제외한 1장을 무작위로 반환한다.
+    /// tier의 후보 중 보유·현재 표시·현재 표시 카드와 충돌·이미 보여준 증강을 제외한 1장을 무작위로 반환한다.
     /// 후보가 없으면 null을 반환한다.
     /// </summary>
     private AugmentData PickRerollCandidate(AugmentTier tier)
     {
         List<AugmentData> candidates = _database.GetCandidates(tier, _owned);
-        candidates.RemoveAll(card => card == null || IsDisplayed(card) || _seenThisSelection.Contains(card));
+        candidates.RemoveAll(card => card == null || IsDisplayed(card) || ConflictsWithDisplayed(card) || _seenThisSelection.Contains(card));
 
         if (candidates.Count == 0)
         {
@@ -343,6 +347,22 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     {
         GamePause.Resume(PauseReason.AugmentSelection);
         AugmentSelection.IsOpen = false;
+    }
+
+    /// <summary>
+    /// data가 현재 표시 중인 3장의 카드 중 하나와 ConflictsWith인지 나타낸다.
+    /// </summary>
+    private bool ConflictsWithDisplayed(AugmentData data)
+    {
+        for (int i = 0; i < CARD_COUNT; i++)
+        {
+            if (_currentCards[i] != null && data.ConflictsWith(_currentCards[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
