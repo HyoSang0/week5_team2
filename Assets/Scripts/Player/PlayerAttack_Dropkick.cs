@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[Obsolete]
 public class PlayerAttack_Dropkick : MonoBehaviour, IDamageSource
 {
     private InputSystem_Actions inputActions;
