@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIDefaultSelection _gameOverSelection;
 
     public int score;
-    float timeLimit;
+    const float timeLimit = 100;
 
     bool isGameOver = false;
     public bool isUnBeat = false;
@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        timeLimit = 60;
         UpdateScoreText();
         StartCoroutine(StartTimer(timeLimit));
     }
