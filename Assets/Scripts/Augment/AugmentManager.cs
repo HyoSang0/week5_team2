@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 지정한 시점에 증강 선택 UI를 열고 선택된 증강을 PlayerStats에 적용하는 런타임 관리자.
+/// 레벨업 시점에 증강 선택 UI를 열고 선택된 증강을 PlayerStats에 적용하는 런타임 관리자.
 /// MainScene의 UiManager 오브젝트에 PlayerStats와 함께 배치한다.
 /// </summary>
 public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
@@ -34,8 +34,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     [SerializeField] private PlayerHp _playerHp;
     [SerializeField] private AugmentHudView _hudView;
 
-    [Header("Pick Schedule")]
-    [SerializeField] private float[] _pickTimes = { 10f, 25f, 40f };
+    [Header("Reroll")]
     [SerializeField] private int _totalRerolls = 3;
 
     [Header("Runtime State")]
@@ -44,9 +43,9 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     private readonly AugmentData[] _currentCards = new AugmentData[CARD_COUNT];
     private readonly bool[] _cardRerolled = new bool[CARD_COUNT];
     private readonly HashSet<AugmentData> _seenThisSelection = new HashSet<AugmentData>();
+    private readonly Queue<int> _pendingLevels = new Queue<int>();
     private AugmentTier[] _runPattern;
     private AugmentTier _currentTier;
-    private float _elapsed;
     private int _nextPickIndex;
     private int _rerollsLeft;
 
@@ -79,18 +78,38 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         _owned.Clear();
         _subscribedEffects.Clear();
         _hudView.ClearOwned();
-        _elapsed = 0f;
+        _pendingLevels.Clear();
         _nextPickIndex = 0;
         _rerollsLeft = _totalRerolls;
         _runPattern = RollTierPattern();
+
+        // 런 초기화가 끝난 뒤 구독해 초기화 도중 발생하는 레벨업 이벤트가 픽을 만들지 않게 한다.
+        GameManager.Instance.LevelReached += HandleLevelReached;
     }
 
-    void Update()
+    /// <summary>
+    /// 레벨업 이벤트를 받아 대기 큐에 레벨을 쌓고, 선택 UI가 닫혀 있으면 즉시 다음 선택을 연다.
+    /// level은 LevelReached 이벤트의 도달 레벨 값이며, UI가 열려 있으면 큐에만 쌓아 이후 선택 종료 시 처리한다.
+    /// </summary>
+    private void HandleLevelReached(int level)
     {
-        _elapsed += Time.deltaTime;
+        _pendingLevels.Enqueue(level);
 
-        if (!AugmentSelection.IsOpen && _nextPickIndex < _pickTimes.Length && _elapsed >= _pickTimes[_nextPickIndex])
+        if (!AugmentSelection.IsOpen)
         {
+            OpenNextSelection();
+        }
+    }
+
+    /// <summary>
+    /// 대기 큐의 레벨업마다 정확히 한 번의 선택을 시도한다.
+    /// AugmentSelection.IsOpen이 false가 될 때까지 큐를 비우며 OpenSelection을 호출하고, 카드 후보가 없어 열리지 않은 픽은 건너뛴다.
+    /// </summary>
+    private void OpenNextSelection()
+    {
+        while (!AugmentSelection.IsOpen && _pendingLevels.Count > 0)
+        {
+            _pendingLevels.Dequeue();
             OpenSelection();
         }
     }
@@ -101,6 +120,11 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     private void OnDestroy()
     {
         UnsubscribeSubscribedEffects();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.LevelReached -= HandleLevelReached;
+        }
 
         if (AugmentSelection.IsOpen)
         {
@@ -162,11 +186,11 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
     /// <summary>
     /// 이번 회차 등급으로 카드를 추첨하고 UI를 연다.
-    /// GamePause로 AugmentSelection 원인의 일시정지를 걸고 AugmentSelection.IsOpen을 true로 설정한다.
+    /// 등급은 _runPattern을 _nextPickIndex로 모듈로 순환해 정하고, GamePause로 AugmentSelection 원인의 일시정지를 걸고 AugmentSelection.IsOpen을 true로 설정한다.
     /// </summary>
     private void OpenSelection()
     {
-        _currentTier = _runPattern[Mathf.Min(_nextPickIndex, _runPattern.Length - 1)];
+        _currentTier = _runPattern[_nextPickIndex % _runPattern.Length];
         _seenThisSelection.Clear();
         FillCards(_currentTier);
 
@@ -269,6 +293,9 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         }
 
         _nextPickIndex++;
+
+        // 닫히는 동안 쌓인 레벨업이 있으면 바로 다음 선택을 연다.
+        OpenNextSelection();
     }
 
     /// <summary>

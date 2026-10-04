@@ -18,7 +18,7 @@ public class DeathZone : MonoBehaviour
             // 살아 있는 적의 첫 진입만 적 풀 타입별로 집계한다. DoDie가 isDead를 즉시 세우므로 중복 트리거·이미 사망한 적은 세지 않는다.
             if (!fallEnemy.isDead)
             {
-                StatisticsManager.Instance.Record(StatisticsManager.GameStatisticType.EnemyFall, fallEnemy.poolType);
+                GameManager.Instance.RecordEnemyOutcome(StatisticsManager.GameStatisticType.EnemyFall, fallEnemy.poolType);
             }
             fallEnemy.DoDie(false);
         }

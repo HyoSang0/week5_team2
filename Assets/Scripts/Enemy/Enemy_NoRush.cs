@@ -189,7 +189,7 @@ public class Enemy_NoRush : Enemy
             isDead = true;
             AugmentEvents.RaiseEnemyKilled(this);
             // 일반 Enemy.Kill과 같은 AddKillScore 경로로 ScoreMultiplier 소비 방식을 일관되게 유지한다.
-            StatisticsManager.Instance.Record(StatisticsManager.GameStatisticType.EnemyKill, poolType);
+            GameManager.Instance.RecordEnemyOutcome(StatisticsManager.GameStatisticType.EnemyKill, poolType);
             GameManager.Instance.AddKillScore(this);
             StartCoroutine(DieNr());
         }

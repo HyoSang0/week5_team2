@@ -5507,7 +5507,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  AbsortionArea: {fileID: 596759505409058145}
+  AbsortionArea: {fileID: 6795692395077801279}
+  _areaBindings: []
   _cooldownSeconds: 0.11
   isStartAbsortion: 0
 --- !u!114 &7124579886636666819
@@ -5527,6 +5528,7 @@ MonoBehaviour:
   noDamageTime: 0.7
   coolTime: 1
   isDashing: 0
+  _coolDownImage: {fileID: 0}
   onStartRush:
     m_PersistentCalls:
       m_Calls:
@@ -5573,6 +5575,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isRushing: 0
+  _rushDamage: 20
 --- !u!114 &8724646819377778419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5638,6 +5641,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c24d50a3d89dce64d861a96527c046d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFallRecovery
+  ground: {fileID: 0}
+  fallDamage: 1
+  invincibilitySeconds: 2
+  supportMargin: 0.1
+  heightOffset: 0.05
 --- !u!1 &5298137482805532922
 GameObject:
   m_ObjectHideFlags: 0
@@ -6154,7 +6162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5552190366650664300
 Transform:
   m_ObjectHideFlags: 0

@@ -64,7 +64,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         inputActions.Player.Ability_Sejin.canceled += DeActiveAbility;
 
         // 기존 AbsortionArea를 기본 폴백 영역으로 캐시하고 모든 후보 영역을 꺼둔 채 시작한다.
-        _defaultArea = AbsortionArea.GetComponent<AbsortionArea_Sejin>();
+        _defaultArea = AbsortionArea.GetComponentInChildren<AbsortionArea_Sejin>(true);
         DeactivateAllAreas();
 
         // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.

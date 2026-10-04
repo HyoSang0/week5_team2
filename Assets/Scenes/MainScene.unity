@@ -197,10 +197,6 @@ MonoBehaviour:
   _selectionView: {fileID: 2061722554762560301}
   _playerHp: {fileID: 782649360}
   _hudView: {fileID: 3186234514657724730}
-  _pickTimes:
-  - 10
-  - 25
-  - 40
   _totalRerolls: 3
 --- !u!1 &66572592
 GameObject:

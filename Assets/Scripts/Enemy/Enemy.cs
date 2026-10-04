@@ -202,7 +202,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         if (isDead) return;
         isDead = true;
         AugmentEvents.RaiseEnemyKilled(this);
-        StatisticsManager.Instance.Record(StatisticsManager.GameStatisticType.EnemyKill, poolType);
+        GameManager.Instance.RecordEnemyOutcome(StatisticsManager.GameStatisticType.EnemyKill, poolType);
         GameManager.Instance.AddKillScore(this);
         StartCoroutine(Die(true));
     }
@@ -239,7 +239,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 
         isDead = true;
         // 가드를 모두 통과한 성공 경로에서만 집계한다. isDead가 먼저 세워지므로 재호출 시 중복 집계되지 않는다.
-        StatisticsManager.Instance.Record(StatisticsManager.GameStatisticType.EnemyAbsorb, poolType);
+        GameManager.Instance.RecordEnemyOutcome(StatisticsManager.GameStatisticType.EnemyAbsorb, poolType);
         Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
 
         // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트 (원본이 비활성일 수 있어 Get에서 명시 활성화)
