@@ -88,9 +88,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     {
         _elapsed += Time.deltaTime;
 
-        if (!AugmentSelection.IsOpen
-            && _nextPickIndex < _pickTimes.Length
-            && _elapsed >= _pickTimes[_nextPickIndex])
+        if (!AugmentSelection.IsOpen && _nextPickIndex < _pickTimes.Length && _elapsed >= _pickTimes[_nextPickIndex])
         {
             OpenSelection();
         }
