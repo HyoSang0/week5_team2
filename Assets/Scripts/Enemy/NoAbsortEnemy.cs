@@ -3,7 +3,11 @@ using UnityEngine;
 
 public class NoAbsortEnemy : Enemy
 {
-    //연쇄 충돌에 맞는 걸로는 안 죽게 해야할 듯
+    /// <summary>
+    /// 통나무처럼 굴러가는 넉백 사망 처리. isKnockback과 플레이어 반대 방향을 사용해
+    /// GetAugmentedKnockbackForce()의 증강 적용 넉백 힘을 충격으로 가한 뒤 풀로 반환한다.
+    /// </summary>
+    /// <param name="isKnockback">넉백 사망 여부</param>
     public override IEnumerator Die(bool isKnockback)
     {
         ChangeMaterial(false);
@@ -14,7 +18,8 @@ public class NoAbsortEnemy : Enemy
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
         // Vector3 pushPoint = transform.position + Vector3.up * 0.5f;
         // enemyRb.AddForceAtPosition(knockbackDirection * knockbackForce, pushPoint, ForceMode.Force);
-        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
+        // 필드 knockbackForce를 직접 쓰지 않고 사용 시점에 증강을 적용해 KnockbackForce 증강이 사망 넉백에 반영되도록 한다.
+        enemyRb.AddForce(knockbackDirection * GetAugmentedKnockbackForce(), ForceMode.Impulse);
 
         yield return new WaitForSeconds(0.5f);
         coll.isTrigger = false;

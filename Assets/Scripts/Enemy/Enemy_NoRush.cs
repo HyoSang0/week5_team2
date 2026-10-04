@@ -120,6 +120,11 @@ public class Enemy_NoRush : Enemy
         ChangeColor("red");
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
+    /// <summary>
+    /// healthNr이 0 이하이고 isDeadNr/isDead가 모두 false일 때 사망을 확정한다.
+    /// EnemyKilled 이벤트 발생 후 일반 Enemy.Kill과 동일하게 GameManager.Instance.AddScore(enemyScore)로
+    /// 점수를 등록하고 DieNr 코루틴을 시작한다. isDead도 함께 세워 Kill() 경유의 중복을 막는다.
+    /// </summary>
     protected void CheckHealthNr()
     {
         // 부모 isDead까지 함께 봐서 Kill() 경유와 무관하게 연쇄 처치/중복 이벤트를 막는다.
@@ -128,6 +133,8 @@ public class Enemy_NoRush : Enemy
             isDeadNr = true;
             isDead = true;
             AugmentEvents.RaiseEnemyKilled(this);
+            // 일반 Enemy.Kill과 같은 순서로 점수를 등록해 ScoreMultiplier 소비 경로를 일관되게 유지한다.
+            GameManager.Instance.AddScore(enemyScore);
             StartCoroutine(DieNr());
         }
     }
