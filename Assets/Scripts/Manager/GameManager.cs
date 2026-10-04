@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     private readonly Dictionary<EnemyOutcomeType, int> _outcomeCounts = new Dictionary<EnemyOutcomeType, int>();
 
     public int score;
-    float timeLimit;
+    const float timeLimit = 100;
 
     bool isGameOver = false;
     public bool isUnBeat = false;
@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        timeLimit = 60;
         UpdateScoreText();
         StartCoroutine(StartTimer(timeLimit));
     }
