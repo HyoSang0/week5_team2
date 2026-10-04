@@ -16,6 +16,7 @@ public class PlayerHp : MonoBehaviour
     private Vignette vignette;
     public int playerHP = 5;
     public int maxPlayerHP = 5;
+    private float _hitInvincibilityUntil;
 
     /// <summary>
     /// playerHP/maxPlayerHP 값이 변경되었음을 UI 구독자에게 알리는 이벤트.
@@ -164,14 +165,25 @@ public class PlayerHp : MonoBehaviour
 
     #region 무적 처리 관련
     /// <summary>
-    /// 피격 무적 활성화 함수 (내부)
+    /// time초의 피격 무적을 부여한다.
+    /// 이미 무적이면 현재 종료 시각과 새 종료 시각 중 더 늦은 시각을 유지한다.
     /// </summary>
-    /// <param name="time">지속 시간(초)</param>
     public void ApplyHitInvincibility(float time)
     {
+        if (time <= 0f)
+            return;
+
+        float requestedUntil = Time.time + time;
+
+        if (isUnBeatHit)
+        {
+            _hitInvincibilityUntil = Mathf.Max(_hitInvincibilityUntil, requestedUntil);
+            return;
+        }
+
+        _hitInvincibilityUntil = requestedUntil;
         isUnBeatHit = true;
-        if (unbeatRoutineHit != null) StopCoroutine(unbeatRoutineHit);
-        unbeatRoutineHit = StartCoroutine(UnBeatTimeForHit(time));
+        unbeatRoutineHit = StartCoroutine(UnBeatTimeForHit());
     }
 
     /// <summary>
@@ -187,23 +199,18 @@ public class PlayerHp : MonoBehaviour
     }
 
     /// <summary>
-    /// 피격 무적 처리 코루틴
+    /// _hitInvincibilityUntil까지 피격 무적과 표시 효과를 유지한다.
+    /// 종료되면 표시 효과, isUnBeatHit, unbeatRoutineHit를 초기화한다.
     /// </summary>
-    /// <param name="sec">무적 시간(초)</param>
-    /// <returns></returns>
-    private IEnumerator UnBeatTimeForHit(float sec)
+    private IEnumerator UnBeatTimeForHit()
     {
-        //무적 상태 이펙트 보여주기(블링크)
         playerMeshRenderer.material = playerMaterials[1];
 
-        //무적 상태 유지
-        yield return new WaitForSeconds(sec);
+        while (Time.time < _hitInvincibilityUntil)
+            yield return null;
 
-        //피격 피드벡 모두 끄기
-        SetVignetteIntensity(0.0f);
+        SetVignetteIntensity(0f);
         playerMeshRenderer.material = playerMaterials[0];
-
-        //무적 해제
         isUnBeatHit = false;
         unbeatRoutineHit = null;
     }
