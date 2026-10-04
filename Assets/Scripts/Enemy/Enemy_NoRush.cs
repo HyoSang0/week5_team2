@@ -177,8 +177,8 @@ public class Enemy_NoRush : Enemy
     }
     /// <summary>
     /// healthNr이 0 이하이고 isDeadNr/isDead가 모두 false일 때 사망을 확정한다.
-    /// EnemyKilled 이벤트 발생 후 일반 Enemy.Kill과 동일하게 RecordEnemyKill로 처치를 집계하고
-    /// GameManager.Instance.AddScore(enemyScore)로 점수를 등록한 뒤 DieNr 코루틴을 시작한다. isDead도 함께 세워 Kill() 경유의 중복을 막는다.
+    /// EnemyKilled 이벤트 발생 후 일반 Enemy.Kill과 동일한 RecordEnemyKill 경로로 처치 집계와 점수를 등록한 뒤
+    /// DieNr 코루틴을 시작한다. isDead도 함께 세워 Kill() 경유의 중복을 막는다.
     /// </summary>
     protected void CheckHealthNr()
     {
@@ -188,9 +188,8 @@ public class Enemy_NoRush : Enemy
             isDeadNr = true;
             isDead = true;
             AugmentEvents.RaiseEnemyKilled(this);
-            // 일반 Enemy.Kill과 같은 순서로 처치 집계와 점수 등록을 수행해 ScoreMultiplier 소비 경로를 일관되게 유지한다.
+            // 일반 Enemy.Kill과 같은 RecordEnemyKill 경로로 ScoreMultiplier 소비 방식을 일관되게 유지한다.
             GameManager.Instance.RecordEnemyKill(this);
-            GameManager.Instance.AddScore(enemyScore);
             StartCoroutine(DieNr());
         }
     }

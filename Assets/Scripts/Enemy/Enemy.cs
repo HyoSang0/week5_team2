@@ -194,8 +194,8 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         StartCoroutine(Die(isKnockback));
     }
     /// <summary>
-    /// 체력 검사에서 처치가 확정된 적의 처치 이벤트와 점수를 한 번 등록하고 사망 처리를 시작한다.
-    /// isDead가 이미 true면 아무 상태도 바꾸지 않으며, 처치 집계 후 Die(true) 코루틴을 실행한다.
+    /// 체력 검사에서 처치가 확정된 적의 처치 이벤트와 킬 집계·점수를 한 번 등록하고 사망 처리를 시작한다.
+    /// isDead가 이미 true면 아무 상태도 바꾸지 않으며, RecordEnemyKill 처리 후 Die(true) 코루틴을 실행한다.
     /// </summary>
     protected void Kill()
     {
@@ -203,7 +203,6 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         isDead = true;
         AugmentEvents.RaiseEnemyKilled(this);
         GameManager.Instance.RecordEnemyKill(this);
-        GameManager.Instance.AddScore(enemyScore);
         StartCoroutine(Die(true));
     }
 
@@ -239,7 +238,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 
         isDead = true;
         // 가드를 모두 통과한 성공 경로에서만 집계한다. isDead가 먼저 세워지므로 재호출 시 중복 집계되지 않는다.
-        GameManager.Instance.RecordEnemyAbsorb(this);
+        GameManager.Instance.RecordEnemyAbsorb();
         Vector3 effectPosition = absorbAura != null ? absorbAura.transform.position : transform.position;
 
         // 풀에 속한 자식 오러와 별개로 잠깐 남을 이펙트 (원본이 비활성일 수 있어 Get에서 명시 활성화)

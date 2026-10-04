@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using TMPro;
 using UnityEngine;
@@ -30,31 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIDefaultSelection _gameOverSelection;
 
     [Header("Enemy Outcome")]
-    private int _enemyFallCount;
-    private int _enemyAbsorbCount;
-    private int _enemyKillCount;
-    private int _killRewardBaseSubtotal;
-    private int _killScoreSubtotal;
-
-    /// <summary>
-    /// 적 결과가 확정될 때 발생하는 이벤트. 유형(Fall 낙하 사망, Absorb 흡수 성공, Kill 전투 사망)과 대상 Enemy를 전달한다.
-    /// </summary>
-    public event Action<EnemyOutcomeType, Enemy> EnemyOutcome;
-
-    /// <summary>이번 런에서 낙하로 사망한 적의 누적 수. GameManager 인스턴스 수명 동안 유지된다.</summary>
-    public int EnemyFallCount => _enemyFallCount;
-
-    /// <summary>이번 런에서 성공적으로 흡수된 적의 누적 수. GameManager 인스턴스 수명 동안 유지된다.</summary>
-    public int EnemyAbsorbCount => _enemyAbsorbCount;
-
-    /// <summary>이번 런에서 전투로 처치한 적의 누적 수. GameManager 인스턴스 수명 동안 유지된다.</summary>
-    public int EnemyKillCount => _enemyKillCount;
-
-    /// <summary>이번 런에서 처치된 적의 enemyScore를 증강 없이 합산한 기준 소계. AddScore와 별개이며 표시 점수에는 영향을 주지 않는다.</summary>
-    public int KillRewardBaseSubtotal => _killRewardBaseSubtotal;
-
-    /// <summary>이번 런에서 킬마다 enemyScore에 당시 ScoreMultiplier를 적용해 누적한 킬 점수 소계. 표시 점수의 유일한 원천이다.</summary>
-    public int KillScoreSubtotal => _killScoreSubtotal;
+    private readonly Dictionary<EnemyOutcomeType, int> _outcomeCounts = new Dictionary<EnemyOutcomeType, int>();
 
     public int score;
     float timeLimit;
@@ -147,53 +123,51 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 적 낙하 결과를 집계한다. fallEnemy 대상으로 _enemyFallCount를 1 증가시키고 Fall 유형의 EnemyOutcome 이벤트를 발생시킨다.
-    /// 점수 계산에는 관여하지 않는다.
+    /// 지정한 유형의 적 결과 누적 수를 반환한다. outcomeType으로 _outcomeCounts를 조회하며, 아직 기록되지 않은 유형은 0을 반환한다.
     /// </summary>
-    public void RecordEnemyFall(Enemy fallEnemy)
+    public int GetOutcomeCount(EnemyOutcomeType outcomeType)
     {
-        _enemyFallCount++;
-        EnemyOutcome?.Invoke(EnemyOutcomeType.Fall, fallEnemy);
+        return _outcomeCounts.TryGetValue(outcomeType, out int count) ? count : 0;
     }
 
     /// <summary>
-    /// 적 흡수 성공 결과를 집계한다. absorbedEnemy 대상으로 _enemyAbsorbCount를 1 증가시키고 Absorb 유형의 EnemyOutcome 이벤트를 발생시킨다.
-    /// 점수 계산에는 관여하지 않는다.
+    /// 적 낙하 결과를 집계한다. Fall 유형의 누적 수를 1 증가시키며, 점수 계산에는 관여하지 않는다.
     /// </summary>
-    public void RecordEnemyAbsorb(Enemy absorbedEnemy)
+    public void RecordEnemyFall()
     {
-        _enemyAbsorbCount++;
-        EnemyOutcome?.Invoke(EnemyOutcomeType.Absorb, absorbedEnemy);
+        IncrementOutcomeCount(EnemyOutcomeType.Fall);
     }
 
     /// <summary>
-    /// 적 전투 사망 결과를 집계한다. killedEnemy 대상으로 _enemyKillCount를 1 증가시키고 enemyScore를 증강 없이 _killRewardBaseSubtotal에 더한 뒤 Kill 유형의 EnemyOutcome 이벤트를 발생시킨다.
-    /// 표시 점수에는 관여하지 않으며, Enemy.Kill과 Enemy_NoRush.CheckHealthNr의 성공 경로에서 한 번씩만 호출된다.
+    /// 적 흡수 성공 결과를 집계한다. Absorb 유형의 누적 수를 1 증가시키며, 점수 계산에는 관여하지 않는다.
+    /// </summary>
+    public void RecordEnemyAbsorb()
+    {
+        IncrementOutcomeCount(EnemyOutcomeType.Absorb);
+    }
+
+    /// <summary>
+    /// 적 전투 사망 결과를 집계하고 킬 점수를 반영한다. Kill 유형의 누적 수를 1 증가시키고,
+    /// killedEnemy의 enemyScore에 PlayerStats의 ScoreMultiplier 증강을 적용해 score에 누적한 뒤 점수 텍스트를 갱신한다.
+    /// PlayerStats.Instance가 없으면 증강 없이 enemyScore를 그대로 더하며, Enemy.Kill과 Enemy_NoRush.CheckHealthNr의 성공 경로에서 한 번씩만 호출된다.
     /// </summary>
     public void RecordEnemyKill(Enemy killedEnemy)
     {
-        _enemyKillCount++;
-        _killRewardBaseSubtotal += killedEnemy.enemyScore;
-        EnemyOutcome?.Invoke(EnemyOutcomeType.Kill, killedEnemy);
+        IncrementOutcomeCount(EnemyOutcomeType.Kill);
+
+        int killScore = PlayerStats.Instance != null
+            ? PlayerStats.Instance.ApplyInt(StatType.ScoreMultiplier, killedEnemy.enemyScore)
+            : killedEnemy.enemyScore;
+
+        score += killScore;
+        UpdateScoreText();
     }
 
     /// <summary>
-    /// 킬 보상을 등록한다. newScore에 PlayerStats의 ScoreMultiplier 증강을 적용한 값을 킬 점수 소계(_killScoreSubtotal)에 누적하고,
-    /// score를 그 소계로 설정한 뒤 점수 텍스트를 갱신한다. PlayerStats.Instance가 없으면 newScore를 그대로 누적한다.
-    /// 총합에 multiplier를 재적용하지 않도록 매 킬 시점의 증강 값을 소계에 더한다.
+    /// 적 결과 유형의 누적 수를 1 증가시킨다. outcomeType으로 _outcomeCounts를 갱신하며, 첫 기록인 유형은 0에서 시작한다.
     /// </summary>
-    public void AddScore(int newScore)
+    private void IncrementOutcomeCount(EnemyOutcomeType outcomeType)
     {
-        if (PlayerStats.Instance != null)
-        {
-            _killScoreSubtotal += PlayerStats.Instance.ApplyInt(StatType.ScoreMultiplier, newScore);
-        }
-        else
-        {
-            _killScoreSubtotal += newScore;
-        }
-
-        score = _killScoreSubtotal;
-        UpdateScoreText();
+        _outcomeCounts[outcomeType] = GetOutcomeCount(outcomeType) + 1;
     }
 }
