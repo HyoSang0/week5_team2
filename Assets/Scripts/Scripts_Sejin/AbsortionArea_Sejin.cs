@@ -126,6 +126,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         if (!other.CompareTag("Enemy"))
             return;
         Enemy enemy = other.GetComponent<Enemy>();
+        if (!CanCapture(enemy))
+            return;
         enemy.OnAbsorbTarget(true);
         enemySet.Add(enemy);
     }
@@ -135,7 +137,10 @@ public class AbsortionArea_Sejin : MonoBehaviour
             return;
 
         Enemy enemy = other.GetComponent<Enemy>();
-        if (enemy != null && enemySet.Add(enemy))
+        if (!CanCapture(enemy))
+            return;
+
+        if (enemySet.Add(enemy))
             enemy.OnAbsorbTarget(true);
     }
 
@@ -150,19 +155,37 @@ public class AbsortionArea_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// 흡수 처리
+    /// 적이 이 흡수 영역의 대상이 될 수 있는지 판정한다.
+    /// enemy는 Enemy 태그 충돌에서 가져온 컴포넌트이며 기본 구현은 null이 아니면 true를 반환한다.
     /// </summary>
-    /// <param name="enemy"></param>
+    protected virtual bool CanCapture(Enemy enemy)
+    {
+        return enemy != null;
+    }
+
+    /// <summary>
+    /// 적이 현재 흡수 반경 안에 들어왔는지 판정한다.
+    /// enemy의 위치와 area_radus, originScale을 사용하며 기본 구현은 보정값 0.1f를 더한 거리가 현재 월드 반경 이내면 true를 반환한다.
+    /// </summary>
+    protected virtual bool IsInAbsorbRange(Enemy enemy)
+    {
+        // 간헐적으로 새로 스폰된 적이 흡수되는 문제를 막기 위해 보정값을 더한 거리로 판정한다.
+        float currentWorldRadius = area_radus * originScale.x;
+        float distance = Vector3.Distance(transform.position, enemy.transform.position) + 0.1f;
+        return distance <= currentWorldRadius;
+    }
+
+    /// <summary>
+    /// 흡수 후보의 적격성과 현재 영역의 범위를 확인한 뒤 대상의 흡수를 시도한다.
+    /// enemy가 판정을 통과하면 TryAbsorb를 호출하고, 실패하면 흡수 대상 표시를 해제한다.
+    /// </summary>
     private void Absorb(Enemy enemy)
     {
         if (enemy == null || !enemy.gameObject.activeInHierarchy)
             return;
 
-
-        //간헐적으로 새로 스폰된 적 흡수되는 문제 방지
-        float currentWorldRadius = area_radus * originScale.x;
-        float distance = Vector3.Distance(transform.position, enemy.transform.position) + 0.1f;  // 보정값 추가
-        if (distance > currentWorldRadius)
+        // 범위 판정은 서브클래스가 바꿀 수 있도록 가상 술어로 위임한다.
+        if (!CanCapture(enemy) || !IsInAbsorbRange(enemy))
         {
             enemy.OnAbsorbTarget(false);
             return;
