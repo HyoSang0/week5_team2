@@ -193,13 +193,13 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "invincible_rush", DisplayName = "무적 돌진", Description = "돌진 중 0.5초 동안 무적이 됩니다.",
+                Id = "invincible_rush", DisplayName = "무적 돌진", Description = "돌진 무적 시간이 0.5초 증가합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.RushInvincible, 0f, 0.5f) },
             },
             new AugmentDefinition
             {
-                Id = "domino", DisplayName = "도미노", Description = "흡수 시 연쇄 피해가 100% 증가합니다.",
+                Id = "domino", DisplayName = "도미노", Description = "드롭킥 적중과 사망한 적과의 연쇄 충돌 피해가 100% 증가합니다.",
                 Tier = AugmentTier.Gold,
                 Modifiers = new[] { new StatModifier(StatType.ChainDamage, 100f, 0f) },
             },
@@ -211,7 +211,7 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "feast", DisplayName = "포식", Description = "적을 흡수할 때마다 돌진 쿨다운이 0.3초 감소합니다.",
+                Id = "feast", DisplayName = "포식", Description = "돌진 중이거나 돌진 쿨다운 중 적을 흡수하면 남은 쿨다운이 0.3초 감소하며 돌진 준비 상태에서는 적용되지 않습니다.",
                 Tier = AugmentTier.Gold,
             },
             new AugmentDefinition
@@ -242,7 +242,7 @@ public static class AugmentAssetBuilder
             },
             new AugmentDefinition
             {
-                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "적을 처치할 때마다 돌진 쿨다운이 0.2초 감소하며, 돌진 중 처치도 다음 쿨다운에 반영됩니다.",
+                Id = "energy_cycle", DisplayName = "에너지 순환", Description = "돌진 중이거나 돌진 쿨다운 중 적을 처치하면 남은 쿨다운이 0.2초 감소하고 돌진 중 처치분은 다음 쿨다운에도 반영됩니다.",
                 Tier = AugmentTier.Prismatic,
             },
             new AugmentDefinition
@@ -437,14 +437,14 @@ public static class AugmentAssetBuilder
 
         FeastEffect feast = EnsureEffect<FeastEffect>("FeastEffect", effectFolder);
         SetEffectFloat(feast, "_cooldownReductionPerAbsorb", 0.3f);
-        LinkEffect("feast", feast, "적을 흡수할 때마다 돌진 쿨다운이 0.3초 감소합니다.");
+        LinkEffect("feast", feast, "돌진 중이거나 돌진 쿨다운 중 적을 흡수하면 남은 쿨다운이 0.3초 감소하며 돌진 준비 상태에서는 적용되지 않습니다.");
 
         LinkEffect("chain_heal", EnsureEffect<ChainHealEffect>("ChainHealEffect", effectFolder),
             "한 번의 돌진 중 5번째 처치 시 HP를 1 회복합니다.");
 
         EnergyCycleEffect energyCycle = EnsureEffect<EnergyCycleEffect>("EnergyCycleEffect", effectFolder);
         SetEffectFloat(energyCycle, "_cooldownReductionPerKill", 0.2f);
-        LinkEffect("energy_cycle", energyCycle, "적을 처치할 때마다 돌진 쿨다운이 0.2초 감소하며, 돌진 중 처치도 다음 쿨다운에 반영됩니다.");
+        LinkEffect("energy_cycle", energyCycle, "돌진 중이거나 돌진 쿨다운 중 적을 처치하면 남은 쿨다운이 0.2초 감소하고 돌진 중 처치분은 다음 쿨다운에도 반영됩니다.");
 
         LinkEffect("chain_explosion", EnsureEffect<ChainExplosionEffect>("ChainExplosionEffect", effectFolder),
             "적을 처치하면 반지름 2m 안의 다른 적도 함께 처치하며, 연쇄 처치는 재귀 폭발을 일으키지 않습니다.");

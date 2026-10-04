@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: invincible_rush
   _displayName: "\uBB34\uC801 \uB3CC\uC9C4"
-  _description: "\uB3CC\uC9C4 \uC911 0.5\uCD08 \uB3D9\uC548 \uBB34\uC801\uC774 \uB429\uB2C8\uB2E4."
+  _description: "\uB3CC\uC9C4 \uBB34\uC801 \uC2DC\uAC04\uC774 0.5\uCD08 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 1
   _conflictTags: []
   _modifiers:
