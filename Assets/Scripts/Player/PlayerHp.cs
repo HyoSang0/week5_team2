@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -113,14 +112,26 @@ public class PlayerHp : MonoBehaviour
         UpdateHpInfoToOthers();
     }
 
+    /// <summary>
+    /// 피격 판정
+    /// </summary>
+    /// <param name="damage"></param>
     public void PlayerAttacked(int damage)
     {
         //까시(레고) 피격 방지용
         if (isUnBeatHit)
             return;
+        ReduceHealth(damage);
+    }
 
+    /// <summary>
+    /// 체력 감소
+    /// </summary>
+    /// <param name="hp"></param>
+    public void ReduceHealth(int hp)
+    {
         //플레이어 체력 감소 처리
-        playerHP -= damage;
+        playerHP -= hp;
         //피격 vignette 처리
         SetVignetteIntensity(attackedVignetteIntensity);
 
@@ -219,6 +230,7 @@ public class PlayerHp : MonoBehaviour
         //무적 해제
         isUnBeatDash = false;
     }
+
     /// <summary>
     /// 기본 무적 여부와 관계없이 damage만큼 낙하 피해를 적용한다. 
     /// 생존하면 invicibilitySeconds동안 피격 무적을 부여하고 true를 반환하며,
@@ -231,7 +243,7 @@ public class PlayerHp : MonoBehaviour
             return false;
         }
 
-        PlayerAttacked(damage);
+        ReduceHealth(damage);
 
         if (playerHP <= 0)
         {

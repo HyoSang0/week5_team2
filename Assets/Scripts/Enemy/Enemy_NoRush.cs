@@ -65,6 +65,7 @@ public class Enemy_NoRush : Enemy
             }
         }
     }
+
     IEnumerator UnBeatTime()
     {
         isUnBeatNr = true;
