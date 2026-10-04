@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// 증강 효과가 구독할 수 있는 전역 적 이벤트(처치/흡수)를 중개하는 정적 클래스.
+/// 증강 효과와 흡수 영역 선택자가 구독하는 전역 이벤트를 중개하는 정적 클래스.
 /// </summary>
 public static class AugmentEvents
 {
@@ -16,6 +16,12 @@ public static class AugmentEvents
     /// 적이 흡수됐을 때 발생하며 흡수된 enemy를 인자로 전달한다.
     /// </summary>
     public static event Action<Enemy> OnEnemyAbsorbed;
+
+    /// <summary>
+    /// 흡수 영역 유형 선택이 변경됐을 때 발생하며 선택된 type을 전달한다.
+    /// None 선택은 발생하지 않는다.
+    /// </summary>
+    public static event Action<AbsorptionAreaType> OnAbsorptionAreaTypeSelected;
 
     /// <summary>
     /// 적 처치 이벤트를 발생시켜 구독 중인 증강 효과에 enemy를 전달한다.
@@ -34,12 +40,27 @@ public static class AugmentEvents
     }
 
     /// <summary>
-    /// 두 적 이벤트의 모든 구독을 제거한다.
+    /// 흡수 영역 유형 선택 이벤트를 발생시킨다.
+    /// type이 None이면 구독자의 현재 선택을 건드리지 않도록 발생시키지 않는다.
+    /// </summary>
+    public static void RaiseAbsorptionAreaTypeSelected(AbsorptionAreaType type)
+    {
+        if (type == AbsorptionAreaType.None)
+        {
+            return;
+        }
+
+        OnAbsorptionAreaTypeSelected?.Invoke(type);
+    }
+
+    /// <summary>
+    /// 적 처치·흡수와 흡수 영역 선택 이벤트의 모든 구독을 제거한다.
     /// </summary>
     public static void ClearAll()
     {
         OnEnemyKilled = null;
         OnEnemyAbsorbed = null;
+        OnAbsorptionAreaTypeSelected = null;
     }
 
     /// <summary>

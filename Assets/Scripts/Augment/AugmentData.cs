@@ -22,6 +22,9 @@ public class AugmentData : ScriptableObject
     [SerializeField] private StatModifier[] _modifiers;
     [SerializeField] private AugmentEffect _effect;
 
+    [Header("Absorption Area")]
+    [SerializeField] private AbsorptionAreaType _absorptionAreaType;
+
     /// <summary>
     /// 증강의 고유 식별자를 반환한다.
     /// </summary>
@@ -56,6 +59,12 @@ public class AugmentData : ScriptableObject
     /// 이 증강의 커스텀 효과 에셋을 반환한다. 없을 경우 null을 반환한다.
     /// </summary>
     public AugmentEffect Effect => _effect;
+
+    /// <summary>
+    /// 이 증강이 선택하는 흡수 영역 유형을 반환한다.
+    /// 필드가 없는 기존 에셋은 None으로 읽혀 흡수 영역 변경이 없음을 나타낸다.
+    /// </summary>
+    public AbsorptionAreaType AbsorptionAreaType => _absorptionAreaType;
 
     /// <summary>
     /// 다른 증강 data와 충돌하는지 판정한다.

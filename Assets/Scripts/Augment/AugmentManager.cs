@@ -89,9 +89,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     {
         _elapsed += Time.deltaTime;
 
-        if (!AugmentSelection.IsOpen
-            && _nextPickIndex < _pickTimes.Length
-            && _elapsed >= _pickTimes[_nextPickIndex])
+        if (!AugmentSelection.IsOpen && _nextPickIndex < _pickTimes.Length && _elapsed >= _pickTimes[_nextPickIndex])
         {
             OpenSelection();
         }
@@ -254,6 +252,10 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
                 _subscribedEffects.Add(effect);
             }
         }
+
+        // 흡수 영역 유형을 선택한 증강만 선택을 통지한다. None이면 이벤트가 발생하지 않아
+        // 흡수와 무관한 증강이 현재 영역 선택을 초기화하지 않는다.
+        AugmentEvents.RaiseAbsorptionAreaTypeSelected(data.AbsorptionAreaType);
 
         _selectionView.Hide();
         _hudView.AddOwned(data);
