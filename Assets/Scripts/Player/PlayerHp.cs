@@ -123,7 +123,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     /// </summary>
     public bool TakeDamage(DamageInfo damageInfo)
     {
-        if (!damageInfo.HasValidSource || damageInfo.IsLethal || damageInfo.Amount <= 0)
+        if (!damageInfo.HasSource || damageInfo.IsLethal || damageInfo.Amount <= 0)
         {
             return false;
         }
@@ -191,7 +191,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     public bool ReceiveHealing(HealingInfo healingInfo)
     {
         if (healingInfo.Amount <= 0
-            || !healingInfo.HasValidSource
+            || !healingInfo.HasSource
             || !isActiveAndEnabled
             || playerHP <= 0
             || playerHP >= maxPlayerHP)

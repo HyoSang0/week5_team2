@@ -10,7 +10,7 @@ public enum HealingKind
 /// <summary>
 /// 체력을 회복시킨 객체를 식별하는 마커 계약이다.
 /// </summary>
-public interface IHealingSource : ICombatSource
+public interface IHealingSource
 {
 }
 
@@ -47,10 +47,10 @@ public readonly struct HealingInfo
     public IHealingSource Source { get; }
 
     /// <summary>
-    /// 회복원 참조가 존재하고 파괴되지 않았는지 반환한다.
-    /// Source를 중앙 유효성 검사로 확인해 UnityEngine.Object의 fake-null까지 판정하며, 유효하면 true를 반환한다.
+    /// 회복원 참조가 존재하는지 반환한다.
+    /// Source를 null과 비교해 참조 부재를 판정하며, 존재하면 true를 반환한다.
     /// </summary>
-    public bool HasValidSource => SourceValidator.IsValid(Source);
+    public bool HasSource => Source != null;
 
     /// <summary>
     /// 회복 요청을 구성해 이후 변경되지 않도록 저장한다.

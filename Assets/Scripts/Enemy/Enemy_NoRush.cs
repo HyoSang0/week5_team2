@@ -86,7 +86,7 @@ public class Enemy_NoRush : Enemy
     /// </summary>
     public override bool TakeDamage(DamageInfo damageInfo)
     {
-        if (isDead || isDeadNr || !IsValidDamageInfo(damageInfo))
+        if (isDead || isDeadNr || !damageInfo.HasSource)
         {
             return false;
         }

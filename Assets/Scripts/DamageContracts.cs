@@ -13,38 +13,10 @@ public enum DamageKind
 }
 
 /// <summary>
-/// 피해원과 회복원 참조가 공통으로 만족하는 마커 계약이다.
-/// </summary>
-public interface ICombatSource
-{
-}
-
-/// <summary>
 /// 피해를 발생시킨 객체를 식별하는 마커 계약이다.
 /// </summary>
-public interface IDamageSource : ICombatSource
+public interface IDamageSource
 {
-}
-
-/// <summary>
-/// 피해원과 회복원 참조의 유효성을 중앙에서 검사하는 공용 헬퍼다.
-/// </summary>
-internal static class SourceValidator
-{
-    /// <summary>
-    /// 소스 참조가 존재하고 파괴되지 않았는지 검사한다.
-    /// source로 검사할 ICombatSource 참조를 받아, null이 아니고 UnityEngine.Object라면 파괴되지 않았을 때 true를 반환한다.
-    /// </summary>
-    internal static bool IsValid(ICombatSource source)
-    {
-        if (source == null)
-        {
-            return false;
-        }
-
-        // UnityEngine.Object 구현은 파괴 후 fake-null이 되므로 == 비교로만 파괴를 잡아낼 수 있다.
-        return source is not UnityEngine.Object unityObject || unityObject != null;
-    }
 }
 
 /// <summary>
@@ -80,10 +52,10 @@ public readonly struct DamageInfo
     public IDamageSource Source { get; }
 
     /// <summary>
-    /// 피해원 참조가 존재하고 파괴되지 않았는지 반환한다.
-    /// Source를 중앙 유효성 검사로 확인해 UnityEngine.Object의 fake-null까지 판정하며, 유효하면 true를 반환한다.
+    /// 피해원 참조가 존재하는지 반환한다.
+    /// Source를 null과 비교해 참조 부재를 판정하며, 존재하면 true를 반환한다.
     /// </summary>
-    public bool HasValidSource => SourceValidator.IsValid(Source);
+    public bool HasSource => Source != null;
 
     /// <summary>
     /// 일반 피해량 대신 즉사 처리를 요청하는지 반환한다.

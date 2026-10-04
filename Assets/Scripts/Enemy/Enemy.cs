@@ -126,7 +126,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     /// </summary>
     public virtual bool TakeDamage(DamageInfo damageInfo)
     {
-        if (isDead || !IsValidDamageInfo(damageInfo))
+        if (isDead || !damageInfo.HasSource)
         {
             return false;
         }
@@ -146,38 +146,13 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     }
 
     /// <summary>
-    /// 적 수신자가 처리할 수 있는 전투 피해 정보인지 검사한다.
-    /// damageInfo의 HasValidSource로 피해원 유효성을 확인하고 피해량 또는 즉사 유형을 확인해, 유효하면 true를 반환한다.
-    /// </summary>
-    protected bool IsValidDamageInfo(DamageInfo damageInfo)
-    {
-        if (!damageInfo.HasValidSource)
-        {
-            return false;
-        }
-
-        switch (damageInfo.Kind)
-        {
-            case DamageKind.RushDirect:
-            case DamageKind.Dropkick:
-            case DamageKind.EnemyChain:
-                return !damageInfo.IsLethal && damageInfo.Amount > 0;
-            case DamageKind.ChainExplosion:
-            case DamageKind.BombCollector:
-                return damageInfo.IsLethal || damageInfo.Amount > 0;
-            default:
-                return false;
-        }
-    }
-
-    /// <summary>
     /// 적 수신자가 처리할 수 있는 회복 정보인지 검사한다.
-    /// healingInfo의 회복량과 HasValidSource로 회복원 유효성을 확인해 유효하면 true를 반환한다.
+    /// healingInfo의 회복량과 HasSource로 회복원 참조 존재를 확인해 유효하면 true를 반환한다.
     /// </summary>
     protected bool IsValidHealingInfo(HealingInfo healingInfo)
     {
         return healingInfo.Amount > 0
-            && healingInfo.HasValidSource;
+            && healingInfo.HasSource;
     }
 
     /// <summary>
