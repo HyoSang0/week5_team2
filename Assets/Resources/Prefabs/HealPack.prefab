@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 6970130837066745115}
   - component: {fileID: -4804761824056252192}
   - component: {fileID: 763053742924661822}
+  - component: {fileID: 8067750059763546188}
   m_Layer: 0
   m_Name: HealPack
   m_TagString: HealPack
@@ -437,3 +438,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8067750059763546188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3839627512098332680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 064bf4728fe4ed2cb4c1caf2d5b260cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

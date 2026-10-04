@@ -6,7 +6,7 @@ using UnityEngine;
 /// 연쇄 폭발 증강 효과. 적을 처치하면 반경 안의 다른 적들을 함께 처치한다.
 /// </summary>
 [CreateAssetMenu(menuName = "Augment/Effects/ChainExplosionEffect")]
-public class ChainExplosionEffect : AugmentEffect
+public class ChainExplosionEffect : AugmentEffect, IDamageSource
 {
     [SerializeField] private float _radius = 2f;
 
@@ -16,7 +16,7 @@ public class ChainExplosionEffect : AugmentEffect
     private static readonly List<Enemy> _buffer = new List<Enemy>();
 
     /// <summary>
-    /// 적이 처치되면 enemy 위치 반경 radius 안의 다른 살아있는 적들에게 Kill()을 호출한다.
+    /// 적이 처치되면 enemy 위치 반경 radius 안의 다른 살아있는 적들에게 즉사 피해를 적용한다.
     /// 가드가 켜져 있는 동안의 처치는 다시 이 효과를 호출하지 않는다.
     /// </summary>
     public override void OnEnemyKilled(Enemy enemy)
@@ -28,7 +28,7 @@ public class ChainExplosionEffect : AugmentEffect
 
         _inChain = true;
 
-        // Kill() 중 예외가 발생해도 가드가 남아 이후 연쇄가 영구 차단되지 않게 복구한다.
+        // 피해 처리 중 예외가 발생해도 가드가 남아 이후 연쇄가 영구 차단되지 않게 복구한다.
         try
         {
             KillAround(enemy.transform.position);
@@ -48,7 +48,7 @@ public class ChainExplosionEffect : AugmentEffect
     }
 
     /// <summary>
-    /// center 반경 radius 안의 살아있는 다른 적들을 수집해 Kill()을 호출한다.
+    /// center 반경 radius 안의 살아있는 다른 적들을 수집해 즉사 피해를 적용한다.
     /// 수집 목록은 정적 버퍼를 재사용한다.
     /// </summary>
     private void KillAround(Vector3 center)
@@ -67,7 +67,9 @@ public class ChainExplosionEffect : AugmentEffect
 
         foreach (Enemy other in _buffer)
         {
-            other.Kill();
+            // Kill 직접 호출 대신 즉사 피해를 보내 각 적의 기존 피해/사망 처리를 따르게 한다.
+            IDamageable damageTarget = other;
+            damageTarget.TakeDamage(new DamageInfo(0, DamageKind.ChainExplosion, this, isLethal: true));
         }
 
         _buffer.Clear();

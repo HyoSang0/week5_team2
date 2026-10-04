@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class RushAbility_Sejin : MonoBehaviour
+public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 {
     // public TextMeshProUGUI dashEnergyText;
     // public float energy = 0.0f;
@@ -39,6 +39,12 @@ public class RushAbility_Sejin : MonoBehaviour
     private EnemyPool enemyPool;
 
     private PlayerFallRecovery fallRecovery;
+
+    [Header("돌진 직격 피해량")]
+    /// <summary>
+    /// 돌진 중 적과 충돌했을 때 적의 피해 진입점에 전달하는 피해량.
+    /// </summary>
+    [SerializeField] private int _rushDamage = 20;
 
     [Header("증강 스탯 재계산에 사용할 기준값들")]
     /// <summary>
@@ -309,12 +315,15 @@ public class RushAbility_Sejin : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && isRushing)
+        // 굴러가는 통나무 적은 태그가 NoAbsortEnemy로 나뉘어 있으므로 함께 직격 피해 대상에 포함한다.
+        if ((collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("NoAbsortEnemy")) && isRushing)
         {
             Enemy enemy = collision.gameObject.GetComponentInParent<Enemy>();
             if (enemy != null)
             {
-                enemy.Kill();
+                // 직격 피해는 적의 공용 피해 진입점으로 전달해 각 적의 기존 피해/사망 처리를 따르게 한다.
+                IDamageable damageTarget = enemy;
+                damageTarget.TakeDamage(new DamageInfo(_rushDamage, DamageKind.RushDirect, this));
             }
         }
     }

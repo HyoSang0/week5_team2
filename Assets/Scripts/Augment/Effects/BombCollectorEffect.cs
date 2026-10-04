@@ -6,7 +6,7 @@ using UnityEngine;
 /// 폭탄 수집가 증강 효과. 적용 중에 폭탄형 적의 흡수를 땅 붕괴 대신 주변 적 처치로 바꾼다.
 /// </summary>
 [CreateAssetMenu(menuName = "Augment/Effects/BombCollectorEffect")]
-public class BombCollectorEffect : AugmentEffect
+public class BombCollectorEffect : AugmentEffect, IDamageSource
 {
     [SerializeField] private float _killRadius = 3f;
 
@@ -43,7 +43,7 @@ public class BombCollectorEffect : AugmentEffect
     }
 
     /// <summary>
-    /// active 인스턴스의 반경 안에서 center 주변의 살아있는 다른 적들에게 Kill()을 호출한다.
+    /// active 인스턴스의 반경 안에서 center 주변의 살아있는 다른 적들에게 즉사 피해를 적용한다.
     /// EnemyExplode.OnAbsorbed에서 땅 붕괴 대체 동작으로 호출한다.
     /// </summary>
     public void KillAround(Vector3 center)
@@ -55,7 +55,7 @@ public class BombCollectorEffect : AugmentEffect
 
         _inChain = true;
 
-        // Kill() 중 예외가 발생해도 가드가 남아 이후 연쇄 처치가 영구 차단되지 않게 복구한다.
+        // 피해 처리 중 예외가 발생해도 가드가 남아 이후 연쇄 처치가 영구 차단되지 않게 복구한다.
         try
         {
             _buffer.Clear();
@@ -72,7 +72,9 @@ public class BombCollectorEffect : AugmentEffect
 
             foreach (Enemy other in _buffer)
             {
-                other.Kill();
+                // Kill 직접 호출 대신 즉사 피해를 보내 각 적의 기존 피해/사망 처리를 따르게 한다.
+                IDamageable damageTarget = other;
+                damageTarget.TakeDamage(new DamageInfo(0, DamageKind.BombCollector, this, isLethal: true));
             }
         }
         finally

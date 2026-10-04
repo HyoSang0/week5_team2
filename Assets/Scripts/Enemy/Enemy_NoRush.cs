@@ -66,22 +66,68 @@ public class Enemy_NoRush : Enemy
         }
     }
 
-    IEnumerator UnBeatTime()
+    /// <summary>
+    /// 플레이어에게 반사 피해 1을 시도하고 1초간 반사 쿨다운을 유지한다.
+    /// 피해는 PlayerHp.TakeDamage(NoRushReflection)로 적용하며 무적 중에는 무시되고, 새로운 피격 무적은 부여하지 않는다.
+    /// </summary>
+    private IEnumerator UnBeatTime()
     {
         isUnBeatNr = true;
-        playerHp.PlayerAttacked(1);
+        IDamageable damageTarget = playerHp;
+        damageTarget.TakeDamage(new DamageInfo(1, DamageKind.NoRushReflection, this));
         yield return new WaitForSeconds(1);
         isUnBeatNr = false;
     }
 
 
-    void TakeDamageNr(int damage)
+    /// <summary>
+    /// 공용 피해 진입점을 NoRush 전용 경로로 우회한다.
+    /// damageInfo의 Amount를 TakeDamageNr로 전달해 healthNr을 감소시키며, IsLethal이면 사망 임계로 보내고 base.TakeDamage는 호출하지 않는다.
+    /// </summary>
+    public override bool TakeDamage(DamageInfo damageInfo)
+    {
+        if (isDead || isDeadNr || !IsValidDamageInfo(damageInfo))
+        {
+            return false;
+        }
+
+        // 즉사 요청은 남은 체력과 무관하게 healthNr을 사망 임계로 보낸다.
+        TakeDamageNr(damageInfo.IsLethal ? healthNr : damageInfo.Amount);
+        return true;
+    }
+
+    /// <summary>
+    /// 공용 회복 진입점을 NoRush 전용 경로로 우회한다.
+    /// healingInfo의 Amount를 사용해 healthNr을 회복하며, base.ReceiveHealing과 상속된 health는 사용하지 않는다.
+    /// 회복량이 0 이하이거나 사망했거나 비활성 상태이면 상태를 변경하지 않고 false를 반환하며,
+    /// 실제로 healthNr이 증가하면 프리팹 기준 체력을 초과하지 않도록 clamp해 true를 반환한다.
+    /// </summary>
+    public override bool ReceiveHealing(HealingInfo healingInfo)
+    {
+        if (!IsValidHealingInfo(healingInfo) || isDead || isDeadNr || !gameObject.activeInHierarchy || healthNr >= _defaultHealthNr)
+        {
+            return false;
+        }
+
+        healthNr = Mathf.Min(healthNr + healingInfo.Amount, _defaultHealthNr);
+        return true;
+    }
+
+    /// <summary>
+    /// NoRush 전용 healthNr을 감소시키고 피격 연출 및 사망 여부를 확인한다.
+    /// damage는 감소량이며 healthNr과 피격 코루틴 상태를 변경한다.
+    /// </summary>
+    private void TakeDamageNr(int damage)
     {
         healthNr -= damage;
         StartCoroutine(PlayHitEffect());
         CheckHealthNr();
     }
-    IEnumerator PlayHitEffect()
+    /// <summary>
+    /// NoRush 피격 시 캐시된 머티리얼 배열의 값을 잠시 사망 머티리얼 참조로 바꾼다.
+    /// mat 배열을 갱신하고 0.1초 뒤 생존 머티리얼 참조로 되돌린다.
+    /// </summary>
+    private IEnumerator PlayHitEffect()
     {
         for (int i = 0; i < mat.Length; i++)
         {
@@ -94,7 +140,11 @@ public class Enemy_NoRush : Enemy
 
         }
     }
-    Color ChangeColor(string color)
+    /// <summary>
+    /// 이름으로 지정된 색 문자열을 Unity Color 값으로 변환한다.
+    /// color가 red 또는 gray이면 해당 색을, 그 외에는 white를 반환한다.
+    /// </summary>
+    private Color ChangeColor(string color)
     {
         if (color == "red")
         {
@@ -108,7 +158,11 @@ public class Enemy_NoRush : Enemy
     }
 
 
-    IEnumerator DieNr()
+    /// <summary>
+    /// NoRush 전용 사망 이펙트와 넉백을 재생한 뒤 적을 전용 풀 타입으로 반환한다.
+    /// 넉백 힘과 사망 대기 시간을 사용하며 NoRush 물리 상태와 풀 소유권을 변경한다.
+    /// </summary>
+    private IEnumerator DieNr()
     {
         PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
         Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
@@ -146,7 +200,8 @@ public class Enemy_NoRush : Enemy
     {
         if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponent<Enemy>().isDead)
         {
-            TakeDamageNr(ApplyChainDamage(1));
+            Enemy corpse = collision.gameObject.GetComponent<Enemy>();
+            corpse.DealChainDamageTo(this, 1);
         }
     }
 }
