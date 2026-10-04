@@ -87,6 +87,33 @@ public class RushAbility_Sejin : MonoBehaviour
     {
         inputActions.Disable();
 
+        // 컴포넌트 비활성화로 코루틴은 정지하지만 필드는 남으므로 참조를 명시적으로 멈추고 정리한다.
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            dashRoutine = null;
+        }
+        if (unbeatRoutine != null)
+        {
+            StopCoroutine(unbeatRoutine);
+            unbeatRoutine = null;
+        }
+
+        // 돌진 이동 중 비활성화면 정상 종료와 동일하게 이동과 상태를 복구한다.
+        if (isRushing)
+        {
+            FinishRushMovement();
+        }
+        // 이동 또는 쿨타임 중 정지된 경우 쿨타임을 끝난 것으로 취급하고 준비 표시를 복구한다.
+        if (isDashing)
+        {
+            dashReadyEffectObject.SetActive(true);
+        }
+
+        // 재활성화 후 CanDash가 막히지 않도록 돌진/쿨타임 플래그를 함께 해제한다.
+        isRushing = false;
+        isDashing = false;
+
         // 컴포넌트 비활성화로 쿨타임 코루틴이 정지하면 감소량 대기 상태를 정리한다.
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
@@ -191,16 +218,19 @@ public class RushAbility_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// coolTime 동안 돌진 쿨타임을 진행하고 준비 표시를 갱신한다. 
-    /// 누적된 감소량을 경과 시간에 반영하며, 완료 시 돌진을 다시 사용할 수 있게 한다. 
+    /// 시작 시점의 coolTime을 지역 기준값으로 캡처해 그 길이만큼 돌진 쿨타임을 진행하고 준비 표시를 갱신한다.
+    /// 진행 중 PlayerStats 변경으로 coolTime 필드가 바뀌어도 진행 중인 쿨타임은 영향을 받지 않고, 완료 시 돌진을 다시 사용할 수 있게 한다.
     /// </summary>
     private IEnumerator DashCooldown()
     {
         float timeElapsed = 0f;
+        // 진행 중 쿨다운 길이가 갑자기 늘거나 즉시 종료되지 않도록 시작 시점 값으로 고정한다. 새 쿨다운 증강은 다음 쿨다운부터 반영된다.
+        float cooldownDuration = coolTime;
         _inCooldown = true;
-        while (timeElapsed < coolTime)
+        while (timeElapsed < cooldownDuration)
         {
-            _coolDownImage.fillAmount = timeElapsed / coolTime;
+            // 0초 기준에서는 루프에 진입하지 않지만, 나눗셈도 길이가 0보다 클 때만 수행해 UI를 안전하게 유지한다.
+            _coolDownImage.fillAmount = cooldownDuration > 0f ? timeElapsed / cooldownDuration : 1f;
             timeElapsed += Time.deltaTime + _pendingCooldownReduction;
             _pendingCooldownReduction = 0f;
             yield return null;
