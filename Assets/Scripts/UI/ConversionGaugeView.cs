@@ -2,31 +2,35 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 전환(시간제) 흡수의 지속 시간과 쿨타임을 슬라이더 게이지로 표시하는 뷰.
-/// 전환 증강이 없으면 게이지를 숨기고, 있으면 활성 중에는 남은 시간을 Accent 색으로,
-/// 쿨타임 중에는 진행률을 SurfaceNavy 색으로, 준비 상태에서는 가득 찬 Accent 게이지를 보여준다.
+/// 일반 흡수와 시간제 포식의 활성 상태 및 쿨타임을 슬라이더 게이지로 표시하는 뷰.
+/// 준비 및 일반 흡수 중에는 가득 찬 Accent 게이지를, 포식 중에는 남은 시간을,
+/// 쿨타임 중에는 Accent 색으로 경과 비율을 보여준다.
 /// </summary>
 public class ConversionGaugeView : MonoBehaviour
 {
-    [Header("Conversion Gauge")]
+    [Header("Absorption Ability Gauge")]
     [SerializeField] private AbsortionAbility_Sejin _ability;
     [SerializeField] private Slider _slider;
     [SerializeField] private Image _fill;
 
+    void Awake()
+    {
+        if (_ability == null)
+        {
+            _ability = FindFirstObjectByType<AbsortionAbility_Sejin>();
+        }
+    }
+
     /// <summary>
-    /// 전환 흡수 능력의 상태를 매 프레임 게이지에 반영한다.
-    /// _ability의 IsTimedMode/IsTimedActive/TimedActiveRatio/TimedCooldownRatio를 읽어
+    /// 일반 흡수 또는 시간제 포식 능력의 상태를 매 프레임 게이지에 반영한다.
+    /// _ability의 IsAbsorptionActive/ActiveAbsorptionRatio/AbsorptionCooldownRatio를 읽어
     /// _slider 오브젝트의 활성 여부와 value, _fill의 색을 변경한다.
     /// </summary>
     private void Update()
     {
-        // 전환 증강이 없으면 게이지를 숨긴 상태로 유지한다.
-        if (!_ability.IsTimedMode)
+        if (_ability == null)
         {
-            if (_slider.gameObject.activeSelf)
-            {
-                _slider.gameObject.SetActive(false);
-            }
+            _slider.gameObject.SetActive(false);
             return;
         }
 
@@ -35,19 +39,17 @@ public class ConversionGaugeView : MonoBehaviour
             _slider.gameObject.SetActive(true);
         }
 
-        // 포식 모드 활성 중에는 남은 지속 시간을 강조색으로 표시한다.
-        if (_ability.IsTimedActive)
+        if (_ability.IsAbsorptionActive)
         {
-            _slider.value = _ability.TimedActiveRatio;
+            _slider.value = _ability.ActiveAbsorptionRatio;
             _fill.color = UIPalette.Accent;
             return;
         }
 
-        // 쿨타임 중에는 진행률을 남색으로, 준비되면 가득 찬 강조색 게이지를 표시한다.
-        if (_ability.TimedCooldownRatio < 1f)
+        if (_ability.AbsorptionCooldownRatio < 1f)
         {
-            _slider.value = _ability.TimedCooldownRatio;
-            _fill.color = UIPalette.SurfaceNavy;
+            _slider.value = _ability.AbsorptionCooldownRatio;
+            _fill.color = UIPalette.Accent;
             return;
         }
 
