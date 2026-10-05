@@ -307,6 +307,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
             return;
         }
         StopCoroutine(dashRoutine);
+        isDashing = false;
         FinishRushMovement();
         dashRoutine = StartCoroutine(DashCooldown());
     }

@@ -19,10 +19,10 @@ MonoBehaviour:
   _tier: 0
   _conflictTags: []
   _modifiers:
-  - _stat: 7
+  - _stat: 6
     _percent: 20
     _flat: 0
-  - _stat: 4
+  - _stat: 12
     _percent: 0
     _flat: 1
   _effect: {fileID: 0}
