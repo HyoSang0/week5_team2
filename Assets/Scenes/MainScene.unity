@@ -934,7 +934,7 @@ MonoBehaviour:
   _playerHp: {fileID: 782649360}
   _hudView: {fileID: 3186234514657724730}
   _totalRerolls: 3
-  _debugForcedNextAugment: {fileID: 11400000, guid: b4ac6f61a518ba84d9a5c07d031ec1fd, type: 2}
+  _debugForcedNextAugment: {fileID: 0}
 --- !u!114 &612590447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3611,6 +3611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82a7f991e9b356b4cb97f2b5edee35e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  _isPracticeMode: 0
   timeText: {fileID: 563494839}
   gameOverText: {fileID: 1844980867}
   scoreText: {fileID: 984024945}
@@ -3986,6 +3987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d479c0e3dfc348f4c89d5959b1b8105f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
+  _isPracticeMode: 0
   BasicEnemyPrefab: {fileID: 3619340856543788439, guid: 65ef6f26693c58849a3900c7eab6bb4f, type: 3}
   BoomEnemyPrefab: {fileID: 3619340856543788439, guid: 8cb24fe9bc81ff942a149ebe31bc2ee6, type: 3}
   NoRushEnemyPrefab: {fileID: 2850225975201428742, guid: 28dae93e3d0c668479e17b73b689d14f, type: 3}
