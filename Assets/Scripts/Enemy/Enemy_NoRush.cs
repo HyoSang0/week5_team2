@@ -165,6 +165,7 @@ public class Enemy_NoRush : Enemy
 
         yield return new WaitForSeconds(0.1f);
         ChangeColor("red");
+        SpawnKillExperienceBall();
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
     /// <summary>
