@@ -364,7 +364,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
                 kick.ApplyDropkickDamage(this);
             }
         }
-        else if (other.CompareTag("Enemy") && other.gameObject.GetComponent<Enemy>().isDead)
+        else if ((other.CompareTag("Enemy") || other.CompareTag("NoAbsortEnemy")) && other.gameObject.GetComponent<Enemy>().isDead)
         {
             if (gameObject.CompareTag("Enemy"))
             {

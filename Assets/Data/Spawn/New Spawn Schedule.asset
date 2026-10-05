@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5e11e54066fb14887f722185a35370, type: 3}
+  m_Name: New Spawn Schedule
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnSchedule
+  _waves:
+  - _kind: 0
+    _startTime: 0
+    _interval: 0.5
+    _duration: 10
+    _count: 1
+  - _kind: 0
+    _startTime: 5
+    _interval: 0.1
+    _duration: 95
+    _count: 1
+  - _kind: 0
+    _startTime: 20
+    _interval: 0.1
+    _duration: 80
+    _count: 1
+  - _kind: 0
+    _startTime: 40
+    _interval: 0.1
+    _duration: 60
+    _count: 1
+  - _kind: 1
+    _startTime: 10
+    _interval: 1
+    _duration: 3
+    _count: 1
+  - _kind: 1
+    _startTime: 35
+    _interval: 0.5
+    _duration: 5
+    _count: 1
+  - _kind: 1
+    _startTime: 55
+    _interval: 0.5
+    _duration: 15
+    _count: 1
+  - _kind: 1
+    _startTime: 75
+    _interval: 0.3
+    _duration: 9
+    _count: 1
+  - _kind: 1
+    _startTime: 90
+    _interval: 0.2
+    _duration: 10
+    _count: 1
+  - _kind: 3
+    _startTime: 5
+    _interval: 1
+    _duration: 2
+    _count: 1
+  - _kind: 3
+    _startTime: 45
+    _interval: 1
+    _duration: 1
+    _count: 1
+  - _kind: 3
+    _startTime: 70
+    _interval: 1
+    _duration: 1
+    _count: 1
+  - _kind: 3
+    _startTime: 87
+    _interval: 1
+    _duration: 1
+    _count: 1
+  - _kind: 2
+    _startTime: 20
+    _interval: 0.5
+    _duration: 1
+    _count: 1
+  - _kind: 2
+    _startTime: 35
+    _interval: 0.5
+    _duration: 1.5
+    _count: 1
+  - _kind: 2
+    _startTime: 50
+    _interval: 0.5
+    _duration: 2
+    _count: 1
+  - _kind: 2
+    _startTime: 65
+    _interval: 0.5
+    _duration: 2.5
+    _count: 1
+  - _kind: 2
+    _startTime: 80
+    _interval: 0.5
+    _duration: 3
+    _count: 1
+  - _kind: 2
+    _startTime: 92
+    _interval: 0.5
+    _duration: 3
+    _count: 1
+  - _kind: 4
+    _startTime: 25
+    _interval: 0
+    _duration: 0
+    _count: 1
+  - _kind: 4
+    _startTime: 55
+    _interval: 0
+    _duration: 0
+    _count: 1
+  - _kind: 4
+    _startTime: 80
+    _interval: 0
+    _duration: 0
+    _count: 1
+  _sourceCsv: {fileID: 4900000, guid: d135ff5d047cc004c9458a436dccadab, type: 3}
