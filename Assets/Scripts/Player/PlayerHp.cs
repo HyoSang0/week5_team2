@@ -166,12 +166,13 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
         //피격 vignette 처리
         SetVignetteIntensity(attackedVignetteIntensity);
 
-        UpdateHpInfoToOthers();
         // 사망 처리
         if (playerHP <= 0)
         {
+            playerHP = 0;
             gameManager.PlayerDie();
         }
+        UpdateHpInfoToOthers();
     }
 
     /// <summary>
