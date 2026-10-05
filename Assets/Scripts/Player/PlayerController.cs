@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private float _baseMoveSpeed;
     // 증강 스탯 재계산에 사용할 chargeSpeed의 기준값
     private float _baseChargeSpeed;
+    private float _temporaryMoveSpeedMultiplier = 1f;
 
     private PlayerFallRecovery fallRecovery;
 
@@ -93,8 +94,15 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        moveSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseMoveSpeed);
-        chargeSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseChargeSpeed);
+        moveSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseMoveSpeed) * _temporaryMoveSpeedMultiplier;
+        chargeSpeed = PlayerStats.Instance.Apply(StatType.MoveSpeed, _baseChargeSpeed) * _temporaryMoveSpeedMultiplier;
+    }
+
+    // 일시적인 이동 속도 배율을 저장하고 기존 증강 스탯과 함께 다시 계산한다.
+    public void SetTemporaryMoveSpeedMultiplier(float multiplier)
+    {
+        _temporaryMoveSpeedMultiplier = Mathf.Max(0f, multiplier);
+        ApplyAugmentStats();
     }
 
     void Update()

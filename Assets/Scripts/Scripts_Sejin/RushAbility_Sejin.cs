@@ -122,7 +122,8 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
             FinishRushMovement();
         }
         // 이동 또는 쿨타임 중 정지된 경우 쿨타임을 끝난 것으로 취급하고 준비 표시를 복구한다.
-        if (isDashing)
+
+        if (isDashing && dashReadyEffectObject != null)
         {
             dashReadyEffectObject.SetActive(true);
         }
