@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
             // 중복 인스턴스가 파괴되는 경로가 아닌 실제 런 시작에서만 런 단위 통계를 초기화한다.
             StatisticsManager.Instance.ResetRun();
             _level = 1;
+            // 화면 포커스를 잃어도 게임이 멈추지 않도록 백그라운드 실행을 허용한다.
+            Application.runInBackground = true;
         }
     }
 
