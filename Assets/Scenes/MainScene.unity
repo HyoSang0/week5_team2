@@ -914,6 +914,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UiManager
   hpSlider: {fileID: 1499864070}
   _experienceSlider: {fileID: 79570251}
+  _showExperience: 1
   hpText: {fileID: 1497688160}
   _hpScreenOffset: {x: 0, y: -50}
   _playerHp: {fileID: 782649360}
@@ -934,7 +935,7 @@ MonoBehaviour:
   _playerHp: {fileID: 782649360}
   _hudView: {fileID: 3186234514657724730}
   _totalRerolls: 3
-  _debugForcedNextAugment: {fileID: 0}
+  _debugForcedNextAugment: {fileID: 11400000, guid: 19ace7945558db0499068e35cf583e30, type: 2}
 --- !u!114 &612590447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1178,6 +1179,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 921099859572358266, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
+      propertyPath: _lineWidth
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 921099859572358266, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
+      propertyPath: area_radus_max
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 5011029444806417265, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: m_Name
       value: Player (1)
@@ -1202,26 +1211,6 @@ PrefabInstance:
       propertyPath: _coolDownImage
       value: 
       objectReference: {fileID: 339346637}
-    - target: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: _areaBindings.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: _areaBindings.Array.data[0]._area
-      value: 
-      objectReference: {fileID: 782649361}
-    - target: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: _areaBindings.Array.data[0]._type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: _areaBindings.Array.data[1]._area
-      value: 
-      objectReference: {fileID: 782649362}
-    - target: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-      propertyPath: _areaBindings.Array.data[1]._type
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 8941100268318639797, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1285,28 +1274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dffec0b3c63741b45a7e7d4ace62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHp
---- !u!114 &782649361 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2586242548174326396, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-  m_PrefabInstance: {fileID: 782649358}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b92a1cc3247de77408c9e274bfeac685, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
---- !u!114 &782649362 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6347137728393194831, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
-  m_PrefabInstance: {fileID: 782649358}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b92a1cc3247de77408c9e274bfeac685, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
 --- !u!114 &782649373 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7879634254771331669, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
