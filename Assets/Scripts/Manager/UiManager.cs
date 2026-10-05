@@ -11,7 +11,6 @@ public class UiManager : MonoBehaviour
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private TextMeshProUGUI _experienceText;
 
     [Header("HP Follow")]
     [SerializeField] private Vector2 _hpScreenOffset = new Vector2(0f, -50f);
@@ -27,10 +26,7 @@ public class UiManager : MonoBehaviour
     void Awake()
     {
         _hpUiRoot = hpSlider.transform.parent.GetComponent<RectTransform>();
-        _canvasRect = _hpUiRoot
-            .GetComponentInParent<Canvas>()
-            .rootCanvas
-            .GetComponent<RectTransform>();
+        _canvasRect = _hpUiRoot.GetComponentInParent<Canvas>().rootCanvas.GetComponent<RectTransform>();
         _mainCamera = Camera.main;
     }
 
@@ -64,18 +60,14 @@ public class UiManager : MonoBehaviour
     {
         Vector3 screenPosition = _mainCamera.WorldToScreenPoint(_playerHp.transform.position);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _canvasRect,
-            (Vector2)screenPosition,
-            null,
-            out Vector2 localPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect, (Vector2)screenPosition, null, out Vector2 localPosition);
 
         _hpUiRoot.anchoredPosition = localPosition + _hpScreenOffset;
     }
 
     /// <summary>
-    /// 현재 레벨 경험치와 다음 레벨 요구치를 경험치 바와 텍스트에 표시한다.
-    /// GameManager의 Level, CurrentLevelExperience, NextLevelRequirement를 읽어 UI 상태를 변경한다.
+    /// 현재 레벨 경험치와 다음 레벨 요구치를 경험치 슬라이더에 반영한다.
+    /// GameManager의 CurrentLevelExperience와 NextLevelRequirement를 읽어 슬라이더 범위와 값을 변경한다.
     /// </summary>
     private void UpdateExperienceHud()
     {
@@ -85,6 +77,5 @@ public class UiManager : MonoBehaviour
         _experienceSlider.minValue = 0;
         _experienceSlider.maxValue = required;
         _experienceSlider.value = current;
-        _experienceText.text = $"Lv.{_gameManager.Level}  {current}/{required}";
     }
 }
