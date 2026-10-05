@@ -156,8 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22bb57678b1ad564086d3c19fce12de4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: 5
-  speed: 5
+  _stats: {fileID: 11400000, guid: e5466e8a879472540a0fac973e20c1da, type: 2}
   knockbackForce: 1000
   isDead: 0
   poolType: 0

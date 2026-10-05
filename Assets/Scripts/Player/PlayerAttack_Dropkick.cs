@@ -1,7 +1,9 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 돌진 공격 중 드롭킥 판정과 애니메이션 오브젝트를 관리한다.
+/// </summary>
 public class PlayerAttack_Dropkick : MonoBehaviour, IDamageSource
 {
     private InputSystem_Actions inputActions;
@@ -49,7 +51,7 @@ public class PlayerAttack_Dropkick : MonoBehaviour, IDamageSource
     }
 
     /// <summary>
-    /// 프리팹의 Rush 시작 UnityEvent가 호출하는 드롭킥 동작을 시작한다.
+    /// RushAbility의 OnRushStarted Action 이벤트가 호출하는 드롭킥 동작을 시작한다.
     /// DropkickSequence 코루틴을 실행해 공격 범위와 발 이펙트를 활성화한다.
     /// </summary>
     public void Dropkick()

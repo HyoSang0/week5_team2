@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
             _level = 1;
             _currentLevelExperience = 0;
             _nextLevelRequirement = GetRequirementForLevel(_level);
+            // 화면 포커스를 잃어도 게임이 멈추지 않도록 백그라운드 실행을 허용한다.
+            Application.runInBackground = true;
         }
     }
 

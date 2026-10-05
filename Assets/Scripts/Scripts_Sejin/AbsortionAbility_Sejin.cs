@@ -10,17 +10,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     private InputSystem_Actions inputActions;
     private PlayerController _playerController;
-    public GameObject AbsortionArea;
 
     [Header("Absorption Area Binding")]
     [SerializeField] private AbsorptionAreaBinding[] _areaBindings;
-
-    // public float stamina = 30f;
-    // public float remainingStamina = 10.0f;
-    // public float regenStamina = 10.0f;
-    // public float maxStamina = 30f;
-    // [Tooltip("흡수 능력을 활성화하는데 필요한 비용")]
-    // public float activateStamina;
 
     [Header("Cooldown")]
     [SerializeField, Min(0f)] private float _cooldownSeconds;
@@ -31,12 +23,10 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     // 증강 스탯 재계산에 사용할 쿨타임 기준값
     private float _baseCooldownSeconds;
 
-    // Start에서 캐시할 기본 흡수 영역과 활성화 중인 영역
-    private AbsortionArea_Sejin _defaultArea;
     private AbsortionArea_Sejin _activeArea;
 
     // 증강 선택으로 바뀐 현재 흡수 영역 유형
-    private AbsorptionAreaType _selectedAreaType;
+    private AbsorptionAreaType _selectedAreaType = AbsorptionAreaType.None;
 
     void Awake()
     {
@@ -63,8 +53,6 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         inputActions.Player.Ability_Sejin.started += ActiveAbility;
         inputActions.Player.Ability_Sejin.canceled += DeActiveAbility;
 
-        // 기존 AbsortionArea를 기본 폴백 영역으로 캐시하고 모든 후보 영역을 꺼둔 채 시작한다.
-        _defaultArea = AbsortionArea.GetComponentInChildren<AbsortionArea_Sejin>(true);
         DeactivateAllAreas();
 
         // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
@@ -123,10 +111,6 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// </summary>
     private void StartAbility()
     {
-        // if (stamina < activateStamina)
-        //     return;
-        // stamina -= activateStamina;
-
         if (isStartAbsortion || Time.time < _nextAvailableTime)
             return;
 
@@ -177,9 +161,15 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// </summary>
     private AbsortionArea_Sejin ResolveArea(AbsorptionAreaType type)
     {
-        if (type == AbsorptionAreaType.Default || _areaBindings == null)
+        if (_selectedAreaType == type)
         {
-            return _defaultArea;
+            if (_activeArea != null)
+                return _activeArea;
+
+        }
+        if (type == AbsorptionAreaType.Default && _areaBindings == null)
+        {
+            return null;
         }
 
         foreach (AbsorptionAreaBinding binding in _areaBindings)
@@ -190,7 +180,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
             }
         }
 
-        return _defaultArea;
+        return null;
     }
 
     /// <summary>
@@ -199,11 +189,6 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// </summary>
     private void DeactivateAllAreas()
     {
-        if (_defaultArea != null)
-        {
-            _defaultArea.gameObject.SetActive(false);
-        }
-
         if (_areaBindings == null)
         {
             return;

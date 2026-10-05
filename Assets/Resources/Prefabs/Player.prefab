@@ -5507,7 +5507,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  AbsortionArea: {fileID: 6795692395077801279}
   _areaBindings: []
   _cooldownSeconds: 0.11
   isStartAbsortion: 0
@@ -5529,51 +5528,6 @@ MonoBehaviour:
   coolTime: 1
   isDashing: 0
   _coolDownImage: {fileID: 0}
-  onStartRush:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8045926363874861570}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: StartRush
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 377643710661271175}
-        m_TargetAssemblyTypeName: PlayerAttack_Dropkick, Assembly-CSharp
-        m_MethodName: Dropkick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onEndRush:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8045926363874861570}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: EndRush
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onBeatable:
-    m_PersistentCalls:
-      m_Calls: []
   isRushing: 0
   _rushDamage: 20
 --- !u!114 &8724646819377778419
@@ -5620,8 +5574,8 @@ MonoBehaviour:
   volume: {fileID: 0}
   darkVignette: {fileID: 0}
   attackedVignetteIntensity: 0.45
-  playerHP: 5
-  maxPlayerHP: 5
+  playerHP: 10
+  maxPlayerHP: 10
   isUnBeatHit: 0
   isUnBeatDash: 0
   playerMeshRenderer: {fileID: 4175106658480865747}
@@ -6272,21 +6226,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
   lightBallPrefab: {fileID: 9196570881659283892, guid: 25f40ae7d936a4f4d93055f547b6eb2d, type: 3}
   _uiWorldMarker: {fileID: 0}
-  onGatherEnergy:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7124579886636666819}
-        m_TargetAssemblyTypeName: RushAbility_Sejin, Assembly-CSharp
-        m_MethodName: RegenEnergy
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   slowMultiplier: 0.1
   absorbTime: 0.5
   area_radus_max: 8

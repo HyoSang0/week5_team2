@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public enum DestinationMode
 {
@@ -15,7 +14,6 @@ public class EnemyAbsorbEffect : MonoBehaviour
     [SerializeField] private DestinationMode _destinationMode = DestinationMode.Player;
     [SerializeField] private Vector3 _uiMarkerOffset = Vector3.zero;
     private Transform target;
-    private UnityEvent rewardOnArrival;
     private bool finished;
     private Vector3 _activeOffset;
     private Transform _visual;
@@ -35,8 +33,7 @@ public class EnemyAbsorbEffect : MonoBehaviour
     /// </summary>
     public void Initialize(
         Transform playerTarget,
-        Transform uiWorldMarker,
-        UnityEvent reward,
+        Transform uiWorldMarker,        
         int experienceAmount,
         bool awardExperienceOnArrival,
         bool forcePlayerDestination = false)
@@ -45,8 +42,7 @@ public class EnemyAbsorbEffect : MonoBehaviour
             && _destinationMode == DestinationMode.UiMarker
             && uiWorldMarker != null;
         target = moveToUiMarker ? uiWorldMarker : playerTarget;
-        _activeOffset = moveToUiMarker ? _uiMarkerOffset : targetOffset;
-        rewardOnArrival = reward;
+        _activeOffset = moveToUiMarker ? _uiMarkerOffset : targetOffset;        
         _experienceAmount = experienceAmount;
         _awardExperienceOnArrival = awardExperienceOnArrival;
         float absorbExperience = GameManager.GetExperienceForOutcome(StatisticsManager.GameStatisticType.EnemyAbsorb);
@@ -77,8 +73,7 @@ public class EnemyAbsorbEffect : MonoBehaviour
         if (_awardExperienceOnArrival)
         {
             GameManager.Instance.AddExperience(_experienceAmount);
-        }
-        rewardOnArrival?.Invoke();
+        }        
         EffectPool.Release(gameObject);
     }
 }

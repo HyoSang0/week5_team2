@@ -1,6 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
+
+/// <summary>
+/// 폭탄
+/// </summary>
 public class EnemyExplode : Enemy
 {
     public GroundInitializer ground;

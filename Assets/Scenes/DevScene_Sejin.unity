@@ -7791,23 +7791,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b92a1cc3247de77408c9e274bfeac685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbsortionArea_Sejin
-  onGatherEnergy:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9141827185443500100}
-        m_TargetAssemblyTypeName: RushAbility_Sejin, Assembly-CSharp
-        m_MethodName: RegenEnergy
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  lightBallPrefab: {fileID: 0}
+  _uiWorldMarker: {fileID: 0}
   slowMultiplier: 0.1
   absorbTime: 0.5
+  area_radus_max: 0
+  area_radus_min: 0
+  speed: 0
+  outline: {fileID: 0}
+  segments: 64
+  outlineWidth: 0.08
 --- !u!1 &1479031626
 GameObject:
   m_ObjectHideFlags: 0
@@ -8813,6 +8806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 8
   rushSpeed: 20
+  chargeSpeed: 5
 --- !u!114 &9141827185443500099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8825,12 +8819,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  absortEnergyText: {fileID: 1561652987}
-  AbsortionArea: {fileID: 1431508447}
-  stamina: 30
-  remainingStamina: 10
-  regenStamina: 10
-  maxStamina: 30
+  _areaBindings: []
+  _cooldownSeconds: 0
   isStartAbsortion: 0
 --- !u!114 &9141827185443500100
 MonoBehaviour:
@@ -8844,59 +8834,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a8d7f181db3c34abbffc43c7493113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RushAbility_Sejin
-  dashEnergyText: {fileID: 1087899753}
-  energy: 0
-  earnEnergy: 5
-  consumeEnergy: 10
-  maxEnergy: 30
   rushSpeed: 30
   duringTime: 0.3
+  noDamageTime: 0.7
   coolTime: 1
   isDashing: 0
-  canDash: 0
-  onStartRush:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9141827185443500098}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: StartRush
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 9141827185443500102}
-        m_TargetAssemblyTypeName: PlayerAttack_Dropkick, Assembly-CSharp
-        m_MethodName: Dropkick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onEndRush:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9141827185443500098}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: EndRush
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  _coolDownImage: {fileID: 0}
   isRushing: 0
+  _rushDamage: 20
 --- !u!114 &9141827185443500101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8909,9 +8854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe4e8e672d1fa34ea9fb23490b189f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseController
-  screenPos: {x: 0, y: 0}
-  worldPosition: {x: 0, y: 0, z: 0}
-  angle: 0
+  lookInput: {x: 0, y: 0}
 --- !u!114 &9141827185443500102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8939,9 +8882,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dffec0b3c63741b45a7e7d4ace62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHp
-  hpText: {fileID: 1292352393}
   gameManager: {fileID: 1415328784}
+  volume: {fileID: 0}
+  darkVignette: {fileID: 0}
+  attackedVignetteIntensity: 0.35
   playerHP: 5
+  maxPlayerHP: 5
+  isUnBeatHit: 0
+  isUnBeatDash: 0
+  playerMeshRenderer: {fileID: 0}
+  playerMaterials: []
+  dashShield: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
