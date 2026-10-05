@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: gluttony
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: gluttony
+  _displayName: "\uACFC\uC2DD"
+  _description: "\uD55C \uBC88\uC758 \uD761\uC218 \uD65C\uC131\uD654\uC5D0\uC11C \uC124\uC815\uB41C \uC218 \uC774\uC0C1\uC758 \uC801\uC744 \uD761\uC218\uD558\uBA74 \uD761\uC218 \uC885\uB8CC \uC2DC HP\uB97C 1 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  _tier: 1
+  _conflictTags: []
+  _modifiers: []
+  _effect: {fileID: 11400000, guid: acdc9a4099c0466181841d15c8feac51, type: 2}
+  _absorptionAreaType: 0

@@ -204,6 +204,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _playerController.SetAbsorbState(true);
+
+        AugmentEvents.RaiseAbsorptionStarted();
     }
 
     /// <summary>
@@ -223,6 +225,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _timedEndTime = Time.time + _conversionActiveSeconds;
+
+        AugmentEvents.RaiseAbsorptionStarted();
     }
 
     /// <summary>
@@ -267,6 +271,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         _lastCooldownSeconds = cooldownSeconds;
         _nextAvailableTime = Time.time + _lastCooldownSeconds;
+
+        // 홀드 모드의 종료 시점 일괄 흡수가 모두 집계된 뒤에 종료를 통지한다.
+        AugmentEvents.RaiseAbsorptionEnded();
     }
 
     /// <summary>
