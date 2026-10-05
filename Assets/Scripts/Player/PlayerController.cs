@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour
     public float chargeSpeed = 5f;
     private InputSystem_Actions inputActions;
     private Rigidbody rb;
+    [SerializeField] private Collider playerCollider;
+    public PhysicsMaterial groundMaterial;
+    public PhysicsMaterial airMaterial;
 
     private State state;
 
@@ -24,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
     // 맵 밖으로 못나가도록
     Vector3 centor = Vector3.zero;
-    float radius = 15f;
+    float radius = 14.8f;
 
     // 증강 스탯 재계산에 사용할 moveSpeed의 기준값
     private float _baseMoveSpeed;
@@ -32,6 +35,12 @@ public class PlayerController : MonoBehaviour
     private float _baseChargeSpeed;
 
     private PlayerFallRecovery fallRecovery;
+
+    [Header("바닥 확인")]
+    public LayerMask groundLayer;
+    public bool isGrounded = true;
+    private float groundCheckDistance = 1f;
+    public float groundCheckRadius = 1f;
 
     void Awake()
     {
@@ -94,6 +103,22 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        //Cast 발사 준비
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        //발사 (바닥 확인)
+        isGrounded = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, groundLayer);
+        if (isGrounded)
+        {
+            //바닥일 경우 기존에 사용중인 물리 Material 사용
+            playerCollider.sharedMaterial = groundMaterial;
+        }
+        else
+        {
+            //공중에 있을 때는 마찰력을 0으로 만들어 미끌어지게 함
+            playerCollider.sharedMaterial = airMaterial;
+        }
+
         // Translate 기반 이동
         Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y);
         float speed = 0f;
