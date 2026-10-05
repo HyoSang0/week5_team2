@@ -20,6 +20,9 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     public int maxPlayerHP = 5;
     private float _hitInvincibilityUntil;
 
+    // 전환(시간제) 흡수 중 접촉 피해를 흡수로 우회시키기 위한 능력 컴포넌트
+    private AbsortionAbility_Sejin _absortionAbility;
+
     /// <summary>
     /// playerHP/maxPlayerHP 값이 변경되었음을 UI 구독자에게 알리는 이벤트.
     /// </summary>
@@ -46,6 +49,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     void Awake()
     {
         _baseMaxPlayerHP = maxPlayerHP;
+        _absortionAbility = GetComponent<AbsortionAbility_Sejin>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -118,7 +122,8 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     /// <summary>
     /// 모든 전투 피해가 거치는 단일 피해 진입점이다. DamageInfo의 Kind별 무적 정책을 검사한 뒤 ReduceHealth로 체력을 감소시킨다.
     /// damageInfo는 피해량과 피해 유형을 제공하며, 피해가 적용되었으면 true를 반환한다.
-    /// EnemyContact는 피격 무적·대쉬 무적 중에는 거부되고, 적용되면 2초 피격 무적을 시작한다.
+    /// EnemyContact는 시간제(전환) 흡수 활성 중 흡수 가능한 적과의 접촉이면 피해 없이 흡수로 우회되고,
+    /// 그 외에는 피격 무적·대쉬 무적 중에 거부되며, 적용되면 2초 피격 무적을 시작한다.
     /// NoRushReflection은 피격·돌진 무적을 우회해 적용하지만, 새로운 피격 무적을 부여하지 않는다.
     /// 그 외 Kind는 무적 정책 우회를 막기 위해 거부하며, 낙하 피해는 ApplyFallDamage 경로에서 처리한다.
     /// </summary>
@@ -132,6 +137,12 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
         switch (damageInfo.Kind)
         {
             case DamageKind.EnemyContact:
+                // 시간제(전환) 흡수 활성 중 흡수 가능한 적과 부딪히면 피해 대신 흡수한다.
+                if (damageInfo.Source is Enemy enemy && _absortionAbility.TryContactAbsorb(enemy))
+                {
+                    return false;
+                }
+
                 // 전투 피해는 피격 무적과 대쉬 무적 중에는 적용되지 않는다.
                 if (isUnBeatHit || isUnBeatDash)
                 {

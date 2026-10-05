@@ -130,6 +130,9 @@ public static class AugmentAssetBuilder
         // 스탯형으로 바뀌는 에셋에 이전 효과형 참조가 남지 않도록 효과 참조를 먼저 비운다.
         so.FindProperty("_effect").objectReferenceValue = null;
 
+        // 흡수 영역 유형을 바꾸는 증강만 값을 가지고, 나머지는 None(0)으로 저장된다.
+        so.FindProperty("_absorptionAreaType").enumValueIndex = (int)definition.AbsorptionAreaType;
+
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(data);
         return data;
@@ -254,6 +257,12 @@ public static class AugmentAssetBuilder
             {
                 Id = "bomb_collector", DisplayName = "폭탄 수집가", Description = "폭탄형 적을 흡수하면 땅 붕괴 대신 반지름 3m 안의 주변 적을 처치하며, 연쇄 처치는 중첩 발동하지 않습니다.",
                 Tier = AugmentTier.Prismatic,
+            },
+            new AugmentDefinition
+            {
+                Id = "conversion", DisplayName = "전환", Description = "흡수가 1.5초 동안 지속되는 포식 모드로 바뀝니다. 포식 모드 중에는 영역에 닿은 적을 즉시 흡수하고, 흡수 가능한 적과 부딪히면 피해 대신 흡수합니다. 종료 후 5초 쿨다운이 적용됩니다.",
+                Tier = AugmentTier.Prismatic, ConflictTags = new[] { "AbsorbArea", "AbsorbHitIgnore" },
+                AbsorptionAreaType = AbsorptionAreaType.Conversion,
             },
         };
     }
@@ -649,5 +658,6 @@ public static class AugmentAssetBuilder
         public AugmentTier Tier;
         public string[] ConflictTags;
         public StatModifier[] Modifiers;
+        public AbsorptionAreaType AbsorptionAreaType;
     }
 }

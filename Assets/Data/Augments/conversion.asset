@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: conversion
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: conversion
+  _displayName: "\uC804\uD658"
+  _description: "\uD761\uC218\uAC00 1.5\uCD08 \uB3D9\uC548 \uC9C0\uC18D\uB418\uB294
+    \uD3EC\uC2DD \uBAA8\uB4DC\uB85C \uBC14\uB01D\uB2C8\uB2E4. \uD3EC\uC2DD \uBAA8\uB4DC
+    \uC911\uC5D0\uB294 \uC601\uC5ED\uC5D0 \uB2FF\uC740 \uC801\uC744 \uC989\uC2DC
+    \uD761\uC218\uD558\uACE0, \uD761\uC218 \uAC00\uB2A5\uD55C \uC801\uACFC \uBD80\uB52A\uD788\uBA74
+    \uD53C\uD574 \uB300\uC2E0 \uD761\uC218\uD569\uB2C8\uB2E4. \uC885\uB8CC \uD6C4
+    5\uCD08 \uCFE8\uB2E4\uC6B4\uC774 \uC801\uC6A9\uB429\uB2C8\uB2E4."
+  _tier: 2
+  _conflictTags:
+  - AbsorbArea
+  - AbsorbHitIgnore
+  _modifiers: []
+  _effect: {fileID: 0}
+  _absorptionAreaType: 2

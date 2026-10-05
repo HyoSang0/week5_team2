@@ -7,6 +7,13 @@ public class AbsortionArea_Sejin : MonoBehaviour
     [SerializeField] private EnemyAbsorbEffect lightBallPrefab;
     // 빛 구슬의 목적지가 UiMarker 모드일 때 날아갈 위치
     [SerializeField] private Transform _uiWorldMarker;
+
+    [Header("Conversion Absorb")]
+    // true면 영역에 들어온 적을 enemySet에 모으지 않고 즉시 흡수한다
+    [SerializeField] private bool _absorbOnEnter;
+    // 영역 외곽선(LineRenderer) 색. 기본값은 흰색이다
+    [SerializeField] private Color _outlineColor = Color.white;
+
     private Transform playerTarget;
     public float slowMultiplier;
     public float absorbTime;
@@ -40,6 +47,13 @@ public class AbsortionArea_Sejin : MonoBehaviour
         _baseAreaRadiusMin = area_radus_min;
         _baseAreaRadiusMax = area_radus_max;
         _baseSpeed = speed;
+
+        // 전환 영역처럼 색을 지정한 경우에만 외곽선 색을 바꾼다. 기본 영역은 흰색이라 변하지 않는다.
+        if (outline != null)
+        {
+            outline.startColor = _outlineColor;
+            outline.endColor = _outlineColor;
+        }
     }
 
     /// <summary>
@@ -127,6 +141,14 @@ public class AbsortionArea_Sejin : MonoBehaviour
         Enemy enemy = other.GetComponent<Enemy>();
         if (!CanCapture(enemy))
             return;
+
+        // 흡수 즉시 실행 모드에서는 대상을 모아 두지 않고 들어오는 즉시 흡수한다.
+        if (_absorbOnEnter)
+        {
+            Absorb(enemy);
+            return;
+        }
+
         enemy.OnAbsorbTarget(true);
         enemySet.Add(enemy);
     }
@@ -138,6 +160,13 @@ public class AbsortionArea_Sejin : MonoBehaviour
         Enemy enemy = other.GetComponent<Enemy>();
         if (!CanCapture(enemy))
             return;
+
+        // 흡수 즉시 실행 모드에서는 Stay에서도 늦게 들어온 적을 즉시 흡수한다.
+        if (_absorbOnEnter)
+        {
+            Absorb(enemy);
+            return;
+        }
 
         if (enemySet.Add(enemy))
             enemy.OnAbsorbTarget(true);
@@ -160,6 +189,20 @@ public class AbsortionArea_Sejin : MonoBehaviour
     protected virtual bool CanCapture(Enemy enemy)
     {
         return enemy != null;
+    }
+
+    /// <summary>
+    /// 접촉한 적의 즉시 흡수를 시도한다. 흡수 반경 판정 없이 적격성만 확인한다.
+    /// enemy는 접촉 판정에서 얻은 Enemy이며, null이거나 흡수 대상이 아니면 false를 반환한다.
+    /// </summary>
+    public bool TryAbsorbOnContact(Enemy enemy)
+    {
+        if (enemy == null || !CanCapture(enemy))
+        {
+            return false;
+        }
+
+        return enemy.TryAbsorb(lightBallPrefab, playerTarget, _uiWorldMarker);
     }
 
     /// <summary>
