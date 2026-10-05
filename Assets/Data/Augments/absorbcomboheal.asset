@@ -16,7 +16,7 @@ MonoBehaviour:
   _displayName: "\uACFC\uC2DD"
   _description: "\uD55C \uBC88\uC758 \uD761\uC218\uB85C 8\uBA85 \uC774\uC0C1\uC758
     \uC801\uC744 \uCC98\uCE58\uD588\uC744 \uC2DC \uCCB4\uB825\uC744 1 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
-  _tier: 0
+  _tier: 1
   _conflictTags: []
   _modifiers: []
   _effect: {fileID: 11400000, guid: 5850b7ac251a89b4399b571823a0ec16, type: 2}
