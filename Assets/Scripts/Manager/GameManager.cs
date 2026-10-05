@@ -10,11 +10,8 @@ public class GameManager : MonoBehaviour
 {
     private const int EXPERIENCE_PER_KILL = 2;
     private const int EXPERIENCE_PER_ABSORB = 10;
-    private const int EXPERIENCE_TO_LEVEL_2 = 1000;
-    private const int EXPERIENCE_TO_LEVEL_3 = 5000;
-    private const int EXPERIENCE_TO_LEVEL_4 = 10000;
-    private const int EXPERIENCE_TO_LEVEL_5 = 15000;
-    private const int EXPERIENCE_STEP_AFTER_LEVEL_4 = 5000;
+    // 각 항목은 해당 레벨에서 다음 레벨로 올라가는 데 필요한 경험치다.
+    private static readonly int[] _levelExperienceRequirements = { 1000, 4000, 5000, 5000 };
 
     public static GameManager Instance;
 
@@ -41,6 +38,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Level")]
     private int _level = 1;
+    private int _currentLevelExperience;
+    private int _nextLevelRequirement;
 
     void Awake()
     {
@@ -54,6 +53,8 @@ public class GameManager : MonoBehaviour
             // 중복 인스턴스가 파괴되는 경로가 아닌 실제 런 시작에서만 런 단위 통계를 초기화한다.
             StatisticsManager.Instance.ResetRun();
             _level = 1;
+            _currentLevelExperience = 0;
+            _nextLevelRequirement = GetRequirementForLevel(_level);
         }
     }
 
@@ -64,54 +65,74 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 런의 레벨을 반환한다. _level을 사용하며 1부터 시작해 누적 경험치가 다음 레벨 기준값에 도달할 때마다 1씩 오른다.
+    /// 현재 런의 레벨을 반환한다. _level은 1부터 시작하며 경험치 요구치를 채울 때마다 1씩 오른다.
     /// </summary>
     public int Level => _level;
 
     /// <summary>
-    /// 현재 런에 누적된 총 경험치를 반환한다. StatisticsManager의 처치·흡수 누적 수에 각 단위 경험치를 곱해 합산하며 낙사는 경험치가 없다.
+    /// 현재 레벨에서 쌓인 경험치를 반환한다. 레벨업 후 남은 초과분은 다음 레벨에 이월된다.
     /// </summary>
-    public int TotalExperience =>
-        StatisticsManager.Instance.GetCount(StatisticsManager.GameStatisticType.EnemyKill) * EXPERIENCE_PER_KILL
-        + StatisticsManager.Instance.GetCount(StatisticsManager.GameStatisticType.EnemyAbsorb) * EXPERIENCE_PER_ABSORB;
+    public int CurrentLevelExperience => _currentLevelExperience;
 
     /// <summary>
-    /// 적 결과를 통계에 기록하고 누적 경험치가 다음 레벨 기준값을 넘으면 레벨을 갱신한다.
-    /// outcomeType과 enemyType을 StatisticsManager.Instance.Record에 정확히 한 번 전달하며, EnemyFall은 경험치가 없어 레벨이 변하지 않는다.
-    /// 한 번의 기록으로 여러 레벨을 넘으면 새로 도달한 각 레벨마다 LevelReached를 한 번씩 발생시키고 _level을 갱신한다.
+    /// 다음 레벨까지 필요한 경험치 총량을 반환한다. 현재 _level에 대응하는 목록 값을 사용한다.
+    /// </summary>
+    public int NextLevelRequirement => _nextLevelRequirement;
+
+    /// <summary>
+    /// 적 결과를 통계에 기록한다. outcomeType과 enemyType을 사용하며 경험치는 볼 도착 시 별도로 지급한다.
+    /// EnemyFall도 통계에는 남기지만 경험치 볼을 만들지 않는다.
     /// </summary>
     public void RecordEnemyOutcome(StatisticsManager.GameStatisticType outcomeType, EnemyPool.PoolType enemyType)
     {
         StatisticsManager.Instance.Record(outcomeType, enemyType);
+    }
 
-        // 누적 수는 줄지 않으므로 레벨도 단조 증가한다. 건너뛴 레벨을 드롭하지 않고 순서대로 발생시킨다.
-        while (TotalExperience >= GetNextLevelRequiredExperience(_level))
+    /// <summary>
+    /// 적 결과 유형에 해당하는 경험치 보상을 반환한다. 전투 처치는 2, 흡수는 10, 낙사는 0이다.
+    /// </summary>
+    public static int GetExperienceForOutcome(StatisticsManager.GameStatisticType outcomeType)
+    {
+        switch (outcomeType)
         {
+            case StatisticsManager.GameStatisticType.EnemyKill:
+                return EXPERIENCE_PER_KILL;
+            case StatisticsManager.GameStatisticType.EnemyAbsorb:
+                return EXPERIENCE_PER_ABSORB;
+            default:
+                return 0;
+        }
+    }
+
+    /// <summary>
+    /// 경험치를 현재 레벨에 더하고 요구치를 넘으면 초과분을 다음 레벨로 넘긴다.
+    /// amount를 사용하며, 여러 레벨을 건너뛰면 새 레벨마다 LevelReached를 한 번씩 발생시킨다.
+    /// </summary>
+    public void AddExperience(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        _currentLevelExperience += amount;
+        while (_currentLevelExperience >= _nextLevelRequirement)
+        {
+            _currentLevelExperience -= _nextLevelRequirement;
             _level++;
+            _nextLevelRequirement = GetRequirementForLevel(_level);
             LevelReached?.Invoke(_level);
         }
     }
 
     /// <summary>
-    /// 현재 레벨에서 다음 레벨로 오르기 위해 필요한 누적 총 경험치 기준값을 반환한다.
-    /// currentLevel(1~4)에는 고정 기준값을 사용하며, 5 이상부터는 레벨마다 EXPERIENCE_STEP_AFTER_LEVEL_4씩 증가한 값을 반환한다.
+    /// currentLevel에서 다음 레벨로 올라가는 데 필요한 경험치를 목록에서 반환한다.
+    /// 목록을 모두 사용한 뒤에는 마지막 요구치를 반복한다.
     /// </summary>
-    private static int GetNextLevelRequiredExperience(int currentLevel)
+    private static int GetRequirementForLevel(int currentLevel)
     {
-        switch (currentLevel)
-        {
-            case 1:
-                return EXPERIENCE_TO_LEVEL_2;
-            case 2:
-                return EXPERIENCE_TO_LEVEL_3;
-            case 3:
-                return EXPERIENCE_TO_LEVEL_4;
-            case 4:
-                return EXPERIENCE_TO_LEVEL_5;
-            default:
-                // 4 -> 5 기준값(15000)에서 한 레벨당 5000씩 누적된다.
-                return EXPERIENCE_TO_LEVEL_5 + (currentLevel - 4) * EXPERIENCE_STEP_AFTER_LEVEL_4;
-        }
+        int index = Mathf.Min(currentLevel - 1, _levelExperienceRequirements.Length - 1);
+        return _levelExperienceRequirements[index];
     }
 
     /// <summary>

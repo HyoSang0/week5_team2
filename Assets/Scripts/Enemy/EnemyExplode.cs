@@ -33,6 +33,10 @@ public class EnemyExplode : Enemy
         yield return new WaitForSeconds(0.1f);
 
         Explode();
+        if (isKnockback)
+        {
+            SpawnKillExperienceBall();
+        }
         enemyPool.DieEnemy(gameObject, poolType);    // 파괴 대신 풀로 반환
     }
 
