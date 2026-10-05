@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: chain_heal
   _displayName: "\uC5F0\uC1C4 \uD68C\uBCF5"
-  _description: "\uD55C \uBC88\uC758 \uB3CC\uC9C4 \uC911 5\uBC88\uC9F8 \uCC98\uCE58
-    \uC2DC HP\uB97C 1 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  _description: "\uB3CC\uC9C4 \uC911 \uC801\uC744 5\uB9C8\uB9AC \uCC98\uCE58\uD558\uBA74
+    \uCCB4\uB825\uC744 1 \uD68C\uBCF5\uD569\uB2C8\uB2E4. "
   _tier: 1
   _conflictTags: []
   _modifiers: []
   _effect: {fileID: 11400000, guid: e0eb1bc0cb3fd7f499c97c2c88671998, type: 2}
+  _absorptionAreaType: 0

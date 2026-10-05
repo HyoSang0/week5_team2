@@ -15,10 +15,10 @@ MonoBehaviour:
   _id: feast
   _displayName: "\uD3EC\uC2DD"
   _description: "\uB3CC\uC9C4 \uC911\uC774\uAC70\uB098 \uB3CC\uC9C4 \uCFE8\uB2E4\uC6B4
-    \uC911 \uC801\uC744 \uD761\uC218\uD558\uBA74 \uB0A8\uC740 \uCFE8\uB2E4\uC6B4\uC774
-    0.3\uCD08 \uAC10\uC18C\uD569\uB2C8\uB2E4. \uB3CC\uC9C4 \uC900\uBE44 \uC0C1\uD0DC\uC5D0\uC11C\uB294
-    \uC801\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    \uC911 \uC801\uC744 \uD761\uC218\uD558\uBA74 \uB0A8\uC740 \uCFE8\uD0C0\uC784\uC774
+    0.3\uCD08 \uAC10\uC18C\uD569\uB2C8\uB2E4. "
   _tier: 1
   _conflictTags: []
   _modifiers: []
   _effect: {fileID: 11400000, guid: a9cee04a2ba0ce84c988eb0979a4422a, type: 2}
+  _absorptionAreaType: 0
