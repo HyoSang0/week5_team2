@@ -5507,7 +5507,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e1545f70fbf0d48970d387e4957361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility_Sejin
-  AbsortionArea: {fileID: 6795692395077801279}
   _areaBindings: []
   _cooldownSeconds: 0.11
   isStartAbsortion: 0
