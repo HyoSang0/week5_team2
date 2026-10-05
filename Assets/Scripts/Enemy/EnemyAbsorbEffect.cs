@@ -74,6 +74,5 @@ public class EnemyAbsorbEffect : MonoBehaviour
         {
             GameManager.Instance.AddExperience(experienceAmount);
         }
-        EffectPool.Release(gameObject);
     }
 }
