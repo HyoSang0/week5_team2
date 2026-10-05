@@ -4,6 +4,7 @@ public enum StatType
     MaxHp,              // 최대 체력
     AbsorbGrowSpeed,    // 흡수 영역 확장 속도
     RushDuration,       // 돌진 지속 시간
+    RushCount,          // 돌진 횟수
     AbsorbRadius,       // 흡수 범위 (최소/최대 반지름)
     AbsorbCooldown,     // 흡수 쿨타임
     RushCooldown,       // 돌진 쿨타임
