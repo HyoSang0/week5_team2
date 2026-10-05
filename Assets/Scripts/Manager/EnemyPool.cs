@@ -53,10 +53,10 @@ public class EnemyPool : MonoBehaviour
     }
 
     /// <summary>
-    ///  위치와 방향을 받아 적을 소환해주는 함수
+    /// pos 주변의 NavMesh 위치에 poolType 종류의 적을 풀에서 꺼내 활성화하고 초기화한다.
+    /// NavMesh 위치를 찾지 못하면 pos를 사용하며, 활성화 후 필요하면 찾은 위치로 Warp를 시도한다.
     /// </summary>
     /// <param name="pos">소환될 위치</param>
-    /// <param name="rot">바라볼 각도</param>
     /// <param name="poolType">소환할 적의 타입</param>
     public void SpawnEnemy(Vector3 pos, PoolType poolType)
     {
