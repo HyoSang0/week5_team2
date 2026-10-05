@@ -21,6 +21,8 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     public int maxPlayerHP = 5;
     private float _hitInvincibilityUntil;
     private bool _hasOneHitShield;
+    [Header("Practice")]
+    [SerializeField] private bool _practiceInvincible;
     private float _shieldContactGraceUntil;
 
     // 전환(시간제) 흡수 중 접촉 피해를 흡수로 우회시키기 위한 능력 컴포넌트
@@ -159,6 +161,11 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
             default:
                 // 플레이어가 수신하지 않는 Kind는 무적 정책 우회를 막기 위해 거부한다.
                 return false;
+        }
+
+        if (_practiceInvincible)
+        {
+            return false;
         }
 
         if (TryConsumeOneHitShield())
@@ -342,6 +349,11 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     /// </summary>
     public bool ApplyFallDamage(int damage, float invincibilitySeconds)
     {
+        if (_practiceInvincible)
+        {
+            return true;
+        }
+
         if (playerHP <= 0)
         {
             return false;

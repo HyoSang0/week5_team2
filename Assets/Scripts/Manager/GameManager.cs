@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
+    [Header("Practice")]
+    [SerializeField] private bool _isPracticeMode;
+
     /// <summary>새 레벨에 도달할 때마다 도달한 레벨 값을 인자로 발생하는 이벤트다.</summary>
     public event Action<int> LevelReached;
 
@@ -67,6 +70,11 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (_isPracticeMode)
+        {
+            return;
+        }
+
         infiniteModeButton.SetActive(false);
         UpdateScoreText();
         StartCoroutine(StartTimer(timeLimit));
@@ -88,11 +96,16 @@ public class GameManager : MonoBehaviour
     public int NextLevelRequirement => _nextLevelRequirement;
 
     /// <summary>
-    /// 적 결과를 통계에 기록한다. outcomeType과 enemyType을 사용하며 경험치는 볼 도착 시 별도로 지급한다.
+    /// 연습 모드가 아니면 적 결과를 통계에 기록한다. outcomeType과 enemyType을 사용하며 경험치는 볼 도착 시 별도로 지급한다.
     /// EnemyFall도 통계에는 남기지만 경험치 볼을 만들지 않는다.
     /// </summary>
     public void RecordEnemyOutcome(StatisticsManager.GameStatisticType outcomeType, EnemyPool.PoolType enemyType)
     {
+        if (_isPracticeMode)
+        {
+            return;
+        }
+
         StatisticsManager.Instance.Record(outcomeType, enemyType);
     }
 
@@ -113,12 +126,12 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 경험치를 현재 레벨에 더하고 요구치를 넘으면 초과분을 다음 레벨로 넘긴다.
+    /// 연습 모드가 아니면 경험치를 현재 레벨에 더하고 요구치를 넘으면 초과분을 다음 레벨로 넘긴다.
     /// amount를 사용하며, 여러 레벨을 건너뛰면 새 레벨마다 LevelReached를 한 번씩 발생시킨다.
     /// </summary>
     public void AddExperience(int amount)
     {
-        if (amount <= 0)
+        if (_isPracticeMode || amount <= 0)
         {
             return;
         }
@@ -159,6 +172,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GameClear()
     {
+        if (_isPracticeMode)
+        {
+            return;
+        }
+
         if (runState != RunState.Normal)
         {
             return;
@@ -177,16 +195,17 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 플레이를 사망 상태로 종료한다. 
-    /// 현재 진행 상태를 확인하고, 무한모드 버튼을 숨긴 게임 오버 UI를 표시한 뒤 게임을 정지한다. 
+    /// 연습 모드가 아닌 현재 플레이를 사망 상태로 종료한다. 
+    /// 연습 여부와 진행 상태를 확인하며, 무한모드 버튼을 숨기고 게임 오버 화면을 표시한 뒤 일시정지한다. 
     /// </summary>
     public void PlayerDie()
     {
-        if (runState != RunState.Dead)
+        if (_isPracticeMode || runState == RunState.Dead)
         {
             return;
         }
         runState = RunState.Dead;
+        infiniteModeButton.SetActive(false);
         _gameOverGroup.SetActive(true);
         gameOverText.text = "게임 오버";
         gameOverText.color = UIPalette.Danger;
@@ -247,7 +266,7 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// 게임 오버 UI의 입력 잠금이 풀린 뒤 재시작 입력을 처리한다.
-    /// _gameOverSelection.IsInputLocked가 true면 아무것도 하지 않고, 아니면 GamePause.ResetAll로 일시정지를 초기화한 뒤 씬을 다시 불러온다.
+    /// _gameOverSelection.IsInputLocked가 true면 아무것도 하지 않고, 아니면 정지를 초기화한 뒤 현재 게임 씬을 다시 불러온다.
     /// </summary>
     public void RestartGame()
     {
@@ -257,17 +276,22 @@ public class GameManager : MonoBehaviour
         }
 
         GamePause.ResetAll();
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     /// <summary>
-    /// 적 처치 점수를 score에 반영한다. killedEnemy의 enemyScore에 PlayerStats의 ScoreMultiplier 증강을 적용해
+    /// 연습 모드가 아니면 적 처치 점수를 score에 반영한다. killedEnemy의 enemyScore에 PlayerStats의 ScoreMultiplier 증강을 적용해
     /// score에 누적한 뒤 점수 텍스트를 갱신한다.
     /// PlayerStats.Instance가 없으면 증강 없이 enemyScore를 그대로 더하며, Enemy.Kill과 Enemy_NoRush.CheckHealthNr의 성공 경로에서 한 번씩만 호출된다.
     /// 통계 집계는 StatisticsManager가 담당하므로 여기서는 점수만 처리한다.
     /// </summary>
     public void AddKillScore(Enemy killedEnemy)
     {
+        if (_isPracticeMode)
+        {
+            return;
+        }
+
         int killScore = PlayerStats.Instance != null
             ? PlayerStats.Instance.ApplyInt(StatType.ScoreMultiplier, killedEnemy.enemyScore)
             : killedEnemy.enemyScore;
