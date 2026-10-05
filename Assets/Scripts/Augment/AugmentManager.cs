@@ -37,6 +37,13 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     [Header("Reroll")]
     [SerializeField] private int _totalRerolls = 3;
 
+#if UNITY_EDITOR
+    [Header("Debug")]
+    [Tooltip("지정한 증강을 다음 선택지의 첫 카드로 1회 강제 표시합니다. 등록된 증강이며 보유 증강과 충돌하지 않아야 합니다.")]
+    [SerializeField] private AugmentData _debugForcedNextAugment;
+    private AugmentData _debugForcedCurrentAugment;
+#endif
+
     [Header("Runtime State")]
     private readonly List<AugmentData> _owned = new List<AugmentData>();
     private readonly List<AugmentEffect> _subscribedEffects = new List<AugmentEffect>();
@@ -192,6 +199,9 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     {
         _currentTier = _runPattern[_nextPickIndex % _runPattern.Length];
         _seenThisSelection.Clear();
+#if UNITY_EDITOR
+        ForceDebugAugmentIntoNextSelection();
+#endif
         FillCards(_currentTier);
 
         if (CountCards() < CARD_COUNT)
@@ -292,6 +302,10 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
             _cardRerolled[i] = false;
         }
 
+#if UNITY_EDITOR
+        _debugForcedCurrentAugment = null;
+#endif
+
         _nextPickIndex++;
 
         // 닫히는 동안 쌓인 레벨업이 있으면 바로 다음 선택을 연다.
@@ -309,6 +323,13 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         {
             return;
         }
+
+#if UNITY_EDITOR
+        if (_debugForcedCurrentAugment != null && _currentCards[index] == _debugForcedCurrentAugment)
+        {
+            return;
+        }
+#endif
 
         AugmentData replacement = FindRerollReplacement();
         if (replacement == null)
@@ -428,4 +449,50 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
         return count;
     }
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Inspector 지정 증강을 다음 선택의 첫 번째 카드에 넣고 지정값을 비운다.
+    /// 등록되지 않았거나 보유 증강과 충돌하면 해당 선택에는 넣지 않고 경고한다.
+    /// </summary>
+    private void ForceDebugAugmentIntoNextSelection()
+    {
+        if (_debugForcedNextAugment == null)
+        {
+            return;
+        }
+
+        AugmentData forcedAugment = _debugForcedNextAugment;
+        _debugForcedNextAugment = null;
+
+        bool isRegistered = false;
+        foreach (AugmentData augment in _database.Augments)
+        {
+            if (augment == forcedAugment)
+            {
+                isRegistered = true;
+                break;
+            }
+        }
+
+        if (!isRegistered)
+        {
+            Debug.LogWarning($"지정한 디버그 증강 '{forcedAugment.name}'이 증강 데이터베이스에 없습니다.", this);
+            return;
+        }
+
+        foreach (AugmentData ownedAugment in _owned)
+        {
+            if (forcedAugment.ConflictsWith(ownedAugment))
+            {
+                Debug.LogWarning($"지정한 디버그 증강 '{forcedAugment.name}'이 보유 증강과 충돌해 선택지에 추가되지 않았습니다.", this);
+                return;
+            }
+        }
+
+        _currentCards[0] = forcedAugment;
+        _seenThisSelection.Add(forcedAugment);
+        _debugForcedCurrentAugment = forcedAugment;
+    }
+#endif
 }
