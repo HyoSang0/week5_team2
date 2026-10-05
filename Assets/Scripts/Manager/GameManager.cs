@@ -182,7 +182,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void PlayerDie()
     {
-        if (runState != RunState.Dead)
+        // 이미 사망 처리된 경우에만 중복 호출을 무시한다.
+        if (runState == RunState.Dead)
         {
             return;
         }

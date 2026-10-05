@@ -30,7 +30,7 @@ public class EndlessGrowthEffect : AugmentEffect
             _currentAbsorbCount = 0;
             //최대 체력 증가시키기
             //Debug.Log("최대 체력 증가");
-            StatModifier statModifier = new StatModifier(StatType.MaxHp, 0f, 1f);
+            StatModifier statModifier = new StatModifier(StatType.MaxHp, 0f, _hpIncreaseFlat);
             PlayerStats.Instance.AddModifiers(new StatModifier[] { statModifier });
         }
     }
