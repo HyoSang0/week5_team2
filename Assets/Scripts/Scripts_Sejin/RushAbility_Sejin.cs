@@ -191,7 +191,6 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
         rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
         maxRushCount = (int)PlayerStats.Instance.Apply(StatType.RushCount, _baseRushCount);
-        Debug.Log($"{maxRushCount}");
     }
 
     // 공격 입력을 받으면 사용 가능 여부를 확인하고 드롭킥을 시작한다.
