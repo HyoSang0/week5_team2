@@ -874,7 +874,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UiManager
   hpSlider: {fileID: 1499864070}
+  _experienceSlider: {fileID: 79570251}
   hpText: {fileID: 1497688160}
+  _experienceText: {fileID: 0}
   _hpScreenOffset: {x: 0, y: -50}
   _playerHp: {fileID: 782649360}
 --- !u!114 &612590446

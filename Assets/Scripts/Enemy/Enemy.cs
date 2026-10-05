@@ -8,6 +8,10 @@ using static EnemyPool;
 /// </summary>
 public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 {
+    private const string EXPERIENCE_BALL_RESOURCE_PATH = "Prefabs/EnemyAbsorbEffect";
+
+    private static GameObject _killExperienceBallPrefab;
+
     [Header("Enemy Stats")]
     [SerializeField] private EnemyStatsData _stats;
     protected int _maxHealth;
@@ -243,8 +247,12 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         if (lightBallPrefab != null)
         {
             EnemyAbsorbEffect lightBall = EffectPool.Get(lightBallPrefab.gameObject, effectPosition, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
-
-            lightBall.Initialize(playerTarget, uiWorldMarker);
+            int experience = GameManager.GetExperienceForOutcome(StatisticsManager.GameStatisticType.EnemyAbsorb);
+            lightBall.Initialize(playerTarget, uiWorldMarker, experience, awardExperienceOnArrival: true);
+        }
+        else
+        {
+            GameManager.Instance.AddExperience(GameManager.GetExperienceForOutcome(StatisticsManager.GameStatisticType.EnemyAbsorb));
         }
 
         // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
@@ -295,7 +303,33 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         {
             // 이곳에 흡수 공격 사망 이펙트 추가 가능
         }
+        if (isKnockback)
+        {
+            SpawnKillExperienceBall();
+        }
         enemyPool.DieEnemy(gameObject, poolType);
+    }
+
+    /// <summary>
+    /// 밀려난 적의 현재 위치에 처치 경험치 볼을 만들고 플레이어를 향해 이동시킨다.
+    /// 적이 풀에 반환되기 직전에 호출하며, 경험치 양은 처치 보상값을 사용한다.
+    /// </summary>
+    protected void SpawnKillExperienceBall()
+    {
+        if (_killExperienceBallPrefab == null)
+        {
+            _killExperienceBallPrefab = Resources.Load<GameObject>(EXPERIENCE_BALL_RESOURCE_PATH);
+        }
+
+        int experience = GameManager.GetExperienceForOutcome(StatisticsManager.GameStatisticType.EnemyKill);
+        if (_killExperienceBallPrefab == null)
+        {
+            GameManager.Instance.AddExperience(experience);
+            return;
+        }
+
+        EnemyAbsorbEffect lightBall = EffectPool.Get(_killExperienceBallPrefab, transform.position, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
+        lightBall.Initialize(player.transform, null, experience, awardExperienceOnArrival: true, forcePlayerDestination: true);
     }
 
     /// <summary>

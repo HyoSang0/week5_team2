@@ -29,6 +29,10 @@ public class NoAbsortEnemy : Enemy
         // X·Z 회전을 한 번에 고정 (개별로 대입하면 뒤의 값으로 덮어써짐)
         enemyRb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         yield return new WaitForSeconds(0.1f);
+        if (isKnockback)
+        {
+            SpawnKillExperienceBall();
+        }
         enemyPool.DieEnemy(gameObject, poolType);    // 파괴 대신 풀로 반환
     }
 }
