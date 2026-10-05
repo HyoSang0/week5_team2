@@ -34,6 +34,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     public float deathEffectForce = 5f;
     public int effectCount = 10;
     public TrailRenderer trail;
+    public bool isDeathEffectEnable = false;
 
     [Header("Prefabs")]
     public GameObject deathEffectPrefab;
@@ -284,8 +285,10 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
             // navMeshAgent.enabled = false;
             coll.isTrigger = true;
             enemyRb.constraints = RigidbodyConstraints.FreezePositionY;
-
-            PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
+            if (isDeathEffectEnable) //증강 획득을 통해 사망 이펙트가 켜져 있는 경우에만 실행
+            {
+                PlayDeathEffect();  //사망 시 나오는 파편 효과를 생성하는 함수. 파편 모양은 Enemy보다 작은 회색 큐브.
+            }
             Vector3 knockbackDirection = (transform.position - player.transform.position).normalized;
             // 풀 재사용 시 누적되지 않도록 필드 대신 사용 시점에 증강을 적용해 계산한다.
             enemyRb.AddForce(knockbackDirection * GetAugmentedKnockbackForce(), ForceMode.Impulse);

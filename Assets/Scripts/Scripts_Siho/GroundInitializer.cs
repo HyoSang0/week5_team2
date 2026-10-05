@@ -114,9 +114,9 @@ public class GroundInitializer : MonoBehaviour
     }
 
     /// <summary>
-    /// origin과 XZ 거리가 가장 가까운 안전한 타일의 윗면 위치를 찾는다. 
-    /// supportRadius로 주변 지지 영역을 검사하며, 성공하면 surfacePosition과 true를 반환한다. 
-    /// 후보가 없으면 surfacePosition은 기본값이고 false를 반환한다. 
+    /// origin과 XZ 거리가 가장 가까운 안전한 타일의 윗면 위치를 찾는다.
+    /// supportRadius로 주변 지지 영역을 검사하며, 성공하면 surfacePosition과 true를 반환한다.
+    /// 후보가 없으면 surfacePosition은 기본값이고 false를 반환한다.
     /// </summary>
     public bool TryFindRecoverySurface(Vector3 origin, float supportRadius, out Vector3 surfacePosition)
     {

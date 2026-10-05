@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076057c1d190ed64983ea9554ba5a771, type: 3}
   m_Name: NoAbsortEnemyStats
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsData
-  _maxHealth: 5
-  _moveSpeed: 1
+  _maxHealth: 20
+  _moveSpeed: 3
   _contactDamage: 2
