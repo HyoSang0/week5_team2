@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -25,14 +25,14 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     private InputSystem_Actions inputActions;
     private PlayerController playerController;
     private PlayerHp playerHp;
+    private PlayerAttack_Dropkick _playerAttackDropkick;
 
     private GameObject dashReadyEffectPrefab;
     private GameObject dashReadyEffectObject;
     [SerializeField] private Image _coolDownImage;
 
-    public UnityEvent onStartRush;
-    public UnityEvent onEndRush;
-    public UnityEvent onBeatable;
+    public event Action OnRushStarted;
+    public event Action OnRushEnded;
 
     public bool isRushing = false;
 
@@ -128,6 +128,13 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     void Start()
     {
         playerController = GetComponent<PlayerController>();
+        _playerAttackDropkick = GetComponent<PlayerAttack_Dropkick>();
+        OnRushStarted += playerController.StartRush;
+        OnRushEnded += playerController.EndRush;
+        if (_playerAttackDropkick != null)
+        {
+            OnRushStarted += _playerAttackDropkick.Dropkick;
+        }
         inputActions.Player.Attack.started += StartRush;
 
         // Start는 씬의 모든 Awake 이후 실행되므로 여기서 구독하면 PlayerStats.Awake 순서와 무관하다.
@@ -141,6 +148,15 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
     private void OnDestroy()
     {
+        if (playerController != null)
+        {
+            OnRushStarted -= playerController.StartRush;
+            OnRushEnded -= playerController.EndRush;
+        }
+        if (_playerAttackDropkick != null)
+        {
+            OnRushStarted -= _playerAttackDropkick.Dropkick;
+        }
         if (PlayerStats.Instance != null)
         {
             PlayerStats.Instance.OnStatsChanged -= ApplyAugmentStats;
@@ -175,7 +191,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
         if (CanDash())
         {
-            onStartRush.Invoke();
+            OnRushStarted?.Invoke();
             isRushing = true;
 
             if (dashRoutine != null)
@@ -219,8 +235,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         rb.useGravity = true;
 
         isRushing = false;
-        playerController.EndRush();
-        onEndRush.Invoke();
+        OnRushEnded?.Invoke();
     }
 
     /// <summary>
@@ -279,18 +294,6 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         // RefreshUI();
 
         return true;
-    }
-
-    // 씬에 남아 있는 흡수 도착 이벤트를 수신한다.
-    // 입력과 반환값은 없으며 자원 상태를 변경하지 않는다.
-    public void RegenEnergy()
-    {
-        // energy += earnEnergy;
-        // if (energy > maxEnergy)
-        // {
-        //     energy = maxEnergy;
-        // }
-        // RefreshUI();
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+
 using UnityEngine;
-using UnityEngine.Events;
 
 public class AbsortionArea_Sejin : MonoBehaviour
 {
@@ -8,7 +8,6 @@ public class AbsortionArea_Sejin : MonoBehaviour
     // 빛 구슬의 목적지가 UiMarker 모드일 때 날아갈 위치
     [SerializeField] private Transform _uiWorldMarker;
     private Transform playerTarget;
-    public UnityEvent onGatherEnergy;
     public float slowMultiplier;
     public float absorbTime;
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
@@ -191,7 +190,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
             return;
         }
 
-        if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, onGatherEnergy, _uiWorldMarker))
+        if (!enemy.TryAbsorb(lightBallPrefab, playerTarget, _uiWorldMarker))
             enemy.OnAbsorbTarget(false);
     }
 

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 /// <summary>
 /// 연쇄 회복 증강 효과. 한 돌진에서 5번째 처치를 달성하면 HP를 1 회복한다.
@@ -13,7 +12,6 @@ public class ChainHealEffect : AugmentEffect, IHealingSource
 
     private RushAbility_Sejin _rush;
     private PlayerHp _playerHp;
-    private UnityAction _onRushStarted;
     private int _killCount;
 
     /// <summary>
@@ -26,12 +24,7 @@ public class ChainHealEffect : AugmentEffect, IHealingSource
 
         if (_rush != null)
         {
-            if (_onRushStarted == null)
-            {
-                _onRushStarted = new UnityAction(ResetKillCount);
-            }
-
-            _rush.onStartRush.AddListener(_onRushStarted);
+            _rush.OnRushStarted += ResetKillCount;
         }
 
         _killCount = 0;
@@ -63,9 +56,9 @@ public class ChainHealEffect : AugmentEffect, IHealingSource
     /// </summary>
     public override void OnRunReset()
     {
-        if (_rush != null && _onRushStarted != null)
+        if (_rush != null)
         {
-            _rush.onStartRush.RemoveListener(_onRushStarted);
+            _rush.OnRushStarted -= ResetKillCount;
         }
 
         _rush = null;

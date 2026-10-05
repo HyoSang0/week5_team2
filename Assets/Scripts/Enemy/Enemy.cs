@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 using static EnemyPool;
 
 /// <summary>
@@ -216,7 +215,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     /// 적 흡수를 시도한다. 사망·비활성·흡수 불가(NoAbsort)·참조 누락 가드를 통과해야 성공하며, 성공 시 isDead를 true로 바꾸고 흡수 이펙트와 풀 반환을 처리한다.
     /// 성공 시 true, 가드에서 실패하면 false를 반환한다.
     /// </summary>
-    public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, UnityEvent rewardOnArrival, Transform uiWorldMarker)
+    public bool TryAbsorb(EnemyAbsorbEffect lightBallPrefab, Transform playerTarget, Transform uiWorldMarker)
     {
         if (isDead || !gameObject.activeInHierarchy || poolType == PoolType.NoAbsort)
             return false;
@@ -245,7 +244,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         {
             EnemyAbsorbEffect lightBall = EffectPool.Get(lightBallPrefab.gameObject, effectPosition, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
 
-            lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);
+            lightBall.Initialize(playerTarget, uiWorldMarker);
         }
 
         // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
