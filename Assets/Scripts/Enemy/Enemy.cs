@@ -7,9 +7,10 @@ using static EnemyPool;
 public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 {
     [Header("Enemy Stats")]
-    private int _maxHealth;
-    public int health = 5;
-    public float speed = 5f;
+    [SerializeField] private EnemyStatsData _stats;
+    protected int _maxHealth;
+    protected int health;
+    private float speed;
     public int knockbackForce = 10;
     public bool isDead = false;
     public PoolType poolType;
@@ -58,8 +59,8 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         _defaultConstraints = enemyRb.constraints;
     }
     /// <summary>
-    /// 풀 타입에 따른 적 체력과 이동 속도를 설정하고 풀 재사용 상태를 초기화한다.
-    /// poolType과 pool을 사용하며, 현재 체력 기준선과 물리·흡수 상태를 갱신한다.
+    /// 프리팹에 연결된 EnemyStatsData의 MaxHealth/MoveSpeed/ContactDamage 정의를 매 풀 재사용마다 적에게 적용하고 풀 재사용 상태를 초기화한다.
+    /// poolType과 pool, _stats를 사용하며, health/speed/_maxHealth 기준선과 물리·흡수 상태를 갱신한다.
     /// </summary>
     public virtual void Initialize(PoolType poolType, EnemyPool pool)
     {
@@ -70,28 +71,13 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         this.poolType = poolType;
         enemyPool = pool;
         isDead = false;
-        switch (poolType)
-        {
-            case PoolType.Basic:
-                speed = 5f;
-                health = 5;
-                break;
-            case PoolType.Boom:
-                speed = 3f;
-                health = 10;
-                break;
-            case PoolType.NoRush:
-                speed = 2f;
-                health = 20;
-                break;
-            case PoolType.NoAbsort:
-                speed = 1f;
-                health = 5;
-                break;
-        }
 
-        // 회복이 스폰 체력 기준선을 초과하지 않도록 현재 풀 타입의 최대치를 함께 기록한다.
-        _maxHealth = health;
+        // 밸런스 정의는 프리팹에 연결된 타입별 데이터 에셋이 유일한 출처다.
+        health = _stats.MaxHealth;
+        speed = _stats.MoveSpeed;
+
+        // 회복이 스폰 체력 기준선을 초과하지 않도록 데이터의 최대 체력을 함께 기록한다.
+        _maxHealth = _stats.MaxHealth;
 
         enemyRb.linearVelocity = Vector3.zero;
         enemyRb.angularVelocity = Vector3.zero;
@@ -256,7 +242,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         {
             EnemyAbsorbEffect lightBall = EffectPool.Get(lightBallPrefab.gameObject, effectPosition, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
 
-        lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);            
+            lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);
         }
 
         // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
@@ -369,7 +355,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     }
 
     /// <summary>
-    /// 접촉 중인 상대의 콜라이더 상위 체인에서 PlayerHp를 찾아 EnemyContact 피해 1을 시도한다.
+    /// 접촉 중인 상대의 콜라이더 상위 체인에서 PlayerHp를 찾아 데이터에 정의된 EnemyContact 접촉 피해를 시도한다.
     /// 무적 판정과 접촉 무적 부여는 수신자인 PlayerHp.TakeDamage가 담당한다.
     /// </summary>
     protected virtual void OnCollisionStay(Collision collision)
@@ -378,7 +364,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         if (hitPlayer != null)
         {
             IDamageable damageTarget = hitPlayer;
-            damageTarget.TakeDamage(new DamageInfo(1, DamageKind.EnemyContact, this));
+            damageTarget.TakeDamage(new DamageInfo(_stats.ContactDamage, DamageKind.EnemyContact, this));
         }
     }
 

@@ -278,8 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d6753949d78b546b59bb95a24a8720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_NoRush
-  health: 20
-  speed: 2
+  _stats: {fileID: 11400000, guid: 9e0aba3e46e3eb942a122b3221c7394f, type: 2}
   knockbackForce: 10
   isDead: 0
   poolType: 2
@@ -295,7 +294,6 @@ MonoBehaviour:
   liveMaterial: {fileID: 2100000, guid: f47f4fa001d6ea949897bbe381da7134, type: 2}
   deathMaterial: {fileID: 2100000, guid: 21e63e167d347af41bf48d167842f172, type: 2}
   absorbAura: {fileID: 4885717846715009467}
-  healthNr: 10
   playerHp: {fileID: 0}
 --- !u!54 &262094974431916916
 Rigidbody:

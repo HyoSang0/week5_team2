@@ -154,16 +154,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22bb57678b1ad564086d3c19fce12de4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: 5
-  speed: 5
+  _stats: {fileID: 11400000, guid: e5466e8a879472540a0fac973e20c1da, type: 2}
   knockbackForce: 10
-  player: {fileID: -81544851927694006, guid: 3c4714ef8b852c147a046f9d74abf4fd, type: 3}
+  isDead: 0
+  poolType: 0
+  coll: {fileID: 0}
+  enemyScore: 0
+  player: {fileID: 0}
   deathEffectForce: 5
   effectCount: 10
+  trail: {fileID: 0}
   deathEffectPrefab: {fileID: 3619340856543788439, guid: 5fde5ad2ff8d3e74c9ba60c1917e42c2, type: 3}
-  deathParticle: {fileID: 2979645494217532622, guid: 62299d00a6d398645a2bbd0191dd4e06, type: 3}
   bulletPrefab: {fileID: 0}
   navMeshAgent: {fileID: 8233113882587583414}
+  liveMaterial: {fileID: 0}
+  deathMaterial: {fileID: 0}
+  absorbAura: {fileID: 0}
 --- !u!195 &8233113882587583414
 NavMeshAgent:
   m_ObjectHideFlags: 0

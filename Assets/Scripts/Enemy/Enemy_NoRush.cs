@@ -3,17 +3,11 @@ using UnityEngine;
 
 public class Enemy_NoRush : Enemy
 {
-    [Header("Enemy Stats")]
-    public int healthNr = 20;
-
-    bool isDeadNr = false;
-    bool isUnBeatNr = false;
+    private bool isDeadNr = false;
+    private bool isUnBeatNr = false;
 
     [Header("References")]
     public PlayerHp playerHp;
-
-    // 풀 재사용 시 복원하기 위해 Awake에서 캐시하는 프리팹 초기 체력
-    private int _defaultHealthNr;
 
     Material[] mat;
 
@@ -21,9 +15,6 @@ public class Enemy_NoRush : Enemy
     {
         // 부모 Awake에서 enemyRb/coll/trail/rend/navMeshAgent를 초기화하므로 반드시 먼저 호출한다.
         base.Awake();
-
-        // 프리팹 인스펙터에 설정된 체력을 기억해 재사용 시 복원한다.
-        _defaultHealthNr = healthNr;
 
         playerHp = player.gameObject.GetComponent<PlayerHp>();
         mat = new Material[5];
@@ -35,8 +26,7 @@ public class Enemy_NoRush : Enemy
 
     }
     /// <summary>
-    /// 풀 재사용 시 base.Initialize을 호출한 뒤 NoRush 전용 상태(체력/사망/무적 플래그, 히트 색)를
-    /// 프리팹 기본값으로 복원한다.
+    /// 풀 재사용 시 base.Initialize을 호출해 데이터 에셋 기준 체력·속도를 복원한 뒤 NoRush 전용 상태(사망/무적 플래그, 히트 색)를 되돌린다.
     /// </summary>
     /// <param name="poolType">소환 풀 타입</param>
     /// <param name="pool">소유 풀</param>
@@ -45,7 +35,6 @@ public class Enemy_NoRush : Enemy
         base.Initialize(poolType, pool);
 
         // 재사용 시 무적/미초기화 상태로 스폰되지 않도록 NoRush 전용 상태를 되돌린다.
-        healthNr = _defaultHealthNr;
         isDeadNr = false;
         isUnBeatNr = false;
         for (int i = 0; i < mat.Length; i++)
@@ -82,7 +71,7 @@ public class Enemy_NoRush : Enemy
 
     /// <summary>
     /// 공용 피해 진입점을 NoRush 전용 경로로 우회한다.
-    /// damageInfo의 Amount를 TakeDamageNr로 전달해 healthNr을 감소시키며, IsLethal이면 사망 임계로 보내고 base.TakeDamage는 호출하지 않는다.
+    /// damageInfo의 Amount를 TakeDamageNr로 전달해 상속된 health를 감소시키며, IsLethal이면 사망 임계로 보내고 base.TakeDamage는 호출하지 않는다.
     /// </summary>
     public override bool TakeDamage(DamageInfo damageInfo)
     {
@@ -91,35 +80,35 @@ public class Enemy_NoRush : Enemy
             return false;
         }
 
-        // 즉사 요청은 남은 체력과 무관하게 healthNr을 사망 임계로 보낸다.
-        TakeDamageNr(damageInfo.IsLethal ? healthNr : damageInfo.Amount);
+        // 즉사 요청은 남은 체력과 무관하게 health를 사망 임계로 보낸다.
+        TakeDamageNr(damageInfo.IsLethal ? health : damageInfo.Amount);
         return true;
     }
 
     /// <summary>
     /// 공용 회복 진입점을 NoRush 전용 경로로 우회한다.
-    /// healingInfo의 Amount를 사용해 healthNr을 회복하며, base.ReceiveHealing과 상속된 health는 사용하지 않는다.
+    /// healingInfo의 Amount를 사용해 상속된 health를 회복하며, base.ReceiveHealing은 호출하지 않는다.
     /// 회복량이 0 이하이거나 사망했거나 비활성 상태이면 상태를 변경하지 않고 false를 반환하며,
-    /// 실제로 healthNr이 증가하면 프리팹 기준 체력을 초과하지 않도록 clamp해 true를 반환한다.
+    /// 실제로 health가 증가하면 데이터 에셋의 최대 체력(_maxHealth)을 초과하지 않도록 clamp해 true를 반환한다.
     /// </summary>
     public override bool ReceiveHealing(HealingInfo healingInfo)
     {
-        if (!IsValidHealingInfo(healingInfo) || isDead || isDeadNr || !gameObject.activeInHierarchy || healthNr >= _defaultHealthNr)
+        if (!IsValidHealingInfo(healingInfo) || isDead || isDeadNr || !gameObject.activeInHierarchy || health >= _maxHealth)
         {
             return false;
         }
 
-        healthNr = Mathf.Min(healthNr + healingInfo.Amount, _defaultHealthNr);
+        health = Mathf.Min(health + healingInfo.Amount, _maxHealth);
         return true;
     }
 
     /// <summary>
-    /// NoRush 전용 healthNr을 감소시키고 피격 연출 및 사망 여부를 확인한다.
-    /// damage는 감소량이며 healthNr과 피격 코루틴 상태를 변경한다.
+    /// 상속된 health를 감소시키고 피격 연출 및 사망 여부를 확인한다.
+    /// damage는 감소량이며 health와 피격 코루틴 상태를 변경한다.
     /// </summary>
     private void TakeDamageNr(int damage)
     {
-        healthNr -= damage;
+        health -= damage;
         StartCoroutine(PlayHitEffect());
         CheckHealthNr();
     }
@@ -176,14 +165,14 @@ public class Enemy_NoRush : Enemy
         enemyPool.DieEnemy(gameObject, EnemyPool.PoolType.NoRush);
     }
     /// <summary>
-    /// healthNr이 0 이하이고 isDeadNr/isDead가 모두 false일 때 사망을 확정한다.
+    /// health가 0 이하이고 isDeadNr/isDead가 모두 false일 때 사망을 확정한다.
     /// EnemyKilled 이벤트 발생 후 일반 Enemy.Kill과 동일하게 킬 통계를 기록하고 AddKillScore로 처치 점수를 등록한 뒤
     /// DieNr 코루틴을 시작한다. isDead도 함께 세워 Kill() 경유의 중복을 막는다.
     /// </summary>
     protected void CheckHealthNr()
     {
         // 부모 isDead까지 함께 봐서 Kill() 경유와 무관하게 연쇄 처치/중복 이벤트를 막는다.
-        if (healthNr <= 0 && !isDeadNr && !isDead)
+        if (health <= 0 && !isDeadNr && !isDead)
         {
             isDeadNr = true;
             isDead = true;
