@@ -274,6 +274,7 @@ public class GameManager : MonoBehaviour
             : killedEnemy.enemyScore;
 
         score += killScore;
+        AugmentEvents.RaiseScoreIncreased((float)killScore);
         UpdateScoreText();
     }
 }

@@ -365,6 +365,19 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StopAbility();
     }
 
+    public void ReduceCooldown(float seconds)
+    {
+        if (seconds <= 0f)
+            return;
+
+        // 현재 시각이 이미 쿨타임이 끝난 상태(_nextAvailableTime <= Time.time)라면 깎을 필요가 없습니다.
+        // 쿨타임 중일 때만 _nextAvailableTime을 앞당겨서 남은 시간을 줄여줍니다.
+        if (_nextAvailableTime > Time.time)
+        {
+            _nextAvailableTime -= seconds;
+        }
+    }
+
     // private void RefreshUI()
     // {
     //     absortEnergyText.text = $"Absort : {stamina}";

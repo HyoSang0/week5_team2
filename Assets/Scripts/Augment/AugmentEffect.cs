@@ -22,6 +22,11 @@ public abstract class AugmentEffect : ScriptableObject
     public virtual void OnEnemyAbsorbed(Enemy enemy) { }
 
     /// <summary>
+    /// 점수가 올랐을 때 호출된다. score은 점수며, 기본 구현은 아무 동작도 하지 않는다.
+    /// </summary>
+    public virtual void OnScoreIncreased(float score) { }
+
+    /// <summary>
     /// 새 판 시작 시 호출되어 Shared ScriptableObject에 남은 런타임 상태를 초기화한다.
     /// 기본 구현은 아무 동작도 하지 않는다.
     /// </summary>
