@@ -13,5 +13,6 @@ public enum StatType
     ChainDamage,        // 연쇄 충돌 피해 (드롭킥 피해 포함)
     ScoreMultiplier,    // 점수 배율
     RushCount,          // 돌진 횟수
-    SpawnRate           // 적 생성 속도 배율
+    SpawnRate,          // 적 생성 속도 배율
+    RushDistance        // 유효 돌진 거리 배율
 }

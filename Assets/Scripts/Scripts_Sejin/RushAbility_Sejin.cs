@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -75,6 +76,18 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     // 쿨타임 진행 중에 누적된 쿨타임 감소량과 쿨타임 진행 여부
     private float _pendingCooldownReduction;
     private bool _inCooldown;
+
+    // 거리 증강별 돌진 거리 보너스(퍼센트)로 두 소스의 값을 분리 보관해 서로 덮어쓰지 않는다.
+    private float _energyConversionDistanceBonusPercent;
+    private float _overdriveDistanceBonusPercent;
+
+    // 긴급 제동 증강 활성화 여부와 쿨타임 환불 상한 퍼센트.
+    private bool _emergencyBrakeEnabled;
+    private float _emergencyBrakeMaxRefundPercent;
+    // 긴급 제동의 환불량을 계산하기 위해 돌진 시작 시점의 시간과 쿨타임을 캡처한다.
+    private float _dashEndTime;
+    private float _dashDurationCaptured;
+    private float _dashCooldownCaptured;
 
     void Awake()
     {
@@ -188,7 +201,8 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
             return;
         }
 
-        duringTime = PlayerStats.Instance.Apply(StatType.RushDuration, _baseDuringTime);
+        // 거리는 속도와 지속시간의 곱이므로 거리 배율을 지속시간에 반영해 속도는 변경하지 않는다.
+        duringTime = PlayerStats.Instance.Apply(StatType.RushDuration, _baseDuringTime) * GetRushDistanceMultiplier();
         coolTime = PlayerStats.Instance.Apply(StatType.RushCooldown, _baseCoolTime);
         noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
         rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
@@ -201,6 +215,16 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     {
         if (GamePause.IsPaused || (ctx.control.device is Mouse && TitleSceneController.IsPointerOverMenu))
             return;
+
+        // 돌진 중 재입력은 긴급 제동 증강이 있을 때만 돌진을 즉시 종료한다.
+        if (isRushing)
+        {
+            if (_emergencyBrakeEnabled)
+            {
+                TryEmergencyBrake();
+            }
+            return;
+        }
 
         if (CanDash())
         {
@@ -215,6 +239,11 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
             if (dashRoutine != null)
                 StopCoroutine(dashRoutine);
+
+            // 긴급 제동의 환불 계산과 증강 거리 배율 판정을 위해 이번 돌진 시작 시점값을 캡처한다.
+            _dashDurationCaptured = duringTime;
+            _dashEndTime = Time.time + duringTime;
+            _dashCooldownCaptured = coolTime;
 
             dashRoutine = StartCoroutine(Dash_Move());
 
@@ -236,7 +265,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         //남은 횟수가 없을 때만 준비 이펙트 끔
         if (_usableRushCount == 0)
             dashReadyEffectObject.SetActive(false);
-                
+
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
 
@@ -315,6 +344,74 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         isDashing = false;
         FinishRushMovement();
         dashRoutine = StartCoroutine(DashCooldown());
+    }
+
+    /// <summary>
+    /// 진행 중인 돌진 이동을 즉시 종료하고, 남은 거리 비율만큼 이번 돌진 쿨타임을 최대 maxRefundPercent까지 환불한다.
+    /// 속도가 일정한 돌진에서는 남은 시간 비율이 남은 거리 비율과 동일하므로 시간 비율로 환불량을 계산한다.
+    /// </summary>
+    private void TryEmergencyBrake()
+    {
+        float remainingDistanceRatio = _dashDurationCaptured > 0f
+            ? Mathf.Clamp01((_dashEndTime - Time.time) / _dashDurationCaptured)
+            : 0f;
+        float refund = _dashCooldownCaptured * remainingDistanceRatio * _emergencyBrakeMaxRefundPercent / 100f;
+
+        // isRushing이 true인 상태에서 ReduceCooldown을 호출해야 진행 중/진입 대기 쿨타임에 환불이 반영된다.
+        ReduceCooldown(refund);
+
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            dashRoutine = null;
+        }
+        isDashing = false;
+        FinishRushMovement();
+    }
+
+    /// <summary>
+    /// 증강의 요청으로 긴급 제동을 활성화하고 쿨타임 환불 상한을 maxRefundPercent(퍼센트)로 설정한다.
+    /// RushAbility 컴포넌트는 판마다 새로 생성되어 활성화 상태가 기본 false로 돌아온다.
+    /// </summary>
+    public void EnableEmergencyBrake(float maxRefundPercent)
+    {
+        _emergencyBrakeMaxRefundPercent = Mathf.Clamp(maxRefundPercent, 0f, 100f);
+        _emergencyBrakeEnabled = true;
+    }
+
+    /// <summary>
+    /// 에너지 전환 증강의 돌진 거리 보너스를 bonusPercent(퍼센트)로 저장하고 증강 스탯을 재계산한다.
+    /// 오버드라이브 보너스와는 별도 필드에 유지되어 합산된다.
+    /// </summary>
+    public void SetEnergyConversionDistanceBonus(float bonusPercent)
+    {
+        _energyConversionDistanceBonusPercent = bonusPercent;
+        ApplyAugmentStats();
+    }
+
+    /// <summary>
+    /// 오버드라이브 증강의 돌진 거리 보너스를 bonusPercent(퍼센트)로 저장하고 증강 스탯을 재계산한다.
+    /// 에너지 전환 보너스와는 별도 필드에 유지되어 합산된다.
+    /// </summary>
+    public void SetOverdriveDistanceBonus(float bonusPercent)
+    {
+        _overdriveDistanceBonusPercent = bonusPercent;
+        ApplyAugmentStats();
+    }
+
+    /// <summary>
+    /// PlayerStats의 RushDistance 수정자에 에너지 전환과 오버드라이브 거리 보너스 합을 더한 돌진 거리 배율을 반환한다.
+    /// 배율은 duringTime에 곱되며 0 이하로 내려가지 않는다.
+    /// </summary>
+    private float GetRushDistanceMultiplier()
+    {
+        float multiplier = PlayerStats.Instance != null
+            ? PlayerStats.Instance.Apply(StatType.RushDistance, 1f)
+            : 1f;
+
+        multiplier += (_energyConversionDistanceBonusPercent + _overdriveDistanceBonusPercent) / 100f;
+
+        return Mathf.Max(0f, multiplier);
     }
 
     // 진행 중인 드롭킥과 쿨타임 상태를 확인한다.
