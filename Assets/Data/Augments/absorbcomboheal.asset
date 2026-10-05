@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: absorbcomboheal
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: absorbcomboheal
+  _displayName: "\uACFC\uC2DD"
+  _description: "\uD55C \uBC88\uC758 \uD761\uC218\uB85C 8\uBA85 \uC774\uC0C1\uC758
+    \uC801\uC744 \uCC98\uCE58\uD588\uC744 \uC2DC \uCCB4\uB825\uC744 1 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  _tier: 0
+  _conflictTags: []
+  _modifiers: []
+  _effect: {fileID: 11400000, guid: 5850b7ac251a89b4399b571823a0ec16, type: 2}
+  _absorptionAreaType: 0
