@@ -8,6 +8,7 @@ public class UiManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] private Slider hpSlider;
     [SerializeField] private Slider _experienceSlider;
+    [SerializeField] private bool _showExperience = true;
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI hpText;
@@ -32,18 +33,24 @@ public class UiManager : MonoBehaviour
 
     void Start()
     {
-        _gameManager = GameManager.Instance;
         _playerHp.OnHpChanged += UpdateHud;
-        _gameManager.ExperienceChanged += UpdateExperienceHud;
-
         UpdateHud();
-        UpdateExperienceHud();
+
+        if (_showExperience)
+        {
+            _gameManager = GameManager.Instance;
+            _gameManager.ExperienceChanged += UpdateExperienceHud;
+            UpdateExperienceHud();
+        }
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         _playerHp.OnHpChanged -= UpdateHud;
-        _gameManager.ExperienceChanged -= UpdateExperienceHud;
+        if (_showExperience)
+        {
+            _gameManager.ExperienceChanged -= UpdateExperienceHud;
+        }
     }
 
     /// <summary>
