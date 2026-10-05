@@ -1,0 +1,24 @@
+# 기존 SpawnManager.Start 하드코딩 이전
+kind,startTime,interval,duration,count
+Basic,0,0.5,10,1
+Basic,5,0.1,95,1
+Basic,20,0.1,80,1
+Basic,40,0.1,60,1
+Boom,10,1,3,1
+Boom,35,0.5,5,1
+Boom,55,0.5,15,1
+Boom,75,0.3,9,1
+Boom,90,0.2,10,1
+NoAbsort,5,1,2,1
+NoAbsort,45,1,1,1
+NoAbsort,70,1,1,1
+NoAbsort,87,1,1,1
+NoRush,20,0.5,1,1
+NoRush,35,0.5,1.5,1
+NoRush,50,0.5,2,1
+NoRush,65,0.5,2.5,1
+NoRush,80,0.5,3,1
+NoRush,92,0.5,3,1
+HealPack,25,0,0,1
+HealPack,55,0,0,1
+HealPack,80,0,0,1

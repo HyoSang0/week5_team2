@@ -8,6 +8,7 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
+    private enum RunState { Normal, SurvivalSuccess, Infinite, Dead };
     private const int EXPERIENCE_PER_KILL = 2;
     private const int EXPERIENCE_PER_ABSORB = 10;
     // 각 항목은 해당 레벨에서 다음 레벨로 올라가는 데 필요한 경험치다.
@@ -29,11 +30,14 @@ public class GameManager : MonoBehaviour
     [FormerlySerializedAs("gameOverGroup")]
     [SerializeField] private GameObject _gameOverGroup;
     [SerializeField] private UIDefaultSelection _gameOverSelection;
+    [SerializeField] private GameObject infiniteModeButton;
+    private RunState runState = RunState.Normal;
 
     public int score;
     const float timeLimit = 100;
 
-    bool isGameOver = false;
+    // bool isGameOver = false;
+
     public bool isUnBeat = false;
 
     [Header("Level")]
@@ -63,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        infiniteModeButton.SetActive(false);
         UpdateScoreText();
         StartCoroutine(StartTimer(timeLimit));
     }
@@ -149,12 +154,22 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 게임 클리어 처리를 한다.
-    /// 게임 오버 그룹을 표시하고 "생존 성공" 문구를 UIPalette.Accent 색으로 표시한 뒤 GamePause로 일시정지한다.
+    /// 일반모드에서 생존 성공 상태로 전환한다. 
+    /// 현재 진행 상태와 플레이어 체력을 확인하고, 성공 UI와 무한모드 버튼을 표시한 뒤 게임을 정지한다. 
     /// </summary>
     public void GameClear()
     {
-        isGameOver = true;
+        if (runState != RunState.Normal)
+        {
+            return;
+        }
+        if (playerHp.playerHP <= 0)
+        {
+            PlayerDie();
+            return;
+        }
+        runState = RunState.SurvivalSuccess;
+        infiniteModeButton.SetActive(true);
         _gameOverGroup.SetActive(true);
         gameOverText.text = "생존 성공";
         gameOverText.color = UIPalette.Accent;
@@ -162,32 +177,72 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어 사망 처리를 한다.
-    /// 게임 오버 그룹을 표시하고 "게임 오버" 문구를 UIPalette.Danger 색으로 표시한 뒤 GamePause로 일시정지한다.
+    /// 현재 플레이를 사망 상태로 종료한다. 
+    /// 현재 진행 상태를 확인하고, 무한모드 버튼을 숨긴 게임 오버 UI를 표시한 뒤 게임을 정지한다. 
     /// </summary>
     public void PlayerDie()
     {
-        isGameOver = true;
+        if (runState != RunState.Dead)
+        {
+            return;
+        }
+        runState = RunState.Dead;
         _gameOverGroup.SetActive(true);
         gameOverText.text = "게임 오버";
         gameOverText.color = UIPalette.Danger;
         GamePause.Pause(PauseReason.GameOver);
     }
 
+    /// <summary>
+    /// 생존 성공 화면에서 무한모드로 진입한다. 
+    /// 현재 진행 상태와 UI 입력 잠금을 확인하고, 플레이 상태를 유지한 채 결과 화면을 닫고 종료 정지를 해제한다. 
+    /// </summary>
+    public void EnterInfiniteMode()
+    {
+        if (runState != RunState.SurvivalSuccess || _gameOverSelection.IsInputLocked)
+        {
+            return;
+        }
+
+        runState = RunState.Infinite;
+        infiniteModeButton.SetActive(false);
+        _gameOverGroup.SetActive(false);
+
+        GamePause.Resume(PauseReason.GameOver);
+    }
     // 게임 시간
+    /// <summary>
+    /// 일반모드의 남은 시간과 무한모드의 총 생존 시간을 갱신한다. 
+    /// time을 일반모드 제한시간으로 사용하며, 제한 도달 시 생존 성공을 처리하고 사망 시 타이머를 종료한다. 
+    /// </summary>
     IEnumerator StartTimer(float time)
     {
-        float curTime = time;
-        while (curTime > 0)
+        float elapsedTime = 0f;
+        while (runState != RunState.Dead)
         {
-            curTime -= Time.deltaTime;
-            // 0 미만으로 내려가지 않게 방지
-            curTime = Mathf.Max(0, curTime);
-            // 소수점 2자리 까지 표현
-            timeText.text = curTime.ToString("F2");
+            if (runState == RunState.SurvivalSuccess || GamePause.IsPaused)
+            {
+                yield return null;
+                continue;
+            }
+            elapsedTime += Time.deltaTime;
+            if (runState == RunState.Normal)
+            {
+                float remainingTime = Mathf.Max(0, time - elapsedTime);
+                timeText.text = remainingTime.ToString("F2");
+                if (remainingTime <= 0)
+                {
+                    elapsedTime = time;
+                    GameClear();
+                }
+            }
+            else if (runState == RunState.Infinite)
+            {
+                timeText.text = elapsedTime.ToString("F2");
+            }
+
             yield return null;
         }
-        GameClear();
     }
 
     /// <summary>

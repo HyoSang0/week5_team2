@@ -23,7 +23,7 @@ public class SpawnScheduleEditor : Editor
         _schedule = (SpawnSchedule)target;
     }
 
-    void OnInspectorGUI()
+    public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 

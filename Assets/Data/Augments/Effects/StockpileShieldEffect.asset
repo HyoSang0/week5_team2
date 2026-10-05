@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 076057c1d190ed64983ea9554ba5a771, type: 3}
-  m_Name: NoAbsortEnemyStats
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsData
-  _maxHealth: 20
-  _moveSpeed: 3
-  _contactDamage: 2
+  m_Script: {fileID: 11500000, guid: 06a305ccb7b1a594c9b8dddcf457d2d4, type: 3}
+  m_Name: StockpileShieldEffect
+  m_EditorClassIdentifier: Assembly-CSharp::StockpileShieldEffect
+  _requiredAbsorbs: 20
+  _cooldownSeconds: 10

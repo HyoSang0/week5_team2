@@ -10,20 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
-  m_Name: battlefield_avatar
+  m_Name: endless_growth
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
-  _id: battlefield_avatar
-  _displayName: "\uC804\uC7A5\uC758 \uD654\uC2E0"
-  _description: "\uD68D\uB4DD \uC810\uC218\uAC00 2\uBC30\uAC00 \uB418\uC9C0\uB9CC
-    \uC801\uC774 1.5\uBC30 \uBE60\uB974\uAC8C \uC0DD\uC131\uB429\uB2C8\uB2E4."
-  _tier: 1
+  _id: endless_growth
+  _displayName: "\uB05D\uC5C6\uB294 \uC131\uC7A5"
+  _description: "\uD761\uC218\uB85C 100\uB9C8\uB9AC\uB97C \uD761\uC218\uD560 \uB54C
+    \uB9C8\uB2E4 \uCD5C\uB300 \uCCB4\uB825 \uC99D\uAC00 "
+  _tier: 2
   _conflictTags: []
-  _modifiers:
-  - _stat: 11
-    _percent: 100
-    _flat: 0
-  - _stat: 13
-    _percent: 50
-    _flat: 0
-  _effect: {fileID: 0}
+  _modifiers: []
+  _effect: {fileID: 11400000, guid: 8f929eefa9105b745825e4413b8c9bfc, type: 2}
   _absorptionAreaType: 0

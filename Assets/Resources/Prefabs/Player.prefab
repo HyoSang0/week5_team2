@@ -5540,6 +5540,7 @@ MonoBehaviour:
   rushSpeed: 30
   duringTime: 0.3
   noDamageTime: 0.7
+  maxRushCount: 1
   coolTime: 1
   isDashing: 0
   _coolDownImage: {fileID: 0}

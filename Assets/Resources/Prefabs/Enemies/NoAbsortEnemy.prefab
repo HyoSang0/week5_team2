@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoAbsortEnemy
   _stats: {fileID: 11400000, guid: e812306e5970bb449826e5479f7fb2e2, type: 2}
-  knockbackForce: 1000
+  knockbackForce: 2500
   isDead: 0
   poolType: 3
   coll: {fileID: 0}
