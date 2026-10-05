@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 덩치
+/// </summary>
 public class NoAbsortEnemy : Enemy
 {
     /// <summary>

@@ -1,7 +1,9 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 돌진 공격 중 드롭킥 판정과 애니메이션 오브젝트를 관리한다.
+/// </summary>
 public class PlayerAttack_Dropkick : MonoBehaviour, IDamageSource
 {
     private InputSystem_Actions inputActions;

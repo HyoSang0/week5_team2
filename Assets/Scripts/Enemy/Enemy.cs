@@ -4,6 +4,9 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using static EnemyPool;
 
+/// <summary>
+/// 일반
+/// </summary>
 public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 {
     [Header("Enemy Stats")]

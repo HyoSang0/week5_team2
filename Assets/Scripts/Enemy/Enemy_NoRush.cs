@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 가시 적의 반사 피해와 전용 피격 연출을 처리하며, 공용 Enemy 체력과 스텟 동작을 상속한다.
+/// </summary>
 public class Enemy_NoRush : Enemy
 {
     private bool isDeadNr = false;
