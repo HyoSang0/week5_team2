@@ -898,7 +898,7 @@ GameObject:
   - component: {fileID: 7598213759039695852}
   - component: {fileID: 3137020581873904400}
   m_Layer: 5
-  m_Name: SelsctBtn
+  m_Name: SelectBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1018,7 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fbde900f6b4266439402f3082120a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UISelectionHighlight
-  _scaleTarget: {fileID: 2499460118998982287}
+  _scaleTarget: {fileID: 2283160521330910501}
   _selectedScale: 1.05
 --- !u!1 &5490777421133949894
 GameObject:
@@ -1188,6 +1188,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2283160521330910501}
+  - {fileID: 901637954643963153}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1253,7 +1254,6 @@ RectTransform:
   - {fileID: 1827620265235327881}
   - {fileID: 1246312486030108438}
   - {fileID: 556023245712740553}
-  - {fileID: 901637954643963153}
   m_Father: {fileID: 2499460118998982287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1369,7 +1369,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4265369374705706644}
-  m_Father: {fileID: 2283160521330910501}
+  m_Father: {fileID: 2499460118998982287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -1470,5 +1470,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fbde900f6b4266439402f3082120a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UISelectionHighlight
-  _scaleTarget: {fileID: 2499460118998982287}
-  _selectedScale: 1.05
+  _scaleTarget: {fileID: 901637954643963153}
+  _selectedScale: 1.1

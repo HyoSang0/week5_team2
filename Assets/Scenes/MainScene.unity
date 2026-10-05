@@ -125,7 +125,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 587388437}
+    m_TransformParent: {fileID: 612590441}
     m_Modifications:
     - target: {fileID: 1465704372548299243, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_Name
@@ -149,7 +149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_AnchorMin.x
@@ -157,15 +157,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -185,23 +185,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 640
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -326.32828
       objectReference: {fileID: 0}
     - target: {fileID: 7317955923997981188, guid: 23beb824a8a9d1642866e8bb3af681fc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -719,13 +719,12 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1499864069}
-  - {fileID: 25406860}
   m_Father: {fileID: 612590441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 20}
-  m_SizeDelta: {x: 75, y: 15}
+  m_SizeDelta: {x: 100, y: 15}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &587388438
 MonoBehaviour:
@@ -841,6 +840,7 @@ RectTransform:
   - {fileID: 984024944}
   - {fileID: 1202620208}
   - {fileID: 79570250}
+  - {fileID: 25406860}
   - {fileID: 587388437}
   - {fileID: 7964097777285556868}
   - {fileID: 4387906104094207522}
@@ -930,7 +930,6 @@ MonoBehaviour:
   hpSlider: {fileID: 1499864070}
   _experienceSlider: {fileID: 79570251}
   hpText: {fileID: 1497688160}
-  _experienceText: {fileID: 0}
   _hpScreenOffset: {x: 0, y: -50}
   _playerHp: {fileID: 782649360}
 --- !u!114 &612590446
@@ -3697,7 +3696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
   BasicEnemyPrefab: {fileID: 3619340856543788439, guid: 65ef6f26693c58849a3900c7eab6bb4f, type: 3}
   BoomEnemyPrefab: {fileID: 3619340856543788439, guid: 8cb24fe9bc81ff942a149ebe31bc2ee6, type: 3}
-  NoRushEnemyPrefab: {fileID: 2850225975201428742, guid: 8c9249676a476354885bf886b5473882, type: 3}
+  NoRushEnemyPrefab: {fileID: 2850225975201428742, guid: 28dae93e3d0c668479e17b73b689d14f, type: 3}
   NoAbsortEnemyPrefab: {fileID: 1152331714916846004, guid: c7ca4fc2aaac4b547897a513715d1a87, type: 3}
 --- !u!224 &7964097777285556868 stripped
 RectTransform:
