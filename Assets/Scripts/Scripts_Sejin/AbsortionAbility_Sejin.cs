@@ -48,6 +48,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// <summary>시간제(전환) 흡수가 현재 활성 상태인지 반환한다.</summary>
     public bool IsTimedActive => _isTimedActivation && isStartAbsortion;
 
+    public event Action OnAbsorbStarted;
+    public event Action OnAbsorbEnded;
+
     /// <summary>
     /// 일반 흡수 또는 시간제 포식이 활성 상태인지 반환한다.
     /// isStartAbsortion을 읽으며 UI 활성 표시 여부를 결정한다.
@@ -109,6 +112,11 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     void OnDisable()
     {
+        if (isStartAbsortion)
+        {
+            StopAbility();
+        }
+
         inputActions.Disable();
         AugmentEvents.OnAbsorptionAreaTypeSelected -= HandleAbsorptionAreaTypeSelected;
     }
@@ -206,6 +214,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         _playerController.SetAbsorbState(true);
 
         AugmentEvents.RaiseAbsorptionStarted();
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -227,6 +236,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         _timedEndTime = Time.time + _conversionActiveSeconds;
 
         AugmentEvents.RaiseAbsorptionStarted();
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -264,7 +274,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         isStartAbsortion = false;
         _isTimedActivation = false;
 
-        if (!wasTimed)
+        if (!wasTimed && _playerController != null)
         {
             _playerController.SetAbsorbState(false);
         }
@@ -274,6 +284,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         // 홀드 모드의 종료 시점 일괄 흡수가 모두 집계된 뒤에 종료를 통지한다.
         AugmentEvents.RaiseAbsorptionEnded();
+        _nextAvailableTime = Time.time + cooldownSeconds;
+        OnAbsorbEnded?.Invoke();
     }
 
     /// <summary>
@@ -345,6 +357,12 @@ public class AbsortionAbility_Sejin : MonoBehaviour
                 binding.Area.gameObject.SetActive(false);
             }
         }
+    }
+
+    // 돌진이 시작될 때 활성화된 흡수를 종료하고 기존 쿨타임을 시작한다.
+    public void InterruptForRush()
+    {
+        StopAbility();
     }
 
     // private void RefreshUI()

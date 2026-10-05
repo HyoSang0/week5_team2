@@ -934,7 +934,7 @@ MonoBehaviour:
   _playerHp: {fileID: 782649360}
   _hudView: {fileID: 3186234514657724730}
   _totalRerolls: 3
-  _debugForcedNextAugment: {fileID: 11400000, guid: c88cbd918a8020149954edb13ded4fb0, type: 2}
+  _debugForcedNextAugment: {fileID: 11400000, guid: b4ac6f61a518ba84d9a5c07d031ec1fd, type: 2}
 --- !u!114 &612590447
 MonoBehaviour:
   m_ObjectHideFlags: 0
