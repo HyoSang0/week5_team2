@@ -5496,6 +5496,14 @@ MonoBehaviour:
   moveSpeed: 8
   rushSpeed: 20
   chargeSpeed: 5
+  playerCollider: {fileID: 7049504919297371655}
+  groundMaterial: {fileID: 13400000, guid: 28fc894cee625ef49a4020c5beb3e304, type: 2}
+  airMaterial: {fileID: 13400000, guid: 498b091ea2ca8574d86383e1ab341926, type: 2}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  isGrounded: 1
+  groundCheckRadius: 1
 --- !u!114 &7879634254771331669
 MonoBehaviour:
   m_ObjectHideFlags: 0

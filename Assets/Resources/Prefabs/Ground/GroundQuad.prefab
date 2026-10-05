@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5459486876552588680}
   - component: {fileID: 1254559200744162939}
   - component: {fileID: 7127252345292593479}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundQuad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
