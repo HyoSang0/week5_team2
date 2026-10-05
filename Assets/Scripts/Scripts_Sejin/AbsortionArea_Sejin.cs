@@ -20,12 +20,12 @@ public class AbsortionArea_Sejin : MonoBehaviour
     private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 
     [SerializeField] private float area_radus_max, area_radus_min;
-    private float area_radus;
+    protected float area_radus;
     // 증강 스탯 재계산에 사용할 기준값들
     private float _baseAreaRadiusMin;
     private float _baseAreaRadiusMax;
     private float _baseSpeed;
-    private Vector3 originScale;
+    protected Vector3 originScale;
     [SerializeField]
     private float speed;
 
@@ -106,6 +106,16 @@ public class AbsortionArea_Sejin : MonoBehaviour
         }
 
         area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
+        ApplyAreaScale();
+    }
+
+    /// <summary>
+    /// 현재 area_radus를 영역 오브젝트의 스케일에 반영한다.
+    /// area_radus와 originScale을 사용하며, 기본 구현은 transform.localScale을 originScale * area_radus로 설정한다.
+    /// 영역 모양이 다른 서브클래스가 스케일 적용 방식을 바꾸기 위한 가상 훅이다.
+    /// </summary>
+    protected virtual void ApplyAreaScale()
+    {
         transform.localScale = originScale * area_radus;
     }
 
@@ -115,8 +125,8 @@ public class AbsortionArea_Sejin : MonoBehaviour
         ApplyAugmentStats();
 
         enemySet.Clear();
-        transform.localScale = originScale * area_radus_min;
         area_radus = area_radus_min;
+        ApplyAreaScale();
     }
 
     private void OnDisable()
@@ -131,7 +141,7 @@ public class AbsortionArea_Sejin : MonoBehaviour
         area_radus += Time.deltaTime * speed;
         area_radus = Mathf.Clamp(area_radus, area_radus_min, area_radus_max);
 
-        transform.localScale = originScale * area_radus;
+        ApplyAreaScale();
     }
 
     private void OnTriggerEnter(Collider other)
