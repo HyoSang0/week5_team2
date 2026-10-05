@@ -47,6 +47,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// <summary>시간제(전환) 흡수가 현재 활성 상태인지 반환한다.</summary>
     public bool IsTimedActive => _isTimedActivation && isStartAbsortion;
 
+    public event Action OnAbsorbStarted;
+    public event Action OnAbsorbEnded;
+
     /// <summary>
     /// 시간제 활성의 남은 시간 비율(0~1)을 반환한다.
     /// 활성 중이 아니면 0을 반환하며, Time.time 기준으로 계산한다.
@@ -97,6 +100,11 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     void OnDisable()
     {
+        if (isStartAbsortion)
+        {
+            StopAbility();
+        }
+
         inputActions.Disable();
         AugmentEvents.OnAbsorptionAreaTypeSelected -= HandleAbsorptionAreaTypeSelected;
     }
@@ -192,6 +200,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _playerController.SetAbsorbState(true);
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -211,6 +220,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _timedEndTime = Time.time + _conversionActiveSeconds;
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -248,12 +258,13 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         isStartAbsortion = false;
         _isTimedActivation = false;
 
-        if (!wasTimed)
+        if (!wasTimed && _playerController != null)
         {
             _playerController.SetAbsorbState(false);
         }
 
         _nextAvailableTime = Time.time + cooldownSeconds;
+        OnAbsorbEnded?.Invoke();
     }
 
     /// <summary>
@@ -325,6 +336,12 @@ public class AbsortionAbility_Sejin : MonoBehaviour
                 binding.Area.gameObject.SetActive(false);
             }
         }
+    }
+
+    // 돌진이 시작될 때 활성화된 흡수를 종료하고 기존 쿨타임을 시작한다.
+    public void InterruptForRush()
+    {
+        StopAbility();
     }
 
     // private void RefreshUI()
