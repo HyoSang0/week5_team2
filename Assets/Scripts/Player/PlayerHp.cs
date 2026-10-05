@@ -10,6 +10,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
 {
     private const float HIT_INVINCIBILITY_SECONDS = 2f;
     private const float SHIELD_CONTACT_GRACE_SECONDS = 0.15f;
+    private const float PRACTICE_HIT_FEEDBACK_SECONDS = 0.5f;
 
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
@@ -166,6 +167,8 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
 
         if (_practiceInvincible)
         {
+            // 연습(타이틀) 모드는 체력을 줄이지 않고 피격 연출만 재생해 반사·접촉 피해를 보여준다.
+            PlayPracticeHitFeedback();
             return false;
         }
 
@@ -188,6 +191,16 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// 연습 모드에서 체력 변경 없이 피격 연출만 재생한다.
+    /// 피격 vignette를 켜고 PRACTICE_HIT_FEEDBACK_SECONDS 동안 피격 머티리얼을 표시하며, 종료 시 UnBeatTimeForHit가 연출을 되돌린다.
+    /// </summary>
+    private void PlayPracticeHitFeedback()
+    {
+        SetVignetteIntensity(attackedVignetteIntensity);
+        ApplyHitInvincibility(PRACTICE_HIT_FEEDBACK_SECONDS);
     }
 
     /// <summary>
