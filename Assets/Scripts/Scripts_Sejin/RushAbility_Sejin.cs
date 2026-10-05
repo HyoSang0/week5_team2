@@ -39,6 +39,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     public event Action OnRushEnded;
 
     public bool isRushing = false;
+    private AbsortionAbility_Sejin _absortionAbility;
 
     private EnemyPool enemyPool;
 
@@ -83,6 +84,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
         fallRecovery = GetComponent<PlayerFallRecovery>();
+        _absortionAbility = GetComponent<AbsortionAbility_Sejin>();
         _baseDuringTime = duringTime;
         _baseCoolTime = coolTime;
         _baseNoDamageTime = noDamageTime;
@@ -202,6 +204,11 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
         if (CanDash())
         {
+            if (_absortionAbility != null)
+            {
+                _absortionAbility.InterruptForRush();
+            }
+
             OnRushStarted?.Invoke();
             isRushing = true;
             _usableRushCount--;             //돌진 횟수 감소
