@@ -56,13 +56,12 @@ public static class AugmentEvents
     }
 
     /// <summary>
-    /// 적 흡수 이벤트를 발생시켜 구독 중인 증강 효과에 enemy를 전달한다.
+    /// 점수 증가 이벤트를 발생시켜 구독 중인 증강 효과에 증가한 점수 score를 전달한다.
     /// </summary>
-    public static void RaiseScoreIncreased(float socre)
+    public static void RaiseScoreIncreased(float score)
     {
-        OnScoreIncreased?.Invoke(socre);
+        OnScoreIncreased?.Invoke(score);
     }
-
 
     /// <summary>
     /// 흡수 활성화 시작 이벤트를 발생시켜 구독 중인 증강 효과에 활성화 시작을 전달한다.

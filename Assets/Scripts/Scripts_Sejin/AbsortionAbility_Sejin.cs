@@ -283,8 +283,8 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         _nextAvailableTime = Time.time + _lastCooldownSeconds;
 
         // 홀드 모드의 종료 시점 일괄 흡수가 모두 집계된 뒤에 종료를 통지한다.
+        // 종료 통지 구독자가 줄인 쿨타임(ReduceCooldown)이 덮어써지지 않도록 쿨타임은 통지 전에 한 번만 설정한다.
         AugmentEvents.RaiseAbsorptionEnded();
-        _nextAvailableTime = Time.time + cooldownSeconds;
         OnAbsorbEnded?.Invoke();
     }
 
@@ -365,13 +365,16 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         StopAbility();
     }
 
+    /// <summary>
+    /// 흡수 쿨타임이 진행 중이면 다음 사용 가능 시각 _nextAvailableTime을 seconds초 앞당긴다.
+    /// 일반 홀드와 전환(시간제) 쿨타임 모두에 적용되며, seconds가 0 이하이거나 쿨타임이 아니면 아무것도 하지 않는다.
+    /// </summary>
     public void ReduceCooldown(float seconds)
     {
         if (seconds <= 0f)
             return;
 
-        // 현재 시각이 이미 쿨타임이 끝난 상태(_nextAvailableTime <= Time.time)라면 깎을 필요가 없습니다.
-        // 쿨타임 중일 때만 _nextAvailableTime을 앞당겨서 남은 시간을 줄여줍니다.
+        // 쿨타임이 이미 끝났으면 줄일 필요가 없다.
         if (_nextAvailableTime > Time.time)
         {
             _nextAvailableTime -= seconds;
