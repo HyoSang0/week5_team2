@@ -163,6 +163,7 @@ MonoBehaviour:
   poolType: 0
   coll: {fileID: 0}
   enemyScore: 0
+  enemyAttackDamage: 2
   player: {fileID: 0}
   deathEffectForce: 50
   effectCount: 5

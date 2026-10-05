@@ -5620,8 +5620,8 @@ MonoBehaviour:
   volume: {fileID: 0}
   darkVignette: {fileID: 0}
   attackedVignetteIntensity: 0.45
-  playerHP: 5
-  maxPlayerHP: 5
+  playerHP: 10
+  maxPlayerHP: 10
   isUnBeatHit: 0
   isUnBeatDash: 0
   playerMeshRenderer: {fileID: 4175106658480865747}

@@ -55,6 +55,9 @@ public class GameManager : MonoBehaviour
             StatisticsManager.Instance.ResetRun();
             _level = 1;
         }
+
+        //백그라운드에서도 작동하도록 설정 (화면 밖으로 클릭할 때 멈추는거 방지)
+        Application.runInBackground = true;
     }
 
     void Start()

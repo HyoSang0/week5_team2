@@ -4,6 +4,9 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using static EnemyPool;
 
+/// <summary>
+/// 일반
+/// </summary>
 public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
 {
     [Header("Enemy Stats")]
@@ -15,6 +18,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     public PoolType poolType;
     public BoxCollider coll;
     public int enemyScore = 0;
+    [Min(2)] public int enemyAttackDamage;
 
     [Header("References")]
     public PlayerController player;
@@ -256,7 +260,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         {
             EnemyAbsorbEffect lightBall = EffectPool.Get(lightBallPrefab.gameObject, effectPosition, Quaternion.identity).GetComponent<EnemyAbsorbEffect>();
 
-        lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);            
+            lightBall.Initialize(playerTarget, uiWorldMarker, rewardOnArrival);
         }
 
         // 흡수 사망 시 즉시 처리해야 하는 subclass(자폭 등)를 위한 훅. 풀 반환 전에 호출한다.
@@ -369,7 +373,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
     }
 
     /// <summary>
-    /// 접촉 중인 상대의 콜라이더 상위 체인에서 PlayerHp를 찾아 EnemyContact 피해 1을 시도한다.
+    /// 접촉 중인 상대의 콜라이더 상위 체인에서 PlayerHp를 찾아 EnemyContact 피해 enemyAttackDamage을 시도한다.
     /// 무적 판정과 접촉 무적 부여는 수신자인 PlayerHp.TakeDamage가 담당한다.
     /// </summary>
     protected virtual void OnCollisionStay(Collision collision)
@@ -378,7 +382,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         if (hitPlayer != null)
         {
             IDamageable damageTarget = hitPlayer;
-            damageTarget.TakeDamage(new DamageInfo(1, DamageKind.EnemyContact, this));
+            damageTarget.TakeDamage(new DamageInfo(enemyAttackDamage, DamageKind.EnemyContact, this));
         }
     }
 

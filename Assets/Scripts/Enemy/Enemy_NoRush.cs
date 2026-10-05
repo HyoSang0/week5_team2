@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 가시
+/// </summary>
 public class Enemy_NoRush : Enemy
 {
     [Header("Enemy Stats")]
