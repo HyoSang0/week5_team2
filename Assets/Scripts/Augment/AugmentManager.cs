@@ -6,9 +6,12 @@ using UnityEngine;
 /// 레벨업 시점에 증강 선택 UI를 열고 선택된 증강을 PlayerStats에 적용하는 런타임 관리자.
 /// MainScene의 UiManager 오브젝트에 PlayerStats와 함께 배치한다.
 /// </summary>
-public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
+public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler, IHealingSource
 {
     private const int CARD_COUNT = 3;
+
+    // 증강 획득 시 최대 체력에서 회복할 비율이다.
+    private const float HEAL_ON_PICK_RATIO = 0.2f;
 
     // 회차별 3회 픽의 등급 조합과 선택 가중치다. Start에서 1개 조합을 뽑아 판 동안 고정한다.
     private static readonly AugmentTier[][] _patternTiers =
@@ -257,7 +260,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
 
     /// <summary>
     /// index의 카드가 선택됐다는 UI 입력을 처리한다.
-    /// 증강을 owned에 추가하고 PlayerStats에 수정자를 적용한 뒤 UI를 닫고 일시정지를 해제한다.
+    /// 증강을 owned에 추가하고 PlayerStats에 수정자를 적용한 뒤 최대 체력의 20%만큼 회복하며, UI를 닫고 일시정지를 해제한다.
     /// </summary>
     public void HandlePickClicked(int index)
     {
@@ -273,6 +276,10 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
         {
             PlayerStats.Instance.AddModifiers(data.Modifiers);
         }
+
+        // MaxHp 수정자가 반영된 최대 체력을 기준으로 획득 회복을 진행한다.
+        int healAmount = Mathf.FloorToInt(_playerHp.maxPlayerHP * HEAL_ON_PICK_RATIO);
+        _playerHp.ReceiveHealing(new HealingInfo(healAmount, HealingKind.Augment, this));
 
         AugmentEffect effect = data.Effect;
         if (effect != null)

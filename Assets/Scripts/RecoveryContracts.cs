@@ -5,7 +5,8 @@ public enum HealingKind
 {
     HealPack,
     ChainHeal,
-    Gluttony
+    Gluttony,
+    Augment
 }
 
 /// <summary>
