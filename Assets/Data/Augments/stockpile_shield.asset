@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: stockpile_shield
   _displayName: "\uBE44\uCD95\uD558\uAE30"
-  _description: "\uC801\uC744 20\uB9C8\uB9AC \uD761\uC218\uD55C \uB4A4 \uBAA8\uB4E0
-    \uC885\uB958\uC758 \uD53C\uD574\uB97C 1\uD68C \uBB34\uD6A8\uD654\uD558\uB294
-    \uBCF4\uD638\uB9C9 \uD68D\uB4DD\uD569\uB2C8\uB2E4. (\uCFE8\uD0C0\uC784 10\uCD08)"
+  _description: "\uC801 20\uB9C8\uB9AC\uB97C \uD761\uC218\uD558\uBA74 \uD53C\uD574\uB97C
+    1\uD68C \uBB34\uC2DC\uD558\uB294 \uBCF4\uD638\uB9C9 \uD68D\uB4DD\uD569\uB2C8\uB2E4.
+    (\uCFE8\uD0C0\uC784 10\uCD08)"
   _tier: 0
   _conflictTags: []
   _modifiers: []

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: energy_conversion
   _displayName: "\uC5D0\uB108\uC9C0 \uC804\uD658"
-  _description: "\uC120\uD0DD \uC774\uD6C4 \uC801\uC744 10\uAE30 \uD761\uC218\uD560
-    \uB54C\uB9C8\uB2E4 \uB3CC\uC9C4 \uAC70\uB9AC\uAC00 2%\uC529 \uC99D\uAC00\uD569\uB2C8\uB2E4.
-    \uCD5C\uB300 10%\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  _description: "\uC801 10\uB9C8\uB9AC \uD761\uC218\uD560 \uB54C\uB9C8\uB2E4 \uB3CC\uC9C4
+    \uAC70\uB9AC\uAC00 2%\uC529 \uC99D\uAC00\uD569\uB2C8\uB2E4. \uCD5C\uB300 10%\uAE4C\uC9C0
+    \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 0
   _conflictTags: []
   _modifiers: []

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: endless_growth
   _displayName: "\uB05D\uC5C6\uB294 \uC131\uC7A5"
-  _description: "\uD761\uC218\uB85C 100\uB9C8\uB9AC\uB97C \uD761\uC218\uD560 \uB54C
-    \uB9C8\uB2E4 \uCD5C\uB300 \uCCB4\uB825\uC774 1 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  _description: "\uC801 100\uB9C8\uB9AC\uB97C \uD761\uC218\uD560 \uB54C\uB9C8\uB2E4
+    \uCD5C\uB300 \uCCB4\uB825\uC774 1 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   _tier: 2
   _conflictTags: []
   _modifiers: []

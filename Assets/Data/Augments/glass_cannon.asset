@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: glass_cannon
   _displayName: "\uC720\uB9AC \uB300\uD3EC"
   _description: "\uB3CC\uC9C4 \uC18D\uB3C4\uAC00 50% \uC99D\uAC00\uD558\uACE0 \uB3CC\uC9C4
-    \uCFE8\uB2E4\uC6B4\uC774 50% \uAC10\uC18C\uD558\uC9C0\uB9CC \uCD5C\uB300 \uCCB4\uB825\uC774
-    100% \uAC10\uC18C\uD569\uB2C8\uB2E4. "
+    \uCFE8\uD0C0\uC784\uC774 50% \uAC10\uC18C\uD558\uC9C0\uB9CC \uCD5C\uB300 \uCCB4\uB825\uC774
+    100% \uAC10\uC18C\uD569\uB2C8\uB2E4. (\uCD5C\uC18C \uCCB4\uB825 1) "
   _tier: 2
   _conflictTags:
   - MaxHp
@@ -31,3 +31,4 @@ MonoBehaviour:
     _percent: -100
     _flat: 0
   _effect: {fileID: 0}
+  _absorptionAreaType: 0

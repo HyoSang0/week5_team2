@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
   _id: efficiency
   _displayName: "\uC7AC\uC815\uBE44"
-  _description: "\uB3CC\uC9C4 \uCFE8\uB2E4\uC6B4\uC774 30% \uAC10\uC18C\uD569\uB2C8\uB2E4."
+  _description: "\uB3CC\uC9C4 \uCFE8\uD0C0\uC784\uC774 30% \uAC10\uC18C\uD569\uB2C8\uB2E4."
   _tier: 1
   _conflictTags: []
   _modifiers:
@@ -22,3 +22,4 @@ MonoBehaviour:
     _percent: -30
     _flat: 0
   _effect: {fileID: 0}
+  _absorptionAreaType: 0
