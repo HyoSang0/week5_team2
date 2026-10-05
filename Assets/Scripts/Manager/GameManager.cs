@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     private int _level = 1;
     private int _currentLevelExperience;
     private int _nextLevelRequirement;
+    public event Action ExperienceChanged;
 
     void Awake()
     {
@@ -123,6 +124,8 @@ public class GameManager : MonoBehaviour
             _nextLevelRequirement = GetRequirementForLevel(_level);
             LevelReached?.Invoke(_level);
         }
+
+        ExperienceChanged?.Invoke();
     }
 
     /// <summary>
