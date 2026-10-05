@@ -23,6 +23,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     private bool _hasOneHitShield;
     [Header("Practice")]
     [SerializeField] private bool _practiceInvincible;
+    private bool _hasAbsorbHitIgnore;
     private float _shieldContactGraceUntil;
 
     // 전환(시간제) 흡수 중 접촉 피해를 흡수로 우회시키기 위한 능력 컴포넌트
@@ -168,7 +169,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
             return false;
         }
 
-        if (TryConsumeOneHitShield())
+        if (TryConsumeAbsorbHitIgnore() || TryConsumeOneHitShield())
         {
             if (damageInfo.Kind == DamageKind.EnemyContact)
             {
@@ -218,6 +219,43 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
         }
 
         _hasOneHitShield = true;
+        return true;
+    }
+
+    // 흡수가 활성화된 동안에만 피격 무시 1회를 부여한다.
+    public bool TryGrantAbsorbHitIgnore()
+    {
+        if (_hasAbsorbHitIgnore
+            || playerHP <= 0
+            || _absortionAbility == null
+            || !_absortionAbility.isActiveAndEnabled
+            || !_absortionAbility.isStartAbsortion)
+        {
+            return false;
+        }
+
+        _hasAbsorbHitIgnore = true;
+        return true;
+    }
+
+    // 흡수가 끝나거나 판이 초기화될 때 사용하지 않은 피격 무시를 제거한다.
+    public void ClearAbsorbHitIgnore()
+    {
+        _hasAbsorbHitIgnore = false;
+    }
+
+    // 흡수 중 피격 무시가 있으면 1회를 소모한다.
+    private bool TryConsumeAbsorbHitIgnore()
+    {
+        if (!_hasAbsorbHitIgnore
+            || _absortionAbility == null
+            || !_absortionAbility.isActiveAndEnabled
+            || !_absortionAbility.isStartAbsortion)
+        {
+            return false;
+        }
+
+        _hasAbsorbHitIgnore = false;
         return true;
     }
 

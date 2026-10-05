@@ -17,6 +17,7 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     [Header("Cooldown")]
     [SerializeField, Min(0f)] private float _cooldownSeconds;
     private float _nextAvailableTime;
+    private float _lastCooldownSeconds;
 
     [Header("Conversion")]
     [SerializeField, Min(0f)] private float _conversionActiveSeconds = 1.5f;
@@ -47,15 +48,29 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     /// <summary>시간제(전환) 흡수가 현재 활성 상태인지 반환한다.</summary>
     public bool IsTimedActive => _isTimedActivation && isStartAbsortion;
 
+    public event Action OnAbsorbStarted;
+    public event Action OnAbsorbEnded;
+
     /// <summary>
-    /// 시간제 활성의 남은 시간 비율(0~1)을 반환한다.
-    /// 활성 중이 아니면 0을 반환하며, Time.time 기준으로 계산한다.
+    /// 일반 흡수 또는 시간제 포식이 활성 상태인지 반환한다.
+    /// isStartAbsortion을 읽으며 UI 활성 표시 여부를 결정한다.
     /// </summary>
-    public float TimedActiveRatio
+    public bool IsAbsorptionActive => isStartAbsortion;
+
+    /// <summary>
+    /// 활성 흡수의 게이지 비율을 반환한다.
+    /// 일반 흡수 중에는 1, 시간제 포식 중에는 남은 지속 시간을 비율로 반환한다.
+    /// </summary>
+    public float ActiveAbsorptionRatio
     {
         get
         {
-            if (!IsTimedActive || _conversionActiveSeconds <= 0f)
+            if (!_isTimedActivation)
+            {
+                return 1f;
+            }
+
+            if (_conversionActiveSeconds <= 0f)
             {
                 return 0f;
             }
@@ -65,19 +80,19 @@ public class AbsortionAbility_Sejin : MonoBehaviour
     }
 
     /// <summary>
-    /// 시간제 쿨타임의 진행 비율(0~1)을 반환하며 준비되면 1을 반환한다.
-    /// Time.time 기준으로 계산한다.
+    /// 마지막 흡수 쿨타임의 경과 비율(0~1)을 반환한다.
+    /// 준비 상태면 1, 쿨타임 시작 시점이면 0이며 Time.time 기준으로 계산한다.
     /// </summary>
-    public float TimedCooldownRatio
+    public float AbsorptionCooldownRatio
     {
         get
         {
-            if (Time.time >= _nextAvailableTime || _conversionCooldownSeconds <= 0f)
+            if (Time.time >= _nextAvailableTime || _lastCooldownSeconds <= 0f)
             {
                 return 1f;
             }
 
-            return Mathf.Clamp01(1f - (_nextAvailableTime - Time.time) / _conversionCooldownSeconds);
+            return Mathf.Clamp01(1f - (_nextAvailableTime - Time.time) / _lastCooldownSeconds);
         }
     }
 
@@ -97,6 +112,11 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
     void OnDisable()
     {
+        if (isStartAbsortion)
+        {
+            StopAbility();
+        }
+
         inputActions.Disable();
         AugmentEvents.OnAbsorptionAreaTypeSelected -= HandleAbsorptionAreaTypeSelected;
     }
@@ -192,6 +212,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _playerController.SetAbsorbState(true);
+
+        AugmentEvents.RaiseAbsorptionStarted();
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -211,6 +234,9 @@ public class AbsortionAbility_Sejin : MonoBehaviour
 
         isStartAbsortion = true;
         _timedEndTime = Time.time + _conversionActiveSeconds;
+
+        AugmentEvents.RaiseAbsorptionStarted();
+        OnAbsorbStarted?.Invoke();
     }
 
     /// <summary>
@@ -248,12 +274,18 @@ public class AbsortionAbility_Sejin : MonoBehaviour
         isStartAbsortion = false;
         _isTimedActivation = false;
 
-        if (!wasTimed)
+        if (!wasTimed && _playerController != null)
         {
             _playerController.SetAbsorbState(false);
         }
 
+        _lastCooldownSeconds = cooldownSeconds;
+        _nextAvailableTime = Time.time + _lastCooldownSeconds;
+
+        // 홀드 모드의 종료 시점 일괄 흡수가 모두 집계된 뒤에 종료를 통지한다.
+        AugmentEvents.RaiseAbsorptionEnded();
         _nextAvailableTime = Time.time + cooldownSeconds;
+        OnAbsorbEnded?.Invoke();
     }
 
     /// <summary>
@@ -325,6 +357,12 @@ public class AbsortionAbility_Sejin : MonoBehaviour
                 binding.Area.gameObject.SetActive(false);
             }
         }
+    }
+
+    // 돌진이 시작될 때 활성화된 흡수를 종료하고 기존 쿨타임을 시작한다.
+    public void InterruptForRush()
+    {
+        StopAbility();
     }
 
     // private void RefreshUI()

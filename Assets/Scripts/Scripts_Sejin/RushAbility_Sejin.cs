@@ -39,6 +39,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     public event Action OnRushEnded;
 
     public bool isRushing = false;
+    private AbsortionAbility_Sejin _absortionAbility;
 
     private EnemyPool enemyPool;
 
@@ -83,6 +84,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         enemyPool = GameObject.Find("ObjectPool").GetComponent<EnemyPool>();
         playerHp = GetComponent<PlayerHp>();
         fallRecovery = GetComponent<PlayerFallRecovery>();
+        _absortionAbility = GetComponent<AbsortionAbility_Sejin>();
         _baseDuringTime = duringTime;
         _baseCoolTime = coolTime;
         _baseNoDamageTime = noDamageTime;
@@ -191,7 +193,6 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
         rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
         maxRushCount = (int)PlayerStats.Instance.Apply(StatType.RushCount, _baseRushCount);
-        Debug.Log($"{maxRushCount}");
     }
 
     // 공격 입력을 받으면 사용 가능 여부를 확인하고 드롭킥을 시작한다.
@@ -203,6 +204,11 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
         if (CanDash())
         {
+            if (_absortionAbility != null)
+            {
+                _absortionAbility.InterruptForRush();
+            }
+
             OnRushStarted?.Invoke();
             isRushing = true;
             _usableRushCount--;             //돌진 횟수 감소

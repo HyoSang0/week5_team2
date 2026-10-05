@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
-  m_Name: stockpile_shield
+  m_Name: absorbhitignore
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
-  _id: stockpile_shield
-  _displayName: "\uBE44\uCD95\uD558\uAE30"
-  _description: "\uC801\uC744 20\uB9C8\uB9AC \uD761\uC218\uD55C \uB4A4 \uBAA8\uB4E0
-    \uC885\uB958\uC758 \uD53C\uD574\uB97C 1\uD68C \uBB34\uD6A8\uD654\uD558\uB294
-    \uBCF4\uD638\uB9C9 \uD68D\uB4DD\uD569\uB2C8\uB2E4. (\uCFE8\uD0C0\uC784 10\uCD08)"
+  _id: absorbhitignore
+  _displayName: "\uCCA0\uBA74\uD53C"
+  _description: "\uD761\uC218 \uC911 \uD53C\uACA9\uC744 1\uD68C \uBB34\uC2DC\uD569\uB2C8\uB2E4
+    .(\uCFE8\uD0C0\uC784 15\uCD08)"
   _tier: 0
   _conflictTags: []
   _modifiers: []
-  _effect: {fileID: 11400000, guid: 621bc9f0bd5154c49a1a3cf084e389a2, type: 2}
+  _effect: {fileID: 11400000, guid: 73ac1d1e94909b244a8acecd9bd08c07, type: 2}
   _absorptionAreaType: 0
