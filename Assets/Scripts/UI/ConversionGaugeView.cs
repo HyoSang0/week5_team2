@@ -13,6 +13,8 @@ public class ConversionGaugeView : MonoBehaviour
     [SerializeField] private Slider _slider;
     [SerializeField] private Image _fill;
 
+    private static readonly Color COOLDOWN_COLOR = new Color32(3, 229, 57, 255);
+
     void Awake()
     {
         if (_ability == null)
@@ -42,18 +44,18 @@ public class ConversionGaugeView : MonoBehaviour
         if (_ability.IsAbsorptionActive)
         {
             _slider.value = _ability.ActiveAbsorptionRatio;
-            _fill.color = UIPalette.Accent;
+            _fill.color = COOLDOWN_COLOR;
             return;
         }
 
         if (_ability.AbsorptionCooldownRatio < 1f)
         {
             _slider.value = _ability.AbsorptionCooldownRatio;
-            _fill.color = UIPalette.Accent;
+            _fill.color = COOLDOWN_COLOR;
             return;
         }
 
         _slider.value = 1f;
-        _fill.color = UIPalette.Accent;
+        _fill.color = COOLDOWN_COLOR;
     }
 }

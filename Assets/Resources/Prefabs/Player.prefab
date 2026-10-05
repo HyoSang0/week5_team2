@@ -5595,6 +5595,7 @@ MonoBehaviour:
   attackedVignetteIntensity: 0.45
   playerHP: 10
   maxPlayerHP: 10
+  _practiceInvincible: 0
   isUnBeatHit: 0
   isUnBeatDash: 0
   playerMeshRenderer: {fileID: 4175106658480865747}
@@ -5878,6 +5879,7 @@ MonoBehaviour:
   outline: {fileID: 5536785131614566053}
   segments: 64
   outlineWidth: 0.08
+  _lineWidth: 1.5
 --- !u!1 &5298137482805532922
 GameObject:
   m_ObjectHideFlags: 0
