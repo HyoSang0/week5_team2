@@ -199,7 +199,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     // ctx는 입력 이벤트이며 드롭킥 상태와 플레이어 무적시간을 변경한다.
     private void StartRush(InputAction.CallbackContext ctx)
     {
-        if (GamePause.IsPaused)
+        if (GamePause.IsPaused || (ctx.control.device is Mouse && TitleSceneController.IsPointerOverMenu))
             return;
 
         if (CanDash())

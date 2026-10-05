@@ -1,9 +1,19 @@
+using System;
+
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Pool;
 
 public class EnemyPool : MonoBehaviour
 {
+    [Header("Practice")]
+    [SerializeField] private bool _isPracticeMode;
+    /// <summary>연습 적이 플레이어 추적을 생략할지 반환한다.</summary>
+    public bool IsPracticeMode => _isPracticeMode;
+    /// <summary>적의 사망 연출이 끝나 풀로 반환되면 해당 적을 전달한다.</summary>
+    public event Action<Enemy> EnemyReturned;
+
+    [Header("Enemy Prefabs")]
     [SerializeField] private GameObject BasicEnemyPrefab;
     [SerializeField] private GameObject BoomEnemyPrefab;
     [SerializeField] private GameObject NoRushEnemyPrefab;
@@ -55,10 +65,11 @@ public class EnemyPool : MonoBehaviour
     /// <summary>
     /// pos 주변의 NavMesh 위치에 poolType 종류의 적을 풀에서 꺼내 활성화하고 초기화한다.
     /// NavMesh 위치를 찾지 못하면 pos를 사용하며, 활성화 후 필요하면 찾은 위치로 Warp를 시도한다.
+    /// 활성화한 Enemy를 반환한다.
     /// </summary>
     /// <param name="pos">소환될 위치</param>
     /// <param name="poolType">소환할 적의 타입</param>
-    public void SpawnEnemy(Vector3 pos, PoolType poolType)
+    public Enemy SpawnEnemy(Vector3 pos, PoolType poolType)
     {
         GameObject thisObject = null;
 
@@ -102,10 +113,11 @@ public class EnemyPool : MonoBehaviour
                 enemy.navMeshAgent.Warp(navHit.position);
             }
         }
+        return enemy;
     }
 
     /// <summary>
-    /// 적이 죽었을 때 호출되는 함수. 적을 풀에 반환한다.
+    /// obj를 poolType에 대응하는 풀에 반환하고 EnemyReturned에 반환한 적을 전달한다.
     /// </summary>
     /// <param name="obj">죽은 적의 게임 오브젝트 타입</param>
     /// <param name="poolType">죽은 적의 풀 타입</param>
@@ -127,6 +139,7 @@ public class EnemyPool : MonoBehaviour
                 NoAbsortEnemyPool.Release(obj);
                 break;
         }
+        EnemyReturned?.Invoke(obj.GetComponent<Enemy>());
     }
 
     /// <summary>

@@ -151,6 +151,19 @@ public class GroundInitializer : MonoBehaviour
         return found;
     }
 
+    /// <summary>
+    /// 고정 연습 위치 주변의 실제 지면이 복구되었는지 검사한다.
+    /// position과 supportRadius로 작은 격자 범위만 검사하고 모든 타일이 활성 상태이면 true를 반환한다.
+    /// </summary>
+    public bool HasPracticeGround(Vector3 position, float supportRadius)
+    {
+        Vector2Int center = new Vector2Int(
+            Mathf.RoundToInt(position.x / cubeSize),
+            Mathf.RoundToInt(position.z / cubeSize));
+        int cells = Mathf.CeilToInt(supportRadius / cubeSize) + 1;
+        return HasGroundSupport(center, cells);
+    }
+
     ///<summary>
     /// center 주변의 정사각형 지지 영역에 밟을 수 있는 타일이 있는 지 검사한다. 
     /// supportCells만큼 각 방향을 확인하며, 모든 타일의 Collider가 활성 상태이면 true를 반환한다. 

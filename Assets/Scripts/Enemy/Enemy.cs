@@ -93,11 +93,21 @@ public class Enemy : MonoBehaviour, IDamageable, IDamageSource, IHealable
         navMeshAgent.speed = speed;
         coll.isTrigger = false;
         trail.enabled = false;
+        if (pool.IsPracticeMode && navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.ResetPath();
+            navMeshAgent.velocity = Vector3.zero;
+        }
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
+        if (enemyPool != null && enemyPool.IsPracticeMode)
+        {
+            return;
+        }
+
         navMeshAgent.speed = speed;
         // MoveTowardsPlayer();
         if (!isDead)
