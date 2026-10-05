@@ -230,8 +230,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         //남은 횟수가 없을 때만 준비 이펙트 끔
         if (_usableRushCount == 0)
             dashReadyEffectObject.SetActive(false);
-
-        dashReadyEffectObject.SetActive(false);
+                
         rb.linearVelocity = transform.forward * rushSpeed;
         rb.useGravity = false;
 
