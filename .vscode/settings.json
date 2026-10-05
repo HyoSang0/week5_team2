@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "W05.slnx"
+    "dotnet.defaultSolution": "week5_team2.slnx"
 }

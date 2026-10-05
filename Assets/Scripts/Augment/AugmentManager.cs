@@ -163,6 +163,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
     {
         AugmentEvents.OnEnemyKilled -= effect.OnEnemyKilled;
         AugmentEvents.OnEnemyAbsorbed -= effect.OnEnemyAbsorbed;
+        AugmentEvents.OnScoreIncreased -= effect.OnScoreIncreased;
     }
 
     /// <summary>
@@ -283,6 +284,7 @@ public class AugmentManager : MonoBehaviour, IAugmentSelectionHandler
             {
                 AugmentEvents.OnEnemyKilled += effect.OnEnemyKilled;
                 AugmentEvents.OnEnemyAbsorbed += effect.OnEnemyAbsorbed;
+                AugmentEvents.OnScoreIncreased += effect.OnScoreIncreased;
                 _subscribedEffects.Add(effect);
             }
         }

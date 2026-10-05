@@ -18,6 +18,11 @@ public static class AugmentEvents
     public static event Action<Enemy> OnEnemyAbsorbed;
 
     /// <summary>
+    /// 점수가 증가했을 때 발생하며 증가한 점수를 인자로 전달한다.
+    /// </summary>
+    public static event Action<float> OnScoreIncreased;
+
+    /// <summary>
     /// 흡수 활성화가 시작됐을 때 발생한다.
     /// </summary>
     public static event Action OnAbsorptionStarted;
@@ -49,6 +54,15 @@ public static class AugmentEvents
     {
         OnEnemyAbsorbed?.Invoke(enemy);
     }
+
+    /// <summary>
+    /// 적 흡수 이벤트를 발생시켜 구독 중인 증강 효과에 enemy를 전달한다.
+    /// </summary>
+    public static void RaiseScoreIncreased(float socre)
+    {
+        OnScoreIncreased?.Invoke(socre);
+    }
+
 
     /// <summary>
     /// 흡수 활성화 시작 이벤트를 발생시켜 구독 중인 증강 효과에 활성화 시작을 전달한다.
@@ -90,6 +104,7 @@ public static class AugmentEvents
         OnAbsorptionStarted = null;
         OnAbsorptionEnded = null;
         OnAbsorptionAreaTypeSelected = null;
+        OnScoreIncreased = null;
     }
 
     /// <summary>
