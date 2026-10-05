@@ -15,11 +15,15 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     public float rushSpeed = 50.0f;
     public float duringTime = 0.2f;
     public float noDamageTime = 0.7f;
+    [Min(1)] public int maxRushCount;
     public float coolTime = 1.0f;
     public bool isDashing = false;
+    [Tooltip("현재 사용 가능한 돌진 횟수")]
+    private int _usableRushCount;
 
     private Coroutine dashRoutine;
     private Coroutine unbeatRoutine;
+    private Coroutine cooldownRoutine;
 
     private Rigidbody rb;
     private InputSystem_Actions inputActions;
@@ -48,21 +52,25 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
 
     [Header("증강 스탯 재계산에 사용할 기준값들")]
     /// <summary>
-    /// 대쉬 지속 시간
+    /// 돌진 지속 시간
     /// </summary>
     private float _baseDuringTime;
     /// <summary>
-    /// 대쉬 쿨타임
+    /// 돌진 쿨타임
     /// </summary>
     private float _baseCoolTime;
     /// <summary>
-    /// 대쉬 무적 시간
+    /// 돌진 무적 시간
     /// </summary>
     private float _baseNoDamageTime;
     /// <summary>
-    /// 대쉬 속도
+    /// 돌진 속도
     /// </summary>
     private float _baseRushSpeed;
+    /// <summary>
+    /// 돌진 횟수
+    /// </summary>
+    private float _baseRushCount;
     // 쿨타임 진행 중에 누적된 쿨타임 감소량과 쿨타임 진행 여부
     private float _pendingCooldownReduction;
     private bool _inCooldown;
@@ -79,9 +87,12 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         _baseCoolTime = coolTime;
         _baseNoDamageTime = noDamageTime;
         _baseRushSpeed = rushSpeed;
+        _baseRushCount = maxRushCount;
+        _usableRushCount = maxRushCount;
 
         dashReadyEffectPrefab = Resources.Load<GameObject>("Prefabs/DashReadyEffect");
         dashReadyEffectObject = Instantiate(dashReadyEffectPrefab, transform.position, Quaternion.identity);
+
     }
 
     void OnEnable()
@@ -111,7 +122,8 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
             FinishRushMovement();
         }
         // 이동 또는 쿨타임 중 정지된 경우 쿨타임을 끝난 것으로 취급하고 준비 표시를 복구한다.
-        if (isDashing)
+
+        if (isDashing && dashReadyEffectObject != null)
         {
             dashReadyEffectObject.SetActive(true);
         }
@@ -178,6 +190,8 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         coolTime = PlayerStats.Instance.Apply(StatType.RushCooldown, _baseCoolTime);
         noDamageTime = PlayerStats.Instance.Apply(StatType.RushInvincible, _baseNoDamageTime);
         rushSpeed = PlayerStats.Instance.Apply(StatType.RushSpeed, _baseRushSpeed);
+        maxRushCount = (int)PlayerStats.Instance.Apply(StatType.RushCount, _baseRushCount);
+        Debug.Log($"{maxRushCount}");
     }
 
     // 공격 입력을 받으면 사용 가능 여부를 확인하고 드롭킥을 시작한다.
@@ -185,20 +199,22 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     private void StartRush(InputAction.CallbackContext ctx)
     {
         if (GamePause.IsPaused)
-        {
             return;
-        }
 
         if (CanDash())
         {
             OnRushStarted?.Invoke();
             isRushing = true;
+            _usableRushCount--;             //돌진 횟수 감소
 
             if (dashRoutine != null)
-            {
                 StopCoroutine(dashRoutine);
-            }
+
             dashRoutine = StartCoroutine(Dash_Move());
+
+            //횟수를 소모했는데 충전 코루틴이 안 돌고 있다면 쿨타임 가동
+            if (!_inCooldown)
+                cooldownRoutine = StartCoroutine(DashCooldown());
 
             //플레이어한테 무적 상태 걸기
             playerHp.ApplyDashInvincibility(noDamageTime);
@@ -210,8 +226,10 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     private IEnumerator Dash_Move()
     {
         isDashing = true;
-        _inCooldown = false;
-        _pendingCooldownReduction = 0f;
+
+        //남은 횟수가 없을 때만 준비 이펙트 끔
+        if (_usableRushCount == 0)
+            dashReadyEffectObject.SetActive(false);
 
         dashReadyEffectObject.SetActive(false);
         rb.linearVelocity = transform.forward * rushSpeed;
@@ -221,8 +239,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         yield return new WaitForSeconds(duringTime);
 
         FinishRushMovement();
-
-        yield return DashCooldown();
+        isDashing = false;
     }
 
     /// <summary>
@@ -244,25 +261,39 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
     /// </summary>
     private IEnumerator DashCooldown()
     {
-        float timeElapsed = 0f;
-        // 진행 중 쿨다운 길이가 갑자기 늘거나 즉시 종료되지 않도록 시작 시점 값으로 고정한다. 새 쿨다운 증강은 다음 쿨다운부터 반영된다.
-        float cooldownDuration = coolTime;
         _inCooldown = true;
-        while (timeElapsed < cooldownDuration)
+        //돌진 가능 횟수가 모두 충전될 때까지 반복
+        while (_usableRushCount < maxRushCount)
         {
-            // 0초 기준에서는 루프에 진입하지 않지만, 나눗셈도 길이가 0보다 클 때만 수행해 UI를 안전하게 유지한다.
-            _coolDownImage.fillAmount = cooldownDuration > 0f ? timeElapsed / cooldownDuration : 1f;
-            timeElapsed += Time.deltaTime + _pendingCooldownReduction;
-            _pendingCooldownReduction = 0f;
-            yield return null;
+            float timeElapsed = 0f;
+            float cooldownDuration = coolTime;
+            //각 돌진 쿨타임 측정
+            while (timeElapsed < cooldownDuration)
+            {
+                if (_usableRushCount == 0)
+                {
+                    _coolDownImage.fillAmount = cooldownDuration > 0f ? timeElapsed / cooldownDuration : 1f;
+                }
+                else
+                {
+                    _coolDownImage.fillAmount = 1f; // 1번 이상 남았으면 일단 불 들어오게 처리
+                }
+
+                timeElapsed += Time.deltaTime + _pendingCooldownReduction;
+                _pendingCooldownReduction = 0f;
+                yield return null;
+            }
+
+            // 쿨타임 1회전 완료 -> 횟수 1 충전
+            _usableRushCount++;
+            dashReadyEffectObject.SetActive(true); // 횟수가 생겼으니 이펙트 온
         }
+
+        // 최대 횟수 도달 시 코루틴 종료
         _inCooldown = false;
         _pendingCooldownReduction = 0f;
         _coolDownImage.fillAmount = 1;
-        // dashReadyEffect.transform.position = transform.position;
-        dashReadyEffectObject.SetActive(true);
-        isDashing = false;
-        dashRoutine = null;
+        cooldownRoutine = null;
     }
 
     /// <summary>
@@ -276,6 +307,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
             return;
         }
         StopCoroutine(dashRoutine);
+        isDashing = false;
         FinishRushMovement();
         dashRoutine = StartCoroutine(DashCooldown());
     }
@@ -288,7 +320,7 @@ public class RushAbility_Sejin : MonoBehaviour, IDamageSource
         {
             return false;
         }
-        if (isDashing) return false;
+        if (isDashing || _usableRushCount < 1) return false;
         // if (energy < consumeEnergy || isDashing) return false;
         // energy -= consumeEnergy;
         // RefreshUI();

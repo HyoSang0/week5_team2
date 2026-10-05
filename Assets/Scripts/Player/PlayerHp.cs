@@ -9,6 +9,7 @@ using UnityEngine.Rendering.Universal;
 public class PlayerHp : MonoBehaviour, IDamageable, IHealable
 {
     private const float HIT_INVINCIBILITY_SECONDS = 2f;
+    private const float SHIELD_CONTACT_GRACE_SECONDS = 0.15f;
 
     Rigidbody rb;
     [SerializeField] GameManager gameManager;
@@ -19,6 +20,8 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     public int playerHP = 5;
     public int maxPlayerHP = 5;
     private float _hitInvincibilityUntil;
+    private bool _hasOneHitShield;
+    private float _shieldContactGraceUntil;
 
     // 전환(시간제) 흡수 중 접촉 피해를 흡수로 우회시키기 위한 능력 컴포넌트
     private AbsortionAbility_Sejin _absortionAbility;
@@ -27,6 +30,8 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
     /// playerHP/maxPlayerHP 값이 변경되었음을 UI 구독자에게 알리는 이벤트.
     /// </summary>
     public event Action OnHpChanged;
+
+    public bool HasOneHitShield => _hasOneHitShield;
 
     [Header("플레이어 무적 상태 표시 관련")]
     public bool isUnBeatHit = false;
@@ -144,7 +149,7 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
                 }
 
                 // 전투 피해는 피격 무적과 대쉬 무적 중에는 적용되지 않는다.
-                if (isUnBeatHit || isUnBeatDash)
+                if (isUnBeatHit || isUnBeatDash || Time.time < _shieldContactGraceUntil)
                 {
                     return false;
                 }
@@ -154,6 +159,16 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
             default:
                 // 플레이어가 수신하지 않는 Kind는 무적 정책 우회를 막기 위해 거부한다.
                 return false;
+        }
+
+        if (TryConsumeOneHitShield())
+        {
+            if (damageInfo.Kind == DamageKind.EnemyContact)
+            {
+                _shieldContactGraceUntil = Time.time + SHIELD_CONTACT_GRACE_SECONDS;
+            }
+
+            return false;
         }
 
         ReduceHealth(damageInfo.Amount);
@@ -185,6 +200,30 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
             gameManager.PlayerDie();
         }
         UpdateHpInfoToOthers();
+    }
+
+    // 보유 중인 보호막이 없고 살아 있을 때 한 번의 피해를 막을 보호막을 부여한다.
+    public bool TryGrantOneHitShield()
+    {
+        if (_hasOneHitShield || playerHP <= 0)
+        {
+            return false;
+        }
+
+        _hasOneHitShield = true;
+        return true;
+    }
+
+    // 보호막이 있으면 한 번 소모하고 피해 차단 여부를 반환한다.
+    private bool TryConsumeOneHitShield()
+    {
+        if (!_hasOneHitShield)
+        {
+            return false;
+        }
+
+        _hasOneHitShield = false;
+        return true;
     }
 
     /// <summary>
@@ -306,6 +345,12 @@ public class PlayerHp : MonoBehaviour, IDamageable, IHealable
         if (playerHP <= 0)
         {
             return false;
+        }
+
+        // 보호막이 낙하 피해를 막아도 복귀 동작은 계속 진행한다.
+        if (damage > 0 && TryConsumeOneHitShield())
+        {
+            return true;
         }
 
         // 낙하 피해는 전투 피해와 별도 경로로 무적과 관계없이 적용한다.
