@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e75e7b4dd3b6264393f7b436fccb888, type: 3}
+  m_Name: battlefield_avatar
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentData
+  _id: battlefield_avatar
+  _displayName: "\uC804\uC7A5\uC758 \uD654\uC2E0"
+  _description: "\uD68D\uB4DD \uC810\uC218\uAC00 2\uBC30\uAC00 \uB418\uC9C0\uB9CC
+    \uC801\uC774 1.5\uBC30 \uBE60\uB974\uAC8C \uC0DD\uC131\uB429\uB2C8\uB2E4."
+  _tier: 1
+  _conflictTags: []
+  _modifiers:
+  - _stat: 11
+    _percent: 100
+    _flat: 0
+  - _stat: 12
+    _percent: 50
+    _flat: 0
+  _effect: {fileID: 0}
+  _absorptionAreaType: 0

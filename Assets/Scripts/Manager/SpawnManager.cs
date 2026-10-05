@@ -37,6 +37,7 @@ public class SpawnManager : MonoBehaviour
     private bool _hasWarnedInvalidInterval;
     private WaveState[] _states;
     private float _elapsed;
+    private float _spawnRate = 1f;
 
     void Awake()
     {
@@ -65,6 +66,16 @@ public class SpawnManager : MonoBehaviour
             state.Remaining = CountRemaining(wave);
             _states[i] = state;
         }
+
+        PlayerStats.Instance.OnStatsChanged += HandleStatsChanged;
+    }
+
+    void OnDestroy()
+    {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.OnStatsChanged -= HandleStatsChanged;
+        }
     }
 
     void Update()
@@ -80,7 +91,7 @@ public class SpawnManager : MonoBehaviour
             while (state.Remaining > 0 && _elapsed >= state.NextTime)
             {
                 for (int c = 0; c < wave.Count; c++) SpawnOne(wave.Kind);
-                state.NextTime += wave.Interval;
+                state.NextTime += wave.Interval / _spawnRate;
                 state.Remaining--;
             }
 
@@ -110,15 +121,62 @@ public class SpawnManager : MonoBehaviour
             return 1;
         }
 
-        float time = wave.Duration;
-        int remaining = 0;
-        while (time > 0f)
+        return CountSpawns(wave.Duration, wave.Interval);
+    }
+
+    /// <summary>
+    /// 창 길이 duration을 간격 interval로 소진할 때의 스폰 횟수를 계산한다.
+    /// duration을 interval씩 줄여 0 이하가 될 때까지 센 횟수를 반환한다.
+    /// </summary>
+    private static int CountSpawns(float duration, float interval)
+    {
+        int count = 0;
+        while (duration > 0f)
         {
-            remaining++;
-            time -= wave.Interval;
+            count++;
+            duration -= interval;
         }
 
-        return remaining;
+        return count;
+    }
+
+    /// <summary>
+    /// 스탯 변경 시 SpawnRate 배율을 다시 읽어 각 웨이브의 남은 스폰 횟수를 재계산한다.
+    /// PlayerStats.Instance.Apply(StatType.SpawnRate, 1f)로 rate를 얻으며, rate가 유효하면 _spawnRate를
+    /// 갱신하고 _states의 Remaining을 새 간격 기준 횟수로 되돌려 놓는다. NextTime은 변경하지 않는다.
+    /// </summary>
+    private void HandleStatsChanged()
+    {
+        float rate = PlayerStats.Instance.Apply(StatType.SpawnRate, 1f);
+
+        if (rate <= 0f || Mathf.Approximately(rate, _spawnRate))
+        {
+            return;
+        }
+
+        for (int i = 0; i < _states.Length; i++)
+        {
+            SpawnWave wave = _schedule.Waves[i];
+            WaveState state = _states[i];
+
+            if (state.Remaining > 0 && wave.Duration > 0f && wave.Interval > 0f)
+            {
+                float window;
+                if (_elapsed < wave.StartTime)
+                {
+                    window = wave.Duration;
+                }
+                else
+                {
+                    window = (wave.StartTime + wave.Duration) - state.NextTime;
+                }
+
+                state.Remaining = CountSpawns(window, wave.Interval / rate);
+                _states[i] = state;
+            }
+        }
+
+        _spawnRate = rate;
     }
 
     /// <summary>
