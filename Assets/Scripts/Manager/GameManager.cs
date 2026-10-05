@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     private const int EXPERIENCE_PER_KILL = 2;
     private const int EXPERIENCE_PER_ABSORB = 10;
     // 각 항목은 해당 레벨에서 다음 레벨로 올라가는 데 필요한 경험치다.
-    private static readonly int[] _levelExperienceRequirements = { 1000, 2000, 3000, 5000 };
+    private static readonly int[] _levelExperienceRequirements = { 500, 700, 900, 1100, 1300, 1500, 3000 };
 
     public static GameManager Instance;
 

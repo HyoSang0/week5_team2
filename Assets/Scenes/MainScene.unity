@@ -935,7 +935,7 @@ MonoBehaviour:
   _playerHp: {fileID: 782649360}
   _hudView: {fileID: 3186234514657724730}
   _totalRerolls: 3
-  _debugForcedNextAugment: {fileID: 11400000, guid: 19ace7945558db0499068e35cf583e30, type: 2}
+  _debugForcedNextAugment: {fileID: 0}
 --- !u!114 &612590447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1189,7 +1189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5011029444806417265, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: m_Name
-      value: Player (1)
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6347137728393194831, guid: 7191f9ec3e48e054abd48ecf070f036a, type: 3}
       propertyPath: slowMultiplier
